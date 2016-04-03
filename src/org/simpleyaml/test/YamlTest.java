@@ -1,10 +1,11 @@
 package org.simpleyaml.test;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
-
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.file.YamlFile;
 
@@ -40,6 +41,7 @@ public final class YamlTest {
 		yamlFile.set("test.number", 5);
 		yamlFile.set("test.string", "Hello world");
 		yamlFile.set("test.boolean", true);
+		yamlFile.set("math.pi", Math.PI);
 		
 		// More additions, e.g. adding entire lists
 		
@@ -47,32 +49,58 @@ public final class YamlTest {
 		yamlFile.set("test.list", list);
 		
 		// You can move between sections with a ConfigurationSection
-		ConfigurationSection section = yamlFile.createSection("newSection");
-		section.set("subSection.pi", Math.PI);
 		
-		section = yamlFile.getConfigurationSection("test");
+		ConfigurationSection section = yamlFile.createSection("timestamp");
+		
+		// Adding dates
+		
+		Date now = new Date();
+		section.set("canonicalDate", now);
+		
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		section.set("formattedDate", df.format(now));
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(now);
+		section.set("calendar", c);
 		
 		// To remove a section or a value set it to null
+		
 		yamlFile.set("test.number", null);
 		
 		// You can check if a value is already present at the selected path inside the file
+		
+		section = yamlFile.getConfigurationSection("test");
+		
 		System.out.println("There is a value at " + section.getName() + ".number?: "
 				+ yamlFile.isSet(section.getName() + ".number"));
 		
 		// And you can check if a path is a ConfigurationSection or a simple value
+		
 		System.out.println("Is " + section.getCurrentPath() + " a ConfigurationSection?: "
 				+ yamlFile.isConfigurationSection(section.getCurrentPath()) + "\n");
 		
 		// Now we'll get some objects from the file
+		
+		now = (Date) yamlFile.get("timestamp.canonicalDate");
+		System.out.println("Date: " + now);
+		
+		System.out.println("Formatted Date: " + yamlFile.get("timestamp.formattedDate"));
+		
+		c = (Calendar) yamlFile.get("timestamp.calendar");
+		System.out.println("Date from Calendar: " + c.getTime());
+		
 		// We can iterate over sections with getKeys(deep) and getValues(deep) methods
 
-		for (Entry<String, Object> entry : section.getValues(false).entrySet()) // false is not recursive
-			System.out.println(entry.getKey() + ": " + entry.getValue());
+		section.getValues(false).entrySet().forEach(System.out::println); // false is not recursive
 		
-		double pi = yamlFile.getDouble("newSection.subSection.pi");
+		// You can use many methods to obtain some types without casting (String, int, double...)
+		
+		double pi = yamlFile.getDouble("math.pi");
 		System.out.println(pi);
 		
-		// You can use get methods with default values if the path is unknown
+		// And you can also use methods with default values if the path is unknown
+		
 		String value = yamlFile.getString("randomSection.noValue"); // returns null
 		System.out.println(value);
 		

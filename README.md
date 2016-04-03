@@ -25,7 +25,7 @@ and put it as dependency on your project.
 
 The best way to learn how to use this API is through some examples.
 
-You can find two examples to test at `src/org/simpleyaml/test/` [(here)](https://github.com/MrFcker/Simple-YAML/tree/master/src/org/simpleyaml/test).
+You can find two examples to test at `src/org/simpleyaml/test/` [(here)](https://github.com/Carleslc/Simple-YAML/tree/master/src/org/simpleyaml/test).
 There are three files:
 * `YamlTest`: An example for create YAML files, save or delete simple values and move through the file.
 * `YamlSerializationTest`: An example for save complex objects using serialization.
@@ -41,6 +41,6 @@ so you don't have to worry about anything more than put the jar as dependency on
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
 * [Guava](https://github.com/google/guava)
 
-As this API uses _SnakeYAML_ you can use all methods from that.
+As this API uses _SnakeYAML_ you can use all methods from that too.
 + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
 + [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
