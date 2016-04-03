@@ -10,9 +10,9 @@ Serialization is the process of translating data structures or object state
 into a format that can be stored and reconstructed later in the same or another
 computer environment.
 
-You can learn more about YAML language [here](http://yaml.org/spec/1.1/);
+You can learn more about YAML language [here](http://www.yaml.org/spec/1.2/spec.html);
 Specifically, if you're interested to learn about the YAML syntax you can go to the
-[Chapter 2 of the YAML specification](http://yaml.org/spec/1.1/#id857168)
+[Chapter 2 of the YAML specification](http://www.yaml.org/spec/1.2/spec.html#Preview).
 
 Filename extensions: `.yaml`, `.yml`
 
@@ -25,22 +25,22 @@ and put it as dependency on your project.
 
 The best way to learn how to use this API is through some examples.
 
-You can find two examples to test at `src/org/simpleyaml/test/` ((here))[link].
+You can find two examples to test at `src/org/simpleyaml/test/` [(here)](https://github.com/MrFcker/Simple-YAML/tree/master/src/org/simpleyaml/test).
 There are three files:
 * `YamlTest`: An example for create YAML files, save or delete simple values and move through the file.
 * `YamlSerializationTest`: An example for save complex objects using serialization.
 * `Person`: An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
 
-For more information and methods see the Javadoc at `doc` ((here))[link].
+For more information and methods see the Javadoc at `doc`.
 
 ## Dependences
 
-This API uses the next two dependences, which are already included in **YAML-Manager.jar**,
+This API uses the next two dependences, which are already included in **Simple-YAML.jar**,
 so you don't have to worry about anything more than put the jar as dependency on your project.
 
-* (SnakeYAML)[https://bitbucket.org/asomov/snakeyaml]
-* (Guava)[https://github.com/google/guava]
+* [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
+* [Guava](https://github.com/google/guava)
 
 As this API uses _SnakeYAML_ you can use all methods from that.
-+ (Javadoc)[http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html]
-+ (Documentation)[https://bitbucket.org/asomov/snakeyaml/wiki/Documentation]
++ [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
++ [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
