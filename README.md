@@ -21,6 +21,17 @@ Filename extensions: `.yaml`, `.yml`
 To use this API all you need is to download the **Simple-YAML.jar** of this repository
 and put it as dependency on your project.
 
+If you are using **Maven** then put the downloaded jar into your project directory and finally add this lines to your _pom.xml_:
+```
+    <dependency>
+        <groupId>org.simpleyaml</groupId>
+        <artifactId>simpleyaml</artifactId>
+        <version>1.0</version>
+        <scope>system</scope>
+        <systemPath>${project.basedir}/simpleyaml-1.0.jar</systemPath>
+    </dependency>
+```
+
 ## Examples
 
 The best way to learn how to use this API is through some examples.
