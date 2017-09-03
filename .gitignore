@@ -1,5 +1,5 @@
 .DS_Store
 .settings
 */*.class
-*/target
-*/bin
+/bin/
+/target/

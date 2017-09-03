@@ -1,0 +1,18 @@
+test:
+  string: Hello world
+  boolean: true
+  list:
+  - Each
+  - word
+  - will
+  - be
+  - in
+  - a
+  - separated
+  - entry.
+math:
+  pi: 3.141592653589793
+timestamp:
+  canonicalDate: 2016-04-03T16:41:30.622Z
+  formattedDate: 03/04/2016 18:41:30
+  calendar: 2016-04-03T18:41:30.622+2:00
