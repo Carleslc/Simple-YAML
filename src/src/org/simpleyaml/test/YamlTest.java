@@ -12,7 +12,7 @@ import org.simpleyaml.file.YamlFile;
 /**
  * YAML is a human-readable data serialization language.<br>
  * This class shows you how to use this API to use these files to save your data.
- * @author Carlos Lázaro Costa
+ * @author Carlos LÃ¡zaro Costa
  */
 public final class YamlTest {
 	

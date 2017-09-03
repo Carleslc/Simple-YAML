@@ -20,7 +20,7 @@ import com.google.common.io.Files;
  * a configuration file.
  * Note that this implementation is not synchronized.
  * 
- * @author Carlos Lázaro Costa
+ * @author Carlos LÃ¡zaro Costa
  */
 public class YamlFile extends YamlConfiguration {
 	
