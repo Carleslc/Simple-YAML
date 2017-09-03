@@ -23,13 +23,11 @@ and put it as dependency on your project.
 
 If you are using **Maven** then put the downloaded jar into your project directory and finally add this lines to your _pom.xml_:
 ```
-    <dependency>
-        <groupId>org.simpleyaml</groupId>
-        <artifactId>simpleyaml</artifactId>
-        <version>1.0</version>
-        <scope>system</scope>
-        <systemPath>${project.basedir}/simpleyaml-1.0.jar</systemPath>
-    </dependency>
+<dependency>
+    <groupId>com.github.Carleslc</groupId>
+    <artifactId>SimpleYAML</artifactId>
+    <version>1.0</version>
+</dependency>
 ```
 
 ## Examples
