@@ -25,7 +25,7 @@ If you are using **Maven** then put the downloaded jar into your project directo
 ```
 <dependency>
     <groupId>com.github.Carleslc</groupId>
-    <artifactId>SimpleYAML</artifactId>
+    <artifactId>Simple-YAML</artifactId>
     <version>1.0</version>
 </dependency>
 ```
