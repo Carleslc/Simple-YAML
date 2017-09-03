@@ -19,8 +19,6 @@ import com.google.common.io.Files;
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to
  * a configuration file.
  * Note that this implementation is not synchronized.
- * 
- * @author Carlos Lázaro Costa
  */
 public class YamlFile extends YamlConfiguration {
 	
