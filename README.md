@@ -16,7 +16,7 @@ Specifically, if you're interested to learn about the YAML syntax you can go to 
 
 Filename extensions: `.yaml`, `.yml`
 
-## What is Simple-YAML?
+## What is Simple-YAML?
 
 This API is a port from [Bukkit](https://github.com/Bukkit/Bukkit) configuration wrapper, so you can use this library wherever you want without Bukkit dependency.
 Core internal configuration representation matches with the Bukkit one, but without the dependencies of Bukkit itself.
