@@ -1,5 +1,7 @@
 package org.simpleyaml.exceptions;
 
+import org.simpleyaml.configuration.Configuration;
+
 /**
  * Exception thrown when attempting to load an invalid {@link Configuration}
  */

@@ -8,7 +8,7 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 /**
  * Class that represents a Person that is used only for the test examples.<br>
  * Note that has methods to serialize and deserialize Person objects to save them later.
- * @author Carlos Lázaro Costa
+ * @author Carlos Lazaro Costa
  */
 public class Person implements ConfigurationSerializable {
 	private String dni, name;

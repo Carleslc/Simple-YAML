@@ -1,6 +1,6 @@
 org.simpleyaml.configuration
+org.simpleyaml.configuration.file
 org.simpleyaml.configuration.serialization
 org.simpleyaml.exceptions
-org.simpleyaml.file
 org.simpleyaml.test
 org.simpleyaml.utils

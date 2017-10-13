@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.simpleyaml.utils.Validate;
+import org.simpleyaml.configuration.Configuration;
 
 /**
  * Utility class for storing and retrieving classes for {@link Configuration}.
