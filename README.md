@@ -53,3 +53,7 @@ so you don't have to worry about anything more than put the jar as dependency on
 As this API uses _SnakeYAML_ you can use all methods from that too.
 + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
 + [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
+
+## Credit
+
+Core configuration files are extracted from [Bukkit](https://github.com/Bukkit/Bukkit) configuration.
