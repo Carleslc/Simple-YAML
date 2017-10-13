@@ -5,7 +5,7 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 
 /**
  * This class shows you how to use this API to serialize and deserialize Objects.
- * @author Carlos L�zaro Costa
+ * @author Carlos Lazaro Costa
  */
 public final class YamlSerializationTest {
 

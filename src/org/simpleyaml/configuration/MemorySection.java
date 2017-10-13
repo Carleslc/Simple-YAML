@@ -1,5 +1,9 @@
 package org.simpleyaml.configuration;
 
+import static org.simpleyaml.utils.NumberConversions.toDouble;
+import static org.simpleyaml.utils.NumberConversions.toInt;
+import static org.simpleyaml.utils.NumberConversions.toLong;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -7,11 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.simpleyaml.utils.NumberConversions;
 import org.simpleyaml.utils.Validate;
 
 /**
  * A type of {@link ConfigurationSection} that is stored in memory.
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemorySection.java>
+ * @author Carlos Lazaro Costa (removed Bukkit-dependent accessors)
  */
 public class MemorySection implements ConfigurationSection {
     protected final Map<String, Object> map = new LinkedHashMap<String, Object>();
@@ -285,12 +290,12 @@ public class MemorySection implements ConfigurationSection {
 
     public int getInt(String path) {
         Object def = getDefault(path);
-        return getInt(path, (def instanceof Number) ? NumberConversions.toInt(def) : 0);
+        return getInt(path, (def instanceof Number) ? toInt(def) : 0);
     }
 
     public int getInt(String path, int def) {
         Object val = get(path, def);
-        return (val instanceof Number) ? NumberConversions.toInt(val) : def;
+        return (val instanceof Number) ? toInt(val) : def;
     }
 
     public boolean isInt(String path) {
@@ -315,12 +320,12 @@ public class MemorySection implements ConfigurationSection {
 
     public double getDouble(String path) {
         Object def = getDefault(path);
-        return getDouble(path, (def instanceof Number) ? NumberConversions.toDouble(def) : 0);
+        return getDouble(path, (def instanceof Number) ? toDouble(def) : 0);
     }
 
     public double getDouble(String path, double def) {
         Object val = get(path, def);
-        return (val instanceof Number) ? NumberConversions.toDouble(val) : def;
+        return (val instanceof Number) ? toDouble(val) : def;
     }
 
     public boolean isDouble(String path) {
@@ -330,12 +335,12 @@ public class MemorySection implements ConfigurationSection {
 
     public long getLong(String path) {
         Object def = getDefault(path);
-        return getLong(path, (def instanceof Number) ? NumberConversions.toLong(def) : 0);
+        return getLong(path, (def instanceof Number) ? toLong(def) : 0);
     }
 
     public long getLong(String path, long def) {
         Object val = get(path, def);
-        return (val instanceof Number) ? NumberConversions.toLong(val) : def;
+        return (val instanceof Number) ? toLong(val) : def;
     }
 
     public boolean isLong(String path) {

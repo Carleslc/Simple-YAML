@@ -1,8 +1,8 @@
 package org.simpleyaml.configuration;
 
 /**
- * Various settings for controlling the input and output of a {@link
- * Configuration}
+ * Various settings for controlling the input and output of a {@link Configuration}
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java>
  */
 public class ConfigurationOptions {
     private char pathSeparator = '.';

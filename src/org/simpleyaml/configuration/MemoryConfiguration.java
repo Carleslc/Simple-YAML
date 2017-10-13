@@ -8,6 +8,8 @@ import org.simpleyaml.utils.Validate;
  * This is a {@link Configuration} implementation that does not save or load
  * from any source, and stores all values in memory only.
  * This is useful for temporary Configurations for providing defaults.
+ * 
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemoryConfiguration.java>
  */
 public class MemoryConfiguration extends MemorySection implements Configuration {
     protected Configuration defaults;

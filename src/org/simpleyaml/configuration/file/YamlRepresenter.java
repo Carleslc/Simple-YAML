@@ -9,6 +9,9 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;
 
+/**
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlRepresenter.java>
+ */
 public class YamlRepresenter extends Representer {
 
     public YamlRepresenter() {

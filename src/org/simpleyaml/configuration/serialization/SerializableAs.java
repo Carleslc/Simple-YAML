@@ -17,6 +17,7 @@ import java.lang.annotation.Target;
  * Using this annotation on any other class than a {@link
  * ConfigurationSerializable} will have no effect.
  *
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/SerializableAs.java>
  * @see ConfigurationSerialization#registerClass(Class, String)
  */
 @Retention(RetentionPolicy.RUNTIME)

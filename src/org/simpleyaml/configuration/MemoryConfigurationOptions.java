@@ -1,8 +1,8 @@
 package org.simpleyaml.configuration;
 
 /**
- * Various settings for controlling the input and output of a {@link
- * MemoryConfiguration}
+ * Various settings for controlling the input and output of a {@link MemoryConfiguration}
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java>
  */
 public class MemoryConfigurationOptions extends ConfigurationOptions {
     protected MemoryConfigurationOptions(MemoryConfiguration configuration) {

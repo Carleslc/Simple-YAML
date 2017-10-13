@@ -18,6 +18,7 @@ import java.util.Map;
  * In addition to implementing this interface, you must register the class
  * with {@link ConfigurationSerialization#registerClass(Class)}.
  *
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerializable.java>
  * @see DelegateDeserialization
  * @see SerializableAs
  */

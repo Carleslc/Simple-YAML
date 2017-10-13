@@ -23,8 +23,8 @@ import org.simpleyaml.utils.Validate;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
- * This is a base class for all File based implementations of {@link
- * Configuration}
+ * This is a base class for all File based implementations of {@link Configuration}
+ * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java>
  */
 public abstract class FileConfiguration extends MemoryConfiguration {
     /**
