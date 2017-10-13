@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration;
+package org.simpleyaml.configuration.file;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -16,6 +16,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
+import org.simpleyaml.configuration.Configuration;
+import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;

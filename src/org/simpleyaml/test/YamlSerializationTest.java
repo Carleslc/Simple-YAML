@@ -1,11 +1,11 @@
 package org.simpleyaml.test;
 
+import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
-import org.simpleyaml.file.YamlFile;
 
 /**
  * This class shows you how to use this API to serialize and deserialize Objects.
- * @author Carlos Lázaro Costa
+ * @author Carlos Lï¿½zaro Costa
  */
 public final class YamlSerializationTest {
 

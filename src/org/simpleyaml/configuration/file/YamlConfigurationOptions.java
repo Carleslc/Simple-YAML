@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration;
+package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.utils.Validate;
 

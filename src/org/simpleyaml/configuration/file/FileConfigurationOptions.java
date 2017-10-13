@@ -1,4 +1,7 @@
-package org.simpleyaml.configuration;
+package org.simpleyaml.configuration.file;
+
+import org.simpleyaml.configuration.MemoryConfiguration;
+import org.simpleyaml.configuration.MemoryConfigurationOptions;
 
 /**
  * Various settings for controlling the input and output of a {@link

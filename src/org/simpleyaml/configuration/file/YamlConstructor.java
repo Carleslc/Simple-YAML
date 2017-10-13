@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration;
+package org.simpleyaml.configuration.file;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

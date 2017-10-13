@@ -1,8 +1,9 @@
-package org.simpleyaml.configuration;
+package org.simpleyaml.configuration.file;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.nodes.Node;

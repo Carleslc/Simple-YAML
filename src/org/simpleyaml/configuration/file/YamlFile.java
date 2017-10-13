@@ -1,4 +1,4 @@
-package org.simpleyaml.file;
+package org.simpleyaml.configuration.file;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.simpleyaml.configuration.YamlConfiguration;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 import com.google.common.io.Files;
@@ -20,7 +19,7 @@ import com.google.common.io.Files;
  * a configuration file.
  * Note that this implementation is not synchronized.
  * 
- * @author Carlos Lázaro Costa
+ * @author Carlos LÃ¡zaro Costa
  */
 public class YamlFile extends YamlConfiguration {
 	

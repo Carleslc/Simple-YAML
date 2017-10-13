@@ -16,21 +16,32 @@ Specifically, if you're interested to learn about the YAML syntax you can go to 
 
 Filename extensions: `.yaml`, `.yml`
 
-## Download
+## What is Simple-YAML?
 
-To use this API all you need is to download the **Simple-YAML.jar** of this repository
+This API is a port from [Bukkit](https://github.com/Bukkit/Bukkit) configuration wrapper, so you can use this library wherever you want without Bukkit dependency.
+Core internal configuration representation matches with the Bukkit one, but without the dependencies of Bukkit itself.
+
+In addition, simplicity is added with the class `YamlFile`, which is an extension of `YamlConfiguration`, with easy use for creation, management and serialization of yaml files.
+
+Furthermore, you can optionally save your files with **comments** in mind. With the original `YamlConfiguration` that is not possible, because if you save the file from code then all previous comments in file will be destroyed. However, at the moment it is not possible to add comments via code, so you will need to write them with a text editor as usually.
+
+## How to install
+
+To use this API all you need is to download the **Simple-YAML-1.1.jar** from this repository
 and put it as dependency on your project.
 
-If you are using **Maven** then put the downloaded jar into your project directory and finally add this lines to your _pom.xml_:
+### Maven
+
+If you are using Maven you do not need to dowload the jar. Instead, add this dependency to your `pom.xml`:
 ```
 <dependency>
     <groupId>com.github.Carleslc</groupId>
     <artifactId>Simple-YAML</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 </dependency>
 ```
 
-## Examples
+## How to use
 
 The best way to learn how to use this API is through some examples.
 
@@ -44,7 +55,7 @@ For more information and methods see the Javadoc at `doc`.
 
 ## Dependences
 
-This API uses the next two dependences, which are already included in **Simple-YAML.jar**,
+This API uses the next two dependences, which are already included in **Simple-YAML-1.1.jar**,
 so you don't have to worry about anything more than put the jar as dependency on your project.
 
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
@@ -53,7 +64,3 @@ so you don't have to worry about anything more than put the jar as dependency on
 As this API uses _SnakeYAML_ you can use all methods from that too.
 + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
 + [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
-
-## Credit
-
-Core configuration files are extracted from [Bukkit](https://github.com/Bukkit/Bukkit) configuration.

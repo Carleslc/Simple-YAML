@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration;
+package org.simpleyaml.configuration.file;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.simpleyaml.configuration.Configuration;
+import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 import org.yaml.snakeyaml.DumperOptions;
