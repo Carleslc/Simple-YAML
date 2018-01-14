@@ -36,9 +36,10 @@
 				</excludes>
 			</resource>
 		</resources>
-		<!--  Uncomment the following plugin to make a fat JAR (with all dependencies packed inside)
+		<!-- Build with all dependencies packed inside -->
 		<plugins>
 			<plugin>
+				<version>3.1.0</version>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<executions>
@@ -50,11 +51,10 @@
 					</execution>
 				</executions>
 				<configuration>
-					<finalName>${artifactId}-${version}</finalName>
+					<finalName>${project.artifactId}-${project.version}</finalName>
 				</configuration>
 			</plugin>
 		</plugins>
-		-->
 	</build>
 
 </project>

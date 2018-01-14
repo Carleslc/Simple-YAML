@@ -1,5 +1,7 @@
 # Simple YAML API
 
+[![](https://jitpack.io/v/Carleslc/Simple-YAML.svg)](https://jitpack.io/#Carleslc/Simple-YAML)
+
 This Java API provides an easy-to-use way to store data using the YAML format.
 
 ## What is YAML?
