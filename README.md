@@ -67,7 +67,7 @@ For more information and methods see the Javadoc at `doc`.
 
 ## Dependences
 
-This API uses the next two dependences, which are already included in **Simple-YAML-1.1.jar**,
+This API uses the next two dependences, which are already included in **Simple-YAML-1.2.jar**,
 so you don't have to worry about anything more than put the jar as dependency on your project.
 
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
