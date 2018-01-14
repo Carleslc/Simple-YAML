@@ -27,7 +27,7 @@ Furthermore, you can optionally save your files with **comments** in mind. With 
 
 ## How to install
 
-To use this API all you need is to download the **Simple-YAML-1.1.jar** from this repository
+To use this API all you need is to download the **Simple-YAML-1.2.jar** from this repository
 and put it as dependency on your project.
 
 ### Maven
