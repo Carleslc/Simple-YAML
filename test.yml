@@ -13,6 +13,6 @@ test:
 math:
   pi: 3.141592653589793
 timestamp:
-  canonicalDate: 2016-04-03T16:41:30.622Z
-  formattedDate: 03/04/2016 18:41:30
-  calendar: 2016-04-03T18:41:30.622+2:00
+  canonicalDate: 2018-01-14T18:43:31.964Z
+  formattedDate: 14/01/2018 19:43:31
+  calendar: 2018-01-14T19:43:31.964+1:00
