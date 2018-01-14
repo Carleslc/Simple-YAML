@@ -32,13 +32,25 @@ and put it as dependency on your project.
 
 ### Maven
 
-If you are using Maven you do not need to download the jar. Instead, add this dependency to your `pom.xml`:
+If you are using Maven you do not need to download the jar. Instead, add this repository and dependency to your `pom.xml`:
+
 ```
-<dependency>
-    <groupId>com.github.Carleslc</groupId>
-    <artifactId>Simple-YAML</artifactId>
-    <version>1.1</version>
-</dependency>
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+```
+<dependencies>
+    <dependency>
+        <groupId>com.github.Carleslc</groupId>
+        <artifactId>Simple-YAML</artifactId>
+        <version>1.2</version>
+    </dependency>
+</dependencies>
 ```
 
 ## How to use
