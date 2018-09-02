@@ -29,7 +29,7 @@ Furthermore, you can optionally save your files with **comments** in mind. With 
 
 ## How to install
 
-To use this API all you need is to download the **Simple-YAML-1.2.jar** from this repository
+To use this API all you need is to download the **Simple-YAML-1.3.jar** from this repository
 and put it as dependency on your project.
 
 ### Maven
@@ -50,7 +50,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
     <dependency>
         <groupId>com.github.Carleslc</groupId>
         <artifactId>Simple-YAML</artifactId>
-        <version>1.2</version>
+        <version>1.3</version>
     </dependency>
 </dependencies>
 ```
@@ -69,7 +69,7 @@ For more information and methods see the Javadoc at `doc`.
 
 ## Dependences
 
-This API uses the next two dependences, which are already included in **Simple-YAML-1.2.jar**,
+This API uses the next two dependences, which are already included in **Simple-YAML-1.3.jar**,
 so you don't have to worry about anything more than put the jar as dependency on your project.
 
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
