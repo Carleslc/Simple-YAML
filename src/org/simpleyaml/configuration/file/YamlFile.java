@@ -344,4 +344,14 @@ public class YamlFile extends YamlConfiguration {
 			throw new IllegalArgumentException(configFile.getName() + " is a directory!");
 		}
 	}
+	
+	/**
+     * Removes the specified path if it exists.
+     * The entry will be removed, either a value or an entire section.
+     * 
+     * @param path Path of the object to remove.
+     */
+    public void remove(String path) {
+    	set(path, null);
+    }
 }

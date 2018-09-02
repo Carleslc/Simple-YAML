@@ -42,6 +42,7 @@ public final class YamlTest {
 		yamlFile.set("test.string", "Hello world");
 		yamlFile.set("test.boolean", true);
 		yamlFile.set("math.pi", Math.PI);
+		yamlFile.set("math.e", Math.E);
 		
 		// More additions, e.g. adding entire lists
 		
@@ -64,11 +65,11 @@ public final class YamlTest {
 		c.setTime(now);
 		section.set("calendar", c);
 		
-		// To remove a section or a value set it to null
+		// Remove values or sections
 		
-		yamlFile.set("test.number", null);
+		yamlFile.remove("test.number"); // Also with yamlFile.set("test.number", null)
 		
-		// You can check if a value is already present at the selected path inside the file
+		// You can check if a value is already present at the selected path
 		
 		section = yamlFile.getConfigurationSection("test");
 		
