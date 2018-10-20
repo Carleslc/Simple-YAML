@@ -25,7 +25,7 @@ Core internal configuration representation matches with the Bukkit one, but with
 
 In addition, simplicity is added with the class `YamlFile`, which is an extension of `YamlConfiguration`, with easy use for creation, management and serialization of yaml files.
 
-Furthermore, you can optionally save your files with **comments** in mind. With the original `YamlConfiguration` that is not possible, because if you save the file from code then all previous comments in file will be removed. However, at the moment it is not possible to add comments via code, so you will need to write them with a text editor as usually.
+Furthermore, you can optionally save your files with **comments** in mind. With the original `YamlConfiguration` that is not possible, because if you save the file from code then all previous comments in file will be removed. However, at the moment it is not possible to add comments via code, so you will need to write them with a text editor as usual.
 
 ## How to install
 
