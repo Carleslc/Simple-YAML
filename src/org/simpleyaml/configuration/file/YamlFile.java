@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.io.Files;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
-import com.google.common.io.Files;
 
 /**
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file.
