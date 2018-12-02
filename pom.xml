@@ -4,7 +4,7 @@
 
 	<groupId>me.carleslc</groupId>
 	<artifactId>Simple-YAML</artifactId>
-	<version>1.4</version>
+	<version>1.4.1</version>
 	<name>Simple-YAML</name>
 
 	<properties>
@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>21.0</version>
+			<version>17.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.yaml</groupId>
