@@ -2,7 +2,9 @@
 
 [![](https://jitpack.io/v/Carleslc/Simple-YAML.svg)](https://jitpack.io/#Carleslc/Simple-YAML)
 
-This Java API provides an easy-to-use way to store data using the YAML format.
+_This Java API provides an easy-to-use way to store data using the YAML format._
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/carleslc)
 
 ## What is YAML?
 
