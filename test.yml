@@ -1,4 +1,5 @@
 test:
+  number: 5
   string: Hello world
   boolean: true
   list:
@@ -14,6 +15,6 @@ math:
   pi: 3.141592653589793
   e: 2.718281828459045
 timestamp:
-  canonicalDate: 2018-09-02T11:49:36.501Z
-  formattedDate: 02/09/2018 13:49:36
-  calendar: 2018-09-02T13:49:36.501+2:00
+  canonicalDate: 2019-10-14T21:38:52.830Z
+  formattedDate: 14/10/2019 23:38:52
+  calendar: 2019-10-14T23:38:52.830+2:00

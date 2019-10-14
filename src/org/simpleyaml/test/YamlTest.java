@@ -23,14 +23,14 @@ public final class YamlTest {
 		
 		// Load the YAML file if is already created or create new one otherwise
 		try {
-			if (yamlFile.exists()) {
-				System.out.println("File already exists, loading configurations...\n");
-				yamlFile.load(); // Loads the entire file
-			}
-			else {
+			if (!yamlFile.exists()) {
 				System.out.println("New file has been created: " + yamlFile.getFilePath() + "\n");
 				yamlFile.createNewFile(true);
 			}
+			else {
+				System.out.println("File already exists, loading configurations...\n");
+			}
+			yamlFile.load(); // Loads the entire file
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -38,9 +38,10 @@ public final class YamlTest {
 		// You can manage hierarchies by separating the sections with a dot at path
 		// Let's put some values to the file
 		
-		yamlFile.set("test.number", 5);
-		yamlFile.set("test.string", "Hello world");
-		yamlFile.set("test.boolean", true);
+		yamlFile.addDefault("test.number", 5);
+		yamlFile.addDefault("test.string", "Hello world");
+		yamlFile.addDefault("test.boolean", true);
+
 		yamlFile.set("math.pi", Math.PI);
 		yamlFile.set("math.e", Math.E);
 		
