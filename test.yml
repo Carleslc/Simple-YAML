@@ -13,8 +13,7 @@ test:
   - entry.
 math:
   pi: 3.141592653589793
-  e: 2.718281828459045
 timestamp:
-  canonicalDate: 2019-10-14T21:38:52.830Z
-  formattedDate: 14/10/2019 23:38:52
-  calendar: 2019-10-14T23:38:52.830+2:00
+  canonicalDate: 2019-10-14T21:50:00.872Z
+  formattedDate: 14/10/2019 23:50:00
+  calendar: 2019-10-14T23:50:00.872+2:00

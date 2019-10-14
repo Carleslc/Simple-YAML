@@ -34,6 +34,8 @@ public final class YamlTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		System.out.println("Copy default values: " + yamlFile.options().copyDefaults());
 		
 		// You can manage hierarchies by separating the sections with a dot at path
 		// Let's put some values to the file
@@ -69,13 +71,17 @@ public final class YamlTest {
 		// Remove values or sections
 		
 		yamlFile.remove("test.number"); // Also with yamlFile.set("test.number", null)
+		yamlFile.remove("math.e");
 		
 		// You can check if a value is already present at the selected path
 		
 		section = yamlFile.getConfigurationSection("test");
-		
-		System.out.println("There is a value at " + section.getName() + ".number?: "
+
+		// Default values are always set if options().copyDefaults() is set to true
+		System.out.println("There is a default value at " + section.getName() + ".number?: "
 				+ yamlFile.isSet(section.getName() + ".number"));
+
+		System.out.println("There is a value at math.e?: " + yamlFile.isSet("math.e"));
 		
 		// And you can check if a path is a ConfigurationSection or a simple value
 		
