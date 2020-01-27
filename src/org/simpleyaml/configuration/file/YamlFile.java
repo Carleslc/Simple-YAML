@@ -1,18 +1,12 @@
 package org.simpleyaml.configuration.file;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.google.common.io.Files;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file.
@@ -221,13 +215,18 @@ public class YamlFile extends YamlConfiguration {
 	 */
 	public void copyTo(File file) throws FileNotFoundException, IllegalArgumentException, IOException {
 		Validate.notNull(configFile, "This configuration file is null!");
-		if (!configFile.exists())
+		if (!configFile.exists()) {
 			throw new FileNotFoundException(configFile.getName() + " is not found in " + configFile.getAbsolutePath());
-		else {
-			if (!file.isDirectory())
-				Files.copy(configFile, file);
-			else
+		} else {
+			if (!file.isDirectory()) {
+				try (OutputStream fos = Files.newOutputStream(file.toPath())) {
+					Files.copy(configFile.toPath(), fos);
+				} catch (Exception exception) {
+					exception.printStackTrace();
+				}
+			} else {
 				throw new IllegalArgumentException(file.getAbsolutePath() + " is a directory!");
+			}
 		}
 	}
 	
