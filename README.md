@@ -52,7 +52,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
     <dependency>
         <groupId>com.github.Carleslc</groupId>
         <artifactId>Simple-YAML</artifactId>
-        <version>1.3</version>
+        <version>1.4.1</version>
     </dependency>
 </dependencies>
 ```
