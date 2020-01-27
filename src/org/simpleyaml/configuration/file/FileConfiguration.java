@@ -1,7 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
@@ -10,6 +8,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This is a base class for all File based implementations of {@link Configuration}
@@ -86,16 +85,17 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     public void save(File file) throws IOException {
         Validate.notNull(file, "File cannot be null");
 
-        Files.createParentDirs(file);
+        if (file.getParentFile() != null) {
+            file.getParentFile().mkdirs();
+        }
 
         String data = saveToString();
 
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), UTF8_OVERRIDE && !UTF_BIG ? Charsets.UTF_8 : Charset.defaultCharset());
-
-        try {
+        try (Writer writer = new OutputStreamWriter(
+            new FileOutputStream(file),
+            UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset()
+        )) {
             writer.write(data);
-        } finally {
-            writer.close();
         }
     }
 
@@ -154,7 +154,12 @@ public abstract class FileConfiguration extends MemoryConfiguration {
 
         final FileInputStream stream = new FileInputStream(file);
 
-        load(new InputStreamReader(stream, UTF8_OVERRIDE && !UTF_BIG ? Charsets.UTF_8 : Charset.defaultCharset()));
+        load(
+            new InputStreamReader(
+                stream,
+                UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset()
+            )
+        );
     }
 
     /**
@@ -179,7 +184,11 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     public void load(InputStream stream) throws IOException, InvalidConfigurationException {
         Validate.notNull(stream, "Stream cannot be null");
 
-        load(new InputStreamReader(stream, UTF8_OVERRIDE ? Charsets.UTF_8 : Charset.defaultCharset()));
+        load(
+            new InputStreamReader(
+                stream, UTF8_OVERRIDE ? StandardCharsets.UTF_8 : Charset.defaultCharset()
+            )
+        );
     }
 
     /**
