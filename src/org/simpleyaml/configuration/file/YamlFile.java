@@ -92,24 +92,14 @@ public class YamlFile extends YamlConfiguration {
      */
 	public void saveWithComments() throws IOException {
 		Validate.notNull(configFile, "This configuration file is null!");
-		File old = File.createTempFile("tmp\\oldFileData", null);
-		if (configFile.exists())
-			copyTo(old);
-		save(configFile);
-		copyComments(old);
-		old.delete();
-	}
 
-	/**
-	 * Insert all comments on <b>from</b> file to configuration file.
-	 * @param from source file
-	 * @throws IOException if I/O error occurs while copying comments
-	 */
-	private void copyComments(File from) throws IOException {
-		BufferedReader r_from = new BufferedReader(new FileReader(from));
-		BufferedReader r_new = new BufferedReader(new FileReader(configFile));
+		if (configFile.getParentFile() != null) {
+			configFile.getParentFile().mkdirs();
+		}
 
-		StringBuilder res = new StringBuilder();
+		BufferedReader r_from = new BufferedReader(new StringReader(fileToString()));
+		BufferedReader r_new = new BufferedReader(new StringReader(saveToString()));
+
 		String line_from = r_from.readLine();
 		String line_new = r_new.readLine();
 
@@ -134,6 +124,8 @@ public class YamlFile extends YamlConfiguration {
 		}
 
 		r_from.close();
+
+		StringBuilder res = new StringBuilder();
 
 		// Copy new file and comments if key is found
 		while (line_new != null) {
@@ -371,4 +363,17 @@ public class YamlFile extends YamlConfiguration {
     public void remove(String path) {
     	set(path, null);
     }
+
+    public String fileToString() throws IOException {
+    	return new String(Files.readAllBytes(getConfigurationFile().toPath()));
+	}
+
+	@Override
+    public String toString() {
+		try {
+			return fileToString();
+		} catch (IOException e) {
+			return e.getMessage();
+		}
+	}
 }
