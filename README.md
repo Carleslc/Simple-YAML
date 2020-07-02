@@ -71,11 +71,10 @@ For more information and methods see the Javadoc at `doc`.
 
 ## Dependences
 
-This API uses the next two dependences, which are already included in **Simple-YAML-1.3.jar**,
+This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.4.2.jar**,
 so you don't have to worry about anything more than put the jar as dependency on your project.
 
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
-* [Guava](https://github.com/google/guava)
 
 As this API uses _SnakeYAML_ you can use all methods from that too.
 + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
