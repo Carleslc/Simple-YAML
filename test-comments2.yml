@@ -8,12 +8,13 @@ section:
     - 2
     - 3
   sub-section-2:
-    # List of numbers
     list:
     - 1
     - 2
     - 3
   sub-section-3:
+    # Skip one comment
+    # List of numbers
     list:
     - 1
     - 2
