@@ -4,7 +4,7 @@
 
 	<groupId>me.carleslc</groupId>
 	<artifactId>Simple-YAML</artifactId>
-	<version>1.4.2</version>
+	<version>1.5</version>
 	<name>Simple-YAML</name>
 
 	<properties>

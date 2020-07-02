@@ -1,0 +1,34 @@
+#####################
+## INITIAL COMMENT ##
+#####################
+
+# Test comments
+test:
+  number: 5
+  string: Hello world
+  boolean: true
+  # List of words
+  list:
+  - Each
+  - word
+  - will
+  - be
+  - in
+  - a
+  - separated
+  - entry.
+
+# Wonderful number
+math:
+  pi: 3.141592653589793
+
+# Some timestamps
+timestamp:
+  # ISO
+  canonicalDate: 2020-07-02T12:03:54.229Z
+  # Date/Time with format
+  formattedDate: 02/07/2020 14:03:54
+  # Date/Time with timezone
+  calendar: 2020-07-02T12:03:54.229Z
+
+# End

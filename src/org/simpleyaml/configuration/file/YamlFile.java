@@ -4,9 +4,10 @@ import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file.
@@ -95,10 +96,8 @@ public class YamlFile extends YamlConfiguration {
 		if (configFile.exists())
 			copyTo(old);
 		save(configFile);
-		if (old != null) {
-			copyComments(old);
-			old.delete();
-		}
+		copyComments(old);
+		old.delete();
 	}
 
 	/**
@@ -109,14 +108,14 @@ public class YamlFile extends YamlConfiguration {
 	private void copyComments(File from) throws IOException {
 		BufferedReader r_from = new BufferedReader(new FileReader(from));
 		BufferedReader r_new = new BufferedReader(new FileReader(configFile));
-		
+
 		StringBuilder res = new StringBuilder();
 		String line_from = r_from.readLine();
 		String line_new = r_new.readLine();
-		
-		// Map comments <PossibleKey, Comment>
-		Map<String, String> comments = new HashMap<String, String>();
-		
+
+		// Map comments <PossibleKey, Queue<Comment>>
+		Map<String, Queue<String>> commentMap = new HashMap<>();
+
 		while (line_from != null) {
 			String trim = line_from.trim();
 			if (trim.isEmpty() || trim.startsWith("#")) { // Save comment
@@ -127,42 +126,63 @@ public class YamlFile extends YamlConfiguration {
 					comment.append(line_from).append('\n');
 					line_from = r_from.readLine();
 				}
-				// Save Key (null for end of file) and its comment
-				comments.put(substring(line_from, ':'), comment.toString());
-			}
-			else
+				// Save key (null for end of file) and its comment
+				insertComment(commentMap, substring(line_from, ':'), comment);
+			} else {
 				line_from = r_from.readLine();
-		}
-		
-		// Restarts reader
-		r_from.close();
-		r_from = new BufferedReader(new FileReader(from));
-		
-		// Copy new file and comments if key is found
-		int commentsWritten = 0, n = comments.size();
-		while (line_new != null) {
-			if (commentsWritten < n) {
-				String comment = comments.get(substring(line_new, ':'));
-				if (comment != null) {
-					res.append(comment);
-					commentsWritten++;
-				}
 			}
-			if (!line_new.trim().startsWith("#"))
+		}
+
+		r_from.close();
+
+		// Copy new file and comments if key is found
+		while (line_new != null) {
+			String comment = getComment(commentMap, substring(line_new, ':'));
+			if (comment != null) {
+				res.append(comment);
+			}
+			if (!line_new.trim().startsWith("#")) {
 				res.append(line_new).append('\n');
+			}
 			line_new = r_new.readLine();
 		}
-		
-		// Copy end of file comment, if found
-		String comment = comments.get(null);
-		if (comment != null)
-			res.append(comment);
-		
-		BufferedWriter out = new BufferedWriter(new FileWriter(configFile, false));
-		out.write(res.toString());
-		out.close();
-		r_from.close();
+
 		r_new.close();
+
+		// Copy end of file comment, if found
+		String comment = getComment(commentMap, null);
+		if (comment != null) {
+			res.append(comment);
+		}
+
+		// Write file with comments
+		try (Writer writer = new OutputStreamWriter(
+				new FileOutputStream(configFile),
+				UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset()
+		)) {
+			writer.write(res.toString());
+		}
+	}
+
+	private void insertComment(Map<String, Queue<String>> commentMap, String key, StringBuilder commentBuilder) {
+		String comment = commentBuilder.toString();
+		if (key != null) {
+			key = key.trim();
+		}
+		Queue<String> commentsList = commentMap.get(key);
+		if (commentsList != null) {
+			commentsList.add(comment);
+		} else {
+			commentMap.put(key, new LinkedList<>(Collections.singletonList(comment)));
+		}
+	}
+
+	private String getComment(Map<String, Queue<String>> commentMap, String key) {
+		if (key != null) {
+			key = key.trim();
+		}
+		Queue<String> comments = commentMap.get(key);
+		return comments != null ? comments.poll() : null;
 	}
 	
 	/**
@@ -217,16 +237,14 @@ public class YamlFile extends YamlConfiguration {
 		Validate.notNull(configFile, "This configuration file is null!");
 		if (!configFile.exists()) {
 			throw new FileNotFoundException(configFile.getName() + " is not found in " + configFile.getAbsolutePath());
-		} else {
-			if (!file.isDirectory()) {
-				try (OutputStream fos = Files.newOutputStream(file.toPath())) {
-					Files.copy(configFile.toPath(), fos);
-				} catch (Exception exception) {
-					exception.printStackTrace();
-				}
-			} else {
-				throw new IllegalArgumentException(file.getAbsolutePath() + " is a directory!");
-			}
+		}
+		if (file.isDirectory()) {
+			throw new IllegalArgumentException(file.getAbsolutePath() + " is a directory!");
+		}
+		try (OutputStream fos = Files.newOutputStream(file.toPath())) {
+			Files.copy(configFile.toPath(), fos);
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
 	}
 	

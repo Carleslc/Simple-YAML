@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -174,19 +175,7 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public static YamlConfiguration loadConfiguration(File file) {
         Validate.notNull(file, "File cannot be null");
-
-        YamlConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(file);
-        } catch (FileNotFoundException ex) {
-        } catch (IOException ex) {
-        	Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load " + file, ex);
-        } catch (InvalidConfigurationException ex) {
-        	Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load " + file , ex);
-        }
-
-        return config;
+        return run(config -> config.load(file));
     }
 
     /**
@@ -206,18 +195,7 @@ public class YamlConfiguration extends FileConfiguration {
     @Deprecated
     public static YamlConfiguration loadConfiguration(InputStream stream) {
         Validate.notNull(stream, "Stream cannot be null");
-
-        YamlConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(stream);
-        } catch (IOException ex) {
-        	Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration from stream", ex);
-        } catch (InvalidConfigurationException ex) {
-        	Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration from stream", ex);
-        }
-
-        return config;
+        return run(config -> config.load(stream));
     }
 
 
@@ -233,18 +211,23 @@ public class YamlConfiguration extends FileConfiguration {
      * @throws IllegalArgumentException Thrown if stream is null
      */
     public static YamlConfiguration loadConfiguration(Reader reader) {
-        Validate.notNull(reader, "Stream cannot be null");
+        Validate.notNull(reader, "Reader cannot be null");
+        return run(config -> config.load(reader));
+    }
 
+    private static YamlConfiguration run(YamlRunnable runnable) {
         YamlConfiguration config = new YamlConfiguration();
 
         try {
-            config.load(reader);
-        } catch (IOException ex) {
-        	Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration from stream", ex);
-        } catch (InvalidConfigurationException ex) {
-        	Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration from stream", ex);
+            runnable.run(config);
+        } catch (IOException | InvalidConfigurationException ex) {
+            Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration from stream", ex);
         }
 
         return config;
+    }
+
+    private interface YamlRunnable {
+        void run(YamlConfiguration config) throws IOException, InvalidConfigurationException;
     }
 }

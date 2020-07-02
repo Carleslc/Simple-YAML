@@ -1,0 +1,20 @@
+# Section
+section:
+  # Sub section
+  sub-section-1:
+    # List of numbers
+    list:
+    - 1
+    - 2
+    - 3
+  sub-section-2:
+    # List of numbers
+    list:
+    - 1
+    - 2
+    - 3
+  sub-section-3:
+    list:
+    - 1
+    - 2
+    - 3

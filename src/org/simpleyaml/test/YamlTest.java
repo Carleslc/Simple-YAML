@@ -28,7 +28,7 @@ public final class YamlTest {
 				yamlFile.createNewFile(true);
 			}
 			else {
-				System.out.println("File already exists, loading configurations...\n");
+				System.out.println(yamlFile.getFilePath() + " already exists, loading configurations...\n");
 			}
 			yamlFile.load(); // Loads the entire file
 		} catch (Exception e) {
