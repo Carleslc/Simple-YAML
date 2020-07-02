@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.file.Files;
 
 /**
  * This class shows you how to use this API to load and save a YAML file with comments.
@@ -14,7 +13,7 @@ import java.nio.file.Files;
  */
 public final class YamlTestComments {
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws IOException {
 		fileShouldPreserveComments("test-comments.yml");
 		fileShouldPreserveComments("test-comments2.yml");
 		fileShouldPreserveComments("test-comments3.yml");
@@ -36,7 +35,7 @@ public final class YamlTestComments {
 			e.printStackTrace();
 		}
 
-		String loaded = fileToString(yamlFile);
+		String loaded = yamlFile.toString().trim();
 
 		// Save the file with comments!
 		try {
@@ -45,7 +44,7 @@ public final class YamlTestComments {
 			e.printStackTrace();
 		}
 
-		String saved = fileToString(yamlFile);
+		String saved = yamlFile.toString().trim();
 
 		boolean same = saved.equals(loaded);
 
@@ -60,10 +59,6 @@ public final class YamlTestComments {
 			// Fail test case
 			throw new AssertionError(path + " comments are not properly copied");
 		}
-	}
-
-	private static String fileToString(YamlFile file) throws IOException {
-		return new String(Files.readAllBytes(file.getConfigurationFile().toPath())).trim();
 	}
 
 }
