@@ -31,6 +31,7 @@ public final class YamlTest {
 				System.out.println(yamlFile.getFilePath() + " already exists, loading configurations...\n");
 			}
 			yamlFile.load(); // Loads the entire file
+			// If your file has comments inside you have to load it with yamlFile.loadWithComments()
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -49,7 +50,7 @@ public final class YamlTest {
 		
 		// More additions, e.g. adding entire lists
 		
-		List<String> list = Arrays.asList("Each word will be in a separated entry.".split("[\\s]+"));
+		List<String> list = Arrays.asList("Each word will be in a separated entry".split("[\\s]+"));
 		yamlFile.set("test.list", list);
 		
 		// You can move between sections with a ConfigurationSection
@@ -63,10 +64,6 @@ public final class YamlTest {
 		
 		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		section.set("formattedDate", df.format(now));
-		
-		Calendar c = Calendar.getInstance();
-		c.setTime(now);
-		section.set("calendar", c);
 		
 		// Remove values or sections
 		
@@ -93,10 +90,7 @@ public final class YamlTest {
 		now = (Date) yamlFile.get("timestamp.canonicalDate");
 		System.out.println("Date: " + now);
 		
-		System.out.println("Formatted Date: " + yamlFile.get("timestamp.formattedDate"));
-		
-		c = (Calendar) yamlFile.get("timestamp.calendar");
-		System.out.println("Date from Calendar: " + c.getTime());
+		System.out.println("Formatted Date: " + yamlFile.getString("timestamp.formattedDate"));
 		
 		// We can iterate over sections with getKeys(deep) and getValues(deep) methods
 

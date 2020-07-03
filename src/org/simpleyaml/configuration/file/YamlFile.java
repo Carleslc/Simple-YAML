@@ -1,5 +1,6 @@
 package org.simpleyaml.configuration.file;
 
+import org.simpleyaml.configuration.comments.*;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
@@ -7,18 +8,21 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
 
 /**
- * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file.
+ * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file
+ * with the added possibility to save and manage comments.
  * Note that this implementation is not synchronized.
  * 
  * @author Carlos Lázaro Costa
  */
-public class YamlFile extends YamlConfiguration {
+public class YamlFile extends YamlConfiguration implements Commentable {
 	
 	/** File where data will be saved for this configuration */
 	private File configFile;
+
+	/** A comment mapper to add comments to sections or values **/
+	private CommentMapper commentMapper;
 	
 	/**
 	 * Builds this {@link FileConfiguration} without any configuration file.
@@ -32,6 +36,7 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Builds this {@link FileConfiguration} with the file specified by path.
+	 *
 	 * @param path location for the configuration file
 	 * @throws IllegalArgumentException if path is null or is a directory.
 	 * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
@@ -43,6 +48,7 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Builds this {@link FileConfiguration} with a source file.
+	 *
 	 * @param file the configuration file
 	 * @throws IllegalArgumentException if file is null or is a directory.
 	 * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
@@ -64,6 +70,7 @@ public class YamlFile extends YamlConfiguration {
      * <p>
      * Note that this method will not copy the comments of original configuration file,
      * use {@link #saveWithComments()} instead.
+	 *
 	 * @throws IOException if it hasn't been possible to save configuration file
      * @see #saveWithComments()
      */
@@ -87,6 +94,7 @@ public class YamlFile extends YamlConfiguration {
      * <p>
      * This method will save using the system default encoding, or possibly
      * using UTF8.
+	 *
 	 * @throws IOException if it hasn't been possible to save configuration file
      * @see #save()
      */
@@ -97,113 +105,33 @@ public class YamlFile extends YamlConfiguration {
 			configFile.getParentFile().mkdirs();
 		}
 
-		BufferedReader r_from = new BufferedReader(new StringReader(fileToString()));
-		BufferedReader r_new = new BufferedReader(new StringReader(saveToString()));
-
-		String line_from = r_from.readLine();
-		String line_new = r_new.readLine();
-
-		// Map comments <PossibleKey, Queue<Comment>>
-		Map<String, Queue<String>> commentMap = new HashMap<>();
-
-		while (line_from != null) {
-			String trim = line_from.trim();
-			if (trim.isEmpty() || trim.startsWith("#")) { // Save comment
-				StringBuilder comment = new StringBuilder(line_from.length());
-				comment.append(line_from).append('\n');
-				line_from = r_from.readLine();
-				while (line_from != null && ((trim = line_from.trim()).isEmpty() || trim.startsWith("#"))) {
-					comment.append(line_from).append('\n');
-					line_from = r_from.readLine();
-				}
-				// Save key (null for end of file) and its comment
-				insertComment(commentMap, substring(line_from, ':'), comment);
-			} else {
-				line_from = r_from.readLine();
-			}
-		}
-
-		r_from.close();
-
-		StringBuilder res = new StringBuilder();
-
-		// Copy new file and comments if key is found
-		while (line_new != null) {
-			String comment = getComment(commentMap, substring(line_new, ':'));
-			if (comment != null) {
-				res.append(comment);
-			}
-			if (!line_new.trim().startsWith("#")) {
-				res.append(line_new).append('\n');
-			}
-			line_new = r_new.readLine();
-		}
-
-		r_new.close();
-
-		// Copy end of file comment, if found
-		String comment = getComment(commentMap, null);
-		if (comment != null) {
-			res.append(comment);
-		}
-
 		// Write file with comments
 		try (Writer writer = new OutputStreamWriter(
 				new FileOutputStream(configFile),
 				UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset()
 		)) {
-			writer.write(res.toString());
+			writer.write(new CommentDumper(parseComments(), new StringReader(saveToString())).dump());
 		}
 	}
 
-	private void insertComment(Map<String, Queue<String>> commentMap, String key, StringBuilder commentBuilder) {
-		String comment = commentBuilder.toString();
-		if (key != null) {
-			key = key.trim();
-		}
-		Queue<String> commentsList = commentMap.get(key);
-		if (commentsList != null) {
-			commentsList.add(comment);
-		} else {
-			commentMap.put(key, new LinkedList<>(Collections.singletonList(comment)));
-		}
-	}
-
-	private String getComment(Map<String, Queue<String>> commentMap, String key) {
-		if (key != null) {
-			key = key.trim();
-		}
-		Queue<String> comments = commentMap.get(key);
-		return comments != null ? comments.poll() : null;
-	}
-	
 	/**
-	 * Returns the substring of s that starts at position 0 and ends at the position
-	 * of character c (excluded).
-	 * @param s the String to search
-	 * @param c the end character of substring (excluded)
-	 * @return the substring of <b>s</b> that starts at position 0 and ends at the position
-	 * of character <b>c</b> (excluded). If <b>s</b> is <b>null</b>, returns <b>null</b>.
-	 * If <b>c</b> is not contained in <b>s</b>, returns <b>s</b>.
+	 * Parse comments from the current file configuration.
+	 *
+	 * @return a comment mapper with comments parsed
+	 * @throws IOException if it hasn't been possible to read the configuration file
 	 */
-	private String substring(String s, char c) {
-		if (s != null) {
-			int n = s.length();
-			StringBuilder aux = new StringBuilder(n);
-			for (int i = 0; i < n; ++i) {
-				char charAt = s.charAt(i);
-				if (charAt != c)
-					aux.append(charAt);
-				else break;
-			}
-			return aux.toString();
+	private CommentMapper parseComments() throws IOException {
+		if (commentMapper == null) {
+			commentMapper = new CommentParser(new StringReader(fileToString()));
+			((CommentParser) commentMapper).parse();
 		}
-		return null;
+		return commentMapper;
 	}
 	
 	/**
 	 * Copy this configuration file to another path, without deleting configuration file.
 	 * If there is already a file on the other path it will be overwritten.
+	 *
 	 * @param path the location of the new file, including name (mustn't be a directory)
 	 * @return the new copied file
 	 * @throws FileNotFoundException if configuration file is not found as source to copy
@@ -219,6 +147,7 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Copy this configuration file to another file, without deleting configuration file.
+	 *
 	 * @param file destination file (mustn't be a directory)
 	 * @return the new copied file
 	 * @throws FileNotFoundException if configuration file is not found as source to copy
@@ -242,8 +171,9 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Loads configurations from this configuration file.
+	 *
 	 * @throws IOException if it hasn't been possible to load file
-	 * @throws InvalidConfigurationException if has been an error while parsing configuration file
+	 * @throws InvalidConfigurationException if there has been an error while parsing configuration file
 	 * @throws FileNotFoundException if configuration file is not found
 	 */
 	public void load() throws InvalidConfigurationException, IOException {
@@ -252,9 +182,22 @@ public class YamlFile extends YamlConfiguration {
 		options().copyHeader(true);
 		load(configFile);
 	}
+
+	/**
+	 * Loads configurations from this configuration file including comments.
+	 *
+	 * @throws IOException if it hasn't been possible to load file
+	 * @throws InvalidConfigurationException if there has been an error while parsing configuration file
+	 * @throws FileNotFoundException if configuration file is not found
+	 */
+	public void loadWithComments() throws InvalidConfigurationException, IOException {
+		load();
+		parseComments();
+	}
 	
 	/**
 	 * Tests whether this configuration file exists.
+	 *
 	 * @return <code>true</code> if and only if this configuration file exists;
 	 * 		   <code>false</code> otherwise
 	 */
@@ -289,16 +232,19 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Deletes this configuration file from disk.
+	 *
 	 * @throws IOException if file cannot be deleted
 	 */
 	public void deleteFile() throws IOException {
 		Validate.notNull(configFile, "This configuration file is null!");
-		if (!configFile.delete())
+		if (!configFile.delete()) {
 			throw new IOException("Failed to delete " + configFile);
+		}
 	}
 	
 	/**
 	 * Returns the size of this configuration file.
+	 *
 	 * @return the size, in bytes, of this configuration file.
 	 */
 	public long getSize() {
@@ -306,7 +252,8 @@ public class YamlFile extends YamlConfiguration {
 	}
 	
 	/**
-	 * Returns the absolute pathname string of this configuration file. 
+	 * Returns the absolute pathname string of this configuration file.
+	 *
 	 * @return the absolute path where configuration file is located.
 	 */
 	public String getFilePath() {
@@ -316,6 +263,7 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Returns this configuration file where data is located.
+	 *
 	 * @return the configuration file where this {@link FileConfiguration} writes.
 	 */
 	public File getConfigurationFile() {
@@ -324,6 +272,7 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Rebuilds this {@link FileConfiguration} with the file specified by path.
+	 *
 	 * @param path location for the configuration file
 	 * @throws IllegalArgumentException if path is null or is a directory.
 	 * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
@@ -340,6 +289,7 @@ public class YamlFile extends YamlConfiguration {
 	
 	/**
 	 * Rebuilds this {@link FileConfiguration} with a source file.
+	 *
 	 * @param file the configuration file
 	 * @throws IllegalArgumentException if file is null or is a directory.
 	 * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
@@ -364,10 +314,39 @@ public class YamlFile extends YamlConfiguration {
     	set(path, null);
     }
 
+	/**
+	 * Adds a comment to the section or value selected by path.
+	 * Comment will be indented automatically.
+	 * Multi-line comments can be provided using \n character.
+	 *
+	 * @param path path of desired section or value
+	 * @param comment the comment to add, # symbol is not needed
+	 * @param type either above (block) or side
+	 */
+    @Override
+	public void addComment(String path, String comment, CommentType type) {
+		if (commentMapper == null) {
+			commentMapper = new CommentMapper();
+		}
+		commentMapper.addComment(path, comment, type);
+	}
+
+	/**
+	 * Returns a representation of the configuration file.
+	 *
+	 * @return the configuration file contents
+	 * @throws IOException if configuration file cannot be read
+	 */
     public String fileToString() throws IOException {
     	return new String(Files.readAllBytes(getConfigurationFile().toPath()));
 	}
 
+	/**
+	 * Returns a representation of the configuration file.
+	 *
+	 * @return the configuration file contents.
+	 * If something goes wrong then this string is an error message.
+	 */
 	@Override
     public String toString() {
 		try {

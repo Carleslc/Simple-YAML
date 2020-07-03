@@ -7,15 +7,14 @@ section:
     - 1
     - 2
     - 3
-  sub-section-2:
+  sub-section-2: # Side comment
     list:
     - 1
-    - 2
+    - 2 # Side comment on an arbitrary element
     - 3
   sub-section-3:
-    # Skip one comment
     # List of numbers
-    list:
+    list:        # Side comment with extra space
     - 1
     - 2
     - 3

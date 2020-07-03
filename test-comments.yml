@@ -5,6 +5,7 @@
 # Test comments
 test:
   number: 5
+  # Hello!
   string: Hello world
   boolean: true
   # List of words
@@ -16,19 +17,19 @@ test:
   - in
   - a
   - separated
-  - entry.
+  # Comment on a list item
+  - entry # :)
 
 # Wonderful number
 math:
   pi: 3.141592653589793
+  # Comment without direct key
 
 # Some timestamps
 timestamp:
   # ISO
-  canonicalDate: 2020-07-02T12:03:54.229Z
+  canonicalDate: 2020-07-03T09:14:35.180Z
   # Date/Time with format
-  formattedDate: 02/07/2020 14:03:54
-  # Date/Time with timezone
-  calendar: 2020-07-02T12:03:54.229Z
+  formattedDate: 03/07/2020 11:14:35
 
 # End
