@@ -12,7 +12,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * This is a base class for all File based implementations of {@link Configuration}
- * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java>
+ * @author Bukkit
+ * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java"
  */
 public abstract class FileConfiguration extends MemoryConfiguration {
     /**
@@ -268,7 +269,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * Compiles the header for this {@link FileConfiguration} and returns the
      * result.
      * <p>
-     * This will use the header from {@link #options()} -> {@link
+     * This will use the header from {@link #options()} {@link
      * FileConfigurationOptions#header()}, respecting the rules of {@link
      * FileConfigurationOptions#copyHeader()} if set.
      *

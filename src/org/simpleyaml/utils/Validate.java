@@ -355,7 +355,7 @@ public class Validate {
      * 
      * <p>If the array has a <code>null</code> element, then the message in the
      * exception is &quot;The validated array contains null element at index: 
-     * &quot followed by the index.</p>
+     * &quot; followed by the index.</p>
      *
      * @param array the array to check
      * @throws IllegalArgumentException if the array is <code>null</code> or
@@ -407,7 +407,7 @@ public class Validate {
      * 
      * <p>If the collection has a <code>null</code> element, then the message in the
      * exception is &quot;The validated collection contains null element at index: 
-     * &quot followed by the index.</p>
+     * &quot; followed by the index.</p>
      *
      * @param collection  the collection to check
      * @throws IllegalArgumentException if the collection is <code>null</code> or

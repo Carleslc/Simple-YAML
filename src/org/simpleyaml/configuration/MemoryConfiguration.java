@@ -9,7 +9,8 @@ import org.simpleyaml.utils.Validate;
  * from any source, and stores all values in memory only.
  * This is useful for temporary Configurations for providing defaults.
  * 
- * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemoryConfiguration.java>
+ * @author Bukkit
+ * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemoryConfiguration.java"
  */
 public class MemoryConfiguration extends MemorySection implements Configuration {
     protected Configuration defaults;

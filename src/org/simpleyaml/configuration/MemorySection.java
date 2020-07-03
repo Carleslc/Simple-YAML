@@ -15,7 +15,8 @@ import org.simpleyaml.utils.Validate;
 
 /**
  * A type of {@link ConfigurationSection} that is stored in memory.
- * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemorySection.java>
+ * @author Bukkit
+ * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemorySection.java"
  * @author Carlos Lazaro Costa (removed Bukkit-dependent accessors)
  */
 public class MemorySection implements ConfigurationSection {

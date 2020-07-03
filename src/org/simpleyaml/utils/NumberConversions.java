@@ -2,7 +2,8 @@ package org.simpleyaml.utils;
 
 /**
  * Utils for casting number types to other number types
- * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/util/NumberConversions.java>
+ * @author Bukkit
+ * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/util/NumberConversions.java"
  */
 public final class NumberConversions {
     private NumberConversions() {}

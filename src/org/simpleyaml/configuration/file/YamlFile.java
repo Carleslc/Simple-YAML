@@ -149,7 +149,6 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 	 * Copy this configuration file to another file, without deleting configuration file.
 	 *
 	 * @param file destination file (mustn't be a directory)
-	 * @return the new copied file
 	 * @throws FileNotFoundException if configuration file is not found as source to copy
 	 * @throws IllegalArgumentException if path is a directory or it is null
 	 * @throws IOException if there I/O error occurs copying file
