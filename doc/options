@@ -1,0 +1,24 @@
+-classpath
+'/Users/carleslc/.m2/repository/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar'
+-encoding
+'UTF-8'
+-private
+-sourcepath
+'/Users/carleslc/Git/GitHub/Simple-YAML/src'
+-author
+-bottom
+'Copyright &#169; 2020. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/carleslc/Git/GitHub/Simple-YAML/doc'
+-docencoding
+'UTF-8'
+-doctitle
+'Simple-YAML 1.5 API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' '/Users/carleslc/Git/GitHub/Simple-YAML/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'Simple-YAML 1.5 API'

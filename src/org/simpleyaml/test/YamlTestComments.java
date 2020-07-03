@@ -38,6 +38,7 @@ public final class YamlTestComments {
 
 		String loaded = yamlFile.toString();
 
+		// Add some comments programmatically
 		yamlFile.addComment("test.string", "Hello!");
 		yamlFile.addComment("test.list.entry", ":)", CommentType.SIDE);
 

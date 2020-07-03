@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Applies to a {@link ConfigurationSerializable} that will delegate all
  * deserialization to another {@link ConfigurationSerializable}.
- * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/DelegateDeserialization.java>
+ * @author Bukkit
+ * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/DelegateDeserialization.java"
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

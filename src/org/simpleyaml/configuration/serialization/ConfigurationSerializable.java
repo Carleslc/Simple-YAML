@@ -9,7 +9,7 @@ import java.util.Map;
  * methods as defined by this interface:
  * <ul>
  * <li>A static method "deserialize" that accepts a single {@link Map}&lt;
- * {@link String}, {@link Object}> and returns the class.</li>
+ * {@link String}, {@link Object} and returns the class.</li>
  * <li>A static method "valueOf" that accepts a single {@link Map}&lt;{@link
  * String}, {@link Object}> and returns the class.</li>
  * <li>A constructor that accepts a single {@link Map}&lt;{@link String},
@@ -18,7 +18,8 @@ import java.util.Map;
  * In addition to implementing this interface, you must register the class
  * with {@link ConfigurationSerialization#registerClass(Class)}.
  *
- * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerializable.java>
+ * @author Bukkit
+ * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerializable.java"
  * @see DelegateDeserialization
  * @see SerializableAs
  */
