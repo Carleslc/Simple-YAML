@@ -10,10 +10,9 @@ test:
   - in
   - a
   - separated
-  - entry.
+  - entry
 math:
   pi: 3.141592653589793
 timestamp:
-  canonicalDate: 2020-07-02T12:13:46.122Z
-  formattedDate: 02/07/2020 14:13:46
-  calendar: 2020-07-02T14:13:46.122+2:00
+  canonicalDate: 2020-07-03T09:14:35.180Z
+  formattedDate: 03/07/2020 11:14:35

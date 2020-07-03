@@ -1,5 +1,6 @@
 package org.simpleyaml.test;
 
+import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.FileOutputStream;
@@ -30,12 +31,15 @@ public final class YamlTestComments {
 				return;
 			}
 			System.out.println(yamlFile.getFilePath() + " exists, loading configurations...");
-			yamlFile.load(); // Loads the entire file
+			yamlFile.loadWithComments(); // Loads the entire file with existing comments
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		String loaded = yamlFile.toString().trim();
+		String loaded = yamlFile.toString();
+
+		yamlFile.addComment("test.string", "Hello!");
+		yamlFile.addComment("test.list.entry", ":)", CommentType.SIDE);
 
 		// Save the file with comments!
 		try {
@@ -44,9 +48,9 @@ public final class YamlTestComments {
 			e.printStackTrace();
 		}
 
-		String saved = yamlFile.toString().trim();
+		String saved = yamlFile.toString();
 
-		boolean same = saved.equals(loaded);
+		boolean same = saved.trim().equals(loaded.trim());
 
 		// Check that comments have been properly copied
 		System.out.println("File is the same after save with comments?: " + same);
