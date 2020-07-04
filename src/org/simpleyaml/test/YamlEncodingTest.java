@@ -10,8 +10,6 @@ public class YamlEncodingTest {
     public static void main(String[] args) throws IOException {
         YamlFile yamlFile = new YamlFile("test-encoding.yml");
 
-        yamlFile.createNewFile(false);
-
         yamlFile.set("encoding.default", Charset.defaultCharset().name());
         yamlFile.set("encoding.charset", yamlFile.options().charset().name());
         yamlFile.set("encoding.unicode", yamlFile.options().isUnicode());
