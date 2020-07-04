@@ -242,6 +242,19 @@ public final class Helper {
 
     private static void convertMapToSection(final Map<?, ?> input, final ConfigurationSection section) {
         final Map<String, Object> result = Helper.deserialize(input);
+        if (result.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
+            final Map<String, Object> typed = new LinkedHashMap<>(result.size());
+            for (final Map.Entry<?, ?> entry : result.entrySet()) {
+                typed.put(entry.getKey().toString(), entry.getValue());
+            }
+            try {
+                System.out.println(typed);
+                ConfigurationSerialization.deserializeObject(typed);
+            } catch (final IllegalArgumentException ex) {
+                throw new RuntimeException("Could not deserialize object", ex);
+            }
+            return;
+        }
         for (final Map.Entry<?, ?> entry : result.entrySet()) {
             final String key = entry.getKey().toString();
             final Object value = entry.getValue();

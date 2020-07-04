@@ -13,7 +13,6 @@ import org.simpleyaml.configuration.serialization.SerializableAs;
  * Note that has methods to serialize and deserialize Person objects to save them later.
  * @author Carlos Lazaro Costa
  */
-@DelegateDeserialization(Person.class)
 public class Person implements ConfigurationSerializable {
 	private String dni;
 	private String name;
