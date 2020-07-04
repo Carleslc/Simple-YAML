@@ -4,8 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
-import org.simpleyaml.configuration.serialization.DelegateDeserialization;
-import org.simpleyaml.configuration.serialization.SerializableAs;
 
 /**
  * Class that represents a Person that is used only for the test examples.<br>
@@ -13,8 +11,7 @@ import org.simpleyaml.configuration.serialization.SerializableAs;
  * @author Carlos Lazaro Costa
  */
 public class Person implements ConfigurationSerializable {
-	private String dni;
-	private String name;
+	private String dni, name;
 	private int birthYear;
 	private boolean isAlive;
 	
