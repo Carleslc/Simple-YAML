@@ -171,13 +171,13 @@ public final class Helper {
         if (optional2.isPresent()) {
             return optional2.get();
         }
-        final Optional<Float> optional3 = Helper.getAsFloat(scalar);
-        if (optional3.isPresent()) {
-            return optional3.get();
-        }
         final Optional<Double> optional4 = Helper.getAsDouble(scalar);
         if (optional4.isPresent()) {
             return optional4.get();
+        }
+        final Optional<Float> optional3 = Helper.getAsFloat(scalar);
+        if (optional3.isPresent()) {
+            return optional3.get();
         }
         final Optional<Short> optional5 = Helper.getAsShort(scalar);
         if (optional5.isPresent()) {

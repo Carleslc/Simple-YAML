@@ -5,9 +5,9 @@
 # Test comments
 test:
   number: 5
+  boolean: true
   # Hello!
   string: Hello world
-  boolean: true
   # List of words
   list:
     - Each
@@ -27,9 +27,9 @@ math:
 
 # Some timestamps
 timestamp:
-  # ISO
-  canonicalDate: 2020-07-04T13:18:04.458Z
   # Date/Time with format
-  formattedDate: 04/07/2020 15:18:04
+  formattedDate: "04/07/2020 15:18:04"
+  # ISO
+  canonicalDate: "2020-07-04T13:18:04.458Z"
 
 # End
