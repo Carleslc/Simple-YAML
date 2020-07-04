@@ -1,13 +1,9 @@
 package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.Configuration;
-import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
+import org.simpleyaml.utils.Helper;
 import org.simpleyaml.utils.Validate;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,19 +25,10 @@ public class YamlConfiguration extends FileConfiguration {
 
     protected static final String BLANK_CONFIG = "{}\n";
 
-    private final DumperOptions yamlOptions = new DumperOptions();
-    private final Representer yamlRepresenter = new YamlRepresenter();
-    private final Yaml yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions);
-
 	@Override
     public String saveToString() {
-        yamlOptions.setIndent(options().indent());
-        yamlOptions.setAllowUnicode(options().isUnicode());
-        yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
         String header = buildHeader();
-        String dump = yaml.dump(getValues(false));
+        String dump = Helper.mapAsYamlMapping(getValues(false)).toString();
 
         if (dump.equals(BLANK_CONFIG)) {
             dump = "";
@@ -54,35 +41,17 @@ public class YamlConfiguration extends FileConfiguration {
     public void loadFromString(String contents) throws InvalidConfigurationException {
         Validate.notNull(contents, "Contents cannot be null");
 
-        Map<?, ?> input;
-        try {
-            input = yaml.load(contents);
-        } catch (YAMLException e) {
-            throw new InvalidConfigurationException(e);
-        } catch (ClassCastException e) {
-            throw new InvalidConfigurationException("Top level is not a Map.");
-        }
-
         String header = parseHeader(contents);
         if (header.length() > 0) {
             options().header(header);
         }
 
-        if (input != null) {
-            convertMapsToSections(input, this);
-        }
-    }
-
-    protected void convertMapsToSections(Map<?, ?> input, ConfigurationSection section) {
-        for (Map.Entry<?, ?> entry : input.entrySet()) {
-            String key = entry.getKey().toString();
-            Object value = entry.getValue();
-
-            if (value instanceof Map) {
-                convertMapsToSections((Map<?, ?>) value, section.createSection(key));
-            } else {
-                section.set(key, value);
-            }
+        try {
+            Helper.loadFromString(this, contents);
+        } catch (IOException e) {
+            throw new InvalidConfigurationException(e);
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Top level is not a Map.");
         }
     }
 
