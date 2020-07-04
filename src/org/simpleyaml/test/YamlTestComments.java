@@ -50,7 +50,7 @@ public final class YamlTestComments {
 		}
 
 		String saved = yamlFile.fileToString();
-		
+
 		boolean same = saved.trim().equals(loaded.trim());
 
 		// Check that comments have been properly copied
