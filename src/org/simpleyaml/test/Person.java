@@ -3,7 +3,6 @@ package org.simpleyaml.test;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.swing.*;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.configuration.serialization.DelegateDeserialization;
 import org.simpleyaml.configuration.serialization.SerializableAs;
