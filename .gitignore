@@ -7,4 +7,4 @@
 /target/.idea
 target
 .idea/
-/*.iml
+*/*.iml
