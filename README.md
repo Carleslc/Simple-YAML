@@ -34,7 +34,7 @@ and put it as dependency on your project.
 
 If you are using Maven you do not need to download the jar. Instead, add this repository and dependency to your `pom.xml`:
 
-```
+```xml
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -43,7 +43,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 </repositories>
 ```
 
-```
+```xml
 <dependencies>
     <dependency>
         <groupId>com.github.Carleslc</groupId>
