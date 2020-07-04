@@ -32,6 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.simpleyaml.configuration.ConfigurationSection;
+import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
+import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 
 public final class Helper {
 
@@ -73,6 +75,11 @@ public final class Helper {
         values.forEach((s, o) -> {
             if (o instanceof ConfigurationSection) {
                 map.put(s, Helper.withoutMemorySection(((ConfigurationSection) o).getValues(false)));
+            } else if (o instanceof ConfigurationSerializable) {
+                final ConfigurationSerializable serializable = (ConfigurationSerializable) o;
+                map.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY,
+                    ConfigurationSerialization.getAlias(serializable.getClass()));
+                map.putAll(serializable.serialize());
             } else {
                 map.put(s, o);
             }

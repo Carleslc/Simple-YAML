@@ -3,15 +3,20 @@ package org.simpleyaml.test;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.swing.*;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
+import org.simpleyaml.configuration.serialization.DelegateDeserialization;
+import org.simpleyaml.configuration.serialization.SerializableAs;
 
 /**
  * Class that represents a Person that is used only for the test examples.<br>
  * Note that has methods to serialize and deserialize Person objects to save them later.
  * @author Carlos Lazaro Costa
  */
+@DelegateDeserialization(Person.class)
 public class Person implements ConfigurationSerializable {
-	private String dni, name;
+	private String dni;
+	private String name;
 	private int birthYear;
 	private boolean isAlive;
 	
