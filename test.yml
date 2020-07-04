@@ -1,18 +1,17 @@
 test:
   number: 5
-  string: Hello world
   boolean: true
+  string: Hello world
   list:
-  - Each
-  - word
-  - will
-  - be
-  - in
-  - a
-  - separated
-  - entry
+    - Each
+    - word
+    - will
+    - be
+    - in
+    - a
+    - separated
+    - entry
 math:
   pi: 3.141592653589793
 timestamp:
-  canonicalDate: 2020-07-04T13:18:04.458Z
-  formattedDate: 04/07/2020 15:18:04
+  formattedDate: "04/07/2020 22:27:13"
