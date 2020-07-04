@@ -4,11 +4,8 @@ import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * This is a base class for all File based implementations of {@link Configuration}
@@ -16,40 +13,6 @@ import java.nio.charset.StandardCharsets;
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java">Bukkit Source</a>
  */
 public abstract class FileConfiguration extends MemoryConfiguration {
-    /**
-     * This value specified that the system default encoding should be
-     * completely ignored, as it cannot handle the ASCII character set, or it
-     * is a strict-subset of UTF8 already (plain ASCII).
-     *
-     * @deprecated temporary compatibility measure
-     */
-    @Deprecated
-    public static final boolean UTF8_OVERRIDE;
-    /**
-     * This value specifies if the system default encoding is unicode, but
-     * cannot parse standard ASCII.
-     *
-     * @deprecated temporary compatibility measure
-     */
-    @Deprecated
-    public static final boolean UTF_BIG;
-    /**
-     * This value specifies if the system supports unicode.
-     *
-     * @deprecated temporary compatibility measure
-     */
-    @Deprecated
-    public static final boolean SYSTEM_UTF;
-    static {
-        final byte[] testBytes = Base64Coder.decode("ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXF1eX2BhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ent8fX4NCg==");
-        final String testString = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\r\n";
-        final Charset defaultCharset = Charset.defaultCharset();
-        final String resultString = new String(testBytes, defaultCharset);
-        final boolean trueUTF = defaultCharset.name().contains("UTF");
-        UTF8_OVERRIDE = !testString.equals(resultString) || defaultCharset.equals(Charset.forName("US-ASCII"));
-        SYSTEM_UTF = trueUTF || UTF8_OVERRIDE;
-        UTF_BIG = trueUTF && UTF8_OVERRIDE;
-    }
 
     /**
      * Creates an empty {@link FileConfiguration} with no default values.
@@ -75,8 +38,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * will be overwritten. If it cannot be overwritten or created, an
      * exception will be thrown.
      * <p>
-     * This method will save using the system default encoding, or possibly
-     * using UTF8.
+     * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
+     * which defaults to UTF8.
      *
      * @param file File to save to.
      * @throws IOException Thrown when the given file cannot be written to for
@@ -85,16 +48,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      */
     public void save(File file) throws IOException {
         Validate.notNull(file, "File cannot be null");
-
-        if (file.getParentFile() != null) {
-            file.getParentFile().mkdirs();
-        }
-
-        String data = saveToString();
-
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), getCharset())) {
-            writer.write(data);
-        }
+        write(file, saveToString());
     }
 
     /**
@@ -104,8 +58,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * will be overwritten. If it cannot be overwritten or created, an
      * exception will be thrown.
      * <p>
-     * This method will save using the system default encoding, or possibly
-     * using UTF8.
+     * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
+     * which defaults to UTF8.
      *
      * @param file File to save to.
      * @throws IOException Thrown when the given file cannot be written to for
@@ -114,7 +68,6 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      */
     public void save(String file) throws IOException {
         Validate.notNull(file, "File cannot be null");
-
         save(new File(file));
     }
 
@@ -125,6 +78,16 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      */
     public abstract String saveToString();
 
+    protected void write(File file, String data) throws IOException {
+        if (file.getParentFile() != null) {
+            file.getParentFile().mkdirs();
+        }
+
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), options().charset())) {
+            writer.write(data);
+        }
+    }
+
     /**
      * Loads this {@link FileConfiguration} from the specified location.
      * <p>
@@ -135,13 +98,36 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * If the file cannot be loaded for any reason, an exception will be
      * thrown.
      * <p>
-     * This will attempt to use the {@link Charset#defaultCharset()} for
-     * files, unless {@link #UTF8_OVERRIDE} but not {@link #UTF_BIG} is
-     * specified.
+     * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
+     * which defaults to UTF8.
      *
      * @param file File to load from.
-     * @throws FileNotFoundException Thrown when the given file cannot be
-     *     opened.
+     * @throws FileNotFoundException Thrown when the given file cannot be opened.
+     * @throws IOException Thrown when the given file cannot be read.
+     * @throws InvalidConfigurationException Thrown when the given file is not
+     *     a valid Configuration.
+     * @throws IllegalArgumentException Thrown when file is null.
+     */
+    public void load(String file) throws FileNotFoundException, IOException, InvalidConfigurationException {
+        Validate.notNull(file, "File cannot be null");
+        load(new File(file));
+    }
+
+    /**
+     * Loads this {@link FileConfiguration} from the specified location.
+     * <p>
+     * All the values contained within this configuration will be removed,
+     * leaving only settings and defaults, and the new values will be loaded
+     * from the given file.
+     * <p>
+     * If the file cannot be loaded for any reason, an exception will be
+     * thrown.
+     * <p>
+     * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
+     * which defaults to UTF8.
+     *
+     * @param file File to load from.
+     * @throws FileNotFoundException Thrown when the given file cannot be opened.
      * @throws IOException Thrown when the given file cannot be read.
      * @throws InvalidConfigurationException Thrown when the given file is not
      *     a valid Configuration.
@@ -149,10 +135,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      */
     public void load(File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
         Validate.notNull(file, "File cannot be null");
-
-        final FileInputStream stream = new FileInputStream(file);
-
-        load(new InputStreamReader(stream, getCharset()));
+        load(new FileInputStream(file));
     }
 
     /**
@@ -162,22 +145,22 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * leaving only settings and defaults, and the new values will be loaded
      * from the given stream.
      * <p>
-     * This will attempt to use the {@link Charset#defaultCharset()}, unless
-     * {@link #UTF8_OVERRIDE} or {@link #UTF_BIG} is specified.
+     * If the file cannot be loaded for any reason, an exception will be
+     * thrown.
+     * <p>
+     * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
+     * which defaults to UTF8.
      *
      * @param stream Stream to load from
      * @throws IOException Thrown when the given file cannot be read.
      * @throws InvalidConfigurationException Thrown when the given file is not
      *     a valid Configuration.
      * @throws IllegalArgumentException Thrown when stream is null.
-     * @deprecated This does not consider encoding
      * @see #load(Reader)
      */
-    @Deprecated
     public void load(InputStream stream) throws IOException, InvalidConfigurationException {
         Validate.notNull(stream, "Stream cannot be null");
-
-        load(new InputStreamReader(stream, getCharset()));
+        load(new InputStreamReader(stream, options().charset()));
     }
 
     /**
@@ -186,6 +169,9 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * All the values contained within this configuration will be removed,
      * leaving only settings and defaults, and the new values will be loaded
      * from the given stream.
+     * <p>
+     * If the file cannot be loaded for any reason, an exception will be
+     * thrown.
      *
      * @param reader the reader to load from
      * @throws IOException thrown when underlying reader throws an IOException
@@ -194,46 +180,17 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @throws IllegalArgumentException thrown when reader is null
      */
     public void load(Reader reader) throws IOException, InvalidConfigurationException {
-        BufferedReader input = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
-
-        StringBuilder builder = new StringBuilder();
-
-        try {
+        try (BufferedReader input = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
+            StringBuilder builder = new StringBuilder();
             String line;
 
             while ((line = input.readLine()) != null) {
                 builder.append(line);
                 builder.append('\n');
             }
-        } finally {
-            input.close();
+
+            loadFromString(builder.toString());
         }
-
-        loadFromString(builder.toString());
-    }
-
-    /**
-     * Loads this {@link FileConfiguration} from the specified location.
-     * <p>
-     * All the values contained within this configuration will be removed,
-     * leaving only settings and defaults, and the new values will be loaded
-     * from the given file.
-     * <p>
-     * If the file cannot be loaded for any reason, an exception will be
-     * thrown.
-     *
-     * @param file File to load from.
-     * @throws FileNotFoundException Thrown when the given file cannot be
-     *     opened.
-     * @throws IOException Thrown when the given file cannot be read.
-     * @throws InvalidConfigurationException Thrown when the given file is not
-     *     a valid Configuration.
-     * @throws IllegalArgumentException Thrown when file is null.
-     */
-    public void load(String file) throws FileNotFoundException, IOException, InvalidConfigurationException {
-        Validate.notNull(file, "File cannot be null");
-
-        load(new File(file));
     }
 
     /**
@@ -264,10 +221,6 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @return Compiled header
      */
     protected abstract String buildHeader();
-
-    public static Charset getCharset() {
-        return UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset();
-    }
 
     @Override
     public FileConfigurationOptions options() {

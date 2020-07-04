@@ -1,6 +1,5 @@
 package org.simpleyaml.test;
 
-import org.simpleyaml.configuration.file.FileConfiguration;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.IOException;
@@ -13,10 +12,12 @@ public class YamlEncodingTest {
 
         yamlFile.createNewFile(false);
 
-        yamlFile.setComment("encoding", "Should be UTF-8");
         yamlFile.set("encoding.default", Charset.defaultCharset().name());
-        yamlFile.set("encoding.charset", FileConfiguration.getCharset().name());
-        yamlFile.set("encoding.unicode", FileConfiguration.SYSTEM_UTF);
+        yamlFile.set("encoding.charset", yamlFile.options().charset().name());
+        yamlFile.set("encoding.unicode", yamlFile.options().isUnicode());
+
+        yamlFile.setComment("encoding.unicode", "Should be true to display values properly");
+
         yamlFile.set("ö", "ö");
         yamlFile.set("umlauts", "öüäß");
         yamlFile.set("hiragana", "ひらがな");

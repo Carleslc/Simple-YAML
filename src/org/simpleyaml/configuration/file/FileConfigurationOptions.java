@@ -3,12 +3,18 @@ package org.simpleyaml.configuration.file;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.configuration.MemoryConfigurationOptions;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * Various settings for controlling the input and output of a {@link FileConfiguration}
  * @author Bukkit
+ * @author Carlos Lazaro Costa (added charset option)
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfigurationOptions.java">Bukkit Source</a>
  */
 public class FileConfigurationOptions extends MemoryConfigurationOptions {
+
+    private Charset charset = StandardCharsets.UTF_8;
     private String header = null;
     private boolean copyHeader = true;
 
@@ -31,6 +37,19 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
     public FileConfigurationOptions pathSeparator(char value) {
         super.pathSeparator(value);
         return this;
+    }
+
+    public Charset charset() {
+        return charset;
+    }
+
+    public FileConfigurationOptions charset(Charset charset) {
+        this.charset = charset;
+        return this;
+    }
+
+    public boolean isUnicode() {
+        return charset.name().startsWith("UTF");
     }
 
     /**
@@ -76,7 +95,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * <p>
      * If this is true, if a default {@link FileConfiguration} is passed to
      * {@link
-     * FileConfiguration#setDefaults(org.bukkit.configuration.Configuration)}
+     * FileConfiguration#setDefaults(org.simpleyaml.configuration.Configuration)}
      * then upon saving it will use the header from that config, instead of
      * the one provided here.
      * <p>
@@ -98,7 +117,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * <p>
      * If this is true, if a default {@link FileConfiguration} is passed to
      * {@link
-     * FileConfiguration#setDefaults(org.bukkit.configuration.Configuration)}
+     * FileConfiguration#setDefaults(org.simpleyaml.configuration.Configuration)}
      * then upon saving it will use the header from that config, instead of
      * the one provided here.
      * <p>
@@ -114,7 +133,6 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      */
     public FileConfigurationOptions copyHeader(boolean value) {
         copyHeader = value;
-
         return this;
     }
 }

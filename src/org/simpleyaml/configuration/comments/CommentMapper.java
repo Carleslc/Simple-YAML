@@ -25,7 +25,8 @@ public class CommentMapper implements Commentable {
         } else if (comment.matches("\n+")) {
             setComment(node, comment, type);
         } else {
-            comment = "# " + comment.replaceAll("[ \\t]*\n", "\n# ");
+            comment = COMMENT_PREFIX + comment;
+            comment = comment.replaceAll("[ \\t]*\n", "\n" + COMMENT_PREFIX);
             if (type == CommentType.BLOCK) {
                 node.setComment(indent(comment, node.getIndentation()));
             } else {

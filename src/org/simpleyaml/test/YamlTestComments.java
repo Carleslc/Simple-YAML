@@ -10,7 +10,7 @@ import java.io.*;
  * @author Carlos Lazaro Costa
  */
 public final class YamlTestComments {
-	
+
 	public static void main(String[] args) throws Exception {
 		YamlFile yamlFile1 = fileShouldPreserveComments("test-comments.yml");
 

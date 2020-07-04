@@ -1,15 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
@@ -19,6 +9,16 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.simpleyaml.configuration.comments.Commentable.COMMENT_PREFIX;
+
 /**
  * An implementation of {@link Configuration} which saves all files in Yaml.
  * Note that this implementation is not synchronized.
@@ -26,25 +26,26 @@ import org.yaml.snakeyaml.representer.Representer;
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConfiguration.java">Bukkit Source</a>
  */
 public class YamlConfiguration extends FileConfiguration {
-    protected static final String COMMENT_PREFIX = "# ";
+
     protected static final String BLANK_CONFIG = "{}\n";
+
     private final DumperOptions yamlOptions = new DumperOptions();
     private final Representer yamlRepresenter = new YamlRepresenter();
     private final Yaml yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions);
 
-    @SuppressWarnings("deprecation")
 	@Override
     public String saveToString() {
         yamlOptions.setIndent(options().indent());
+        yamlOptions.setAllowUnicode(options().isUnicode());
         yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        yamlOptions.setAllowUnicode(SYSTEM_UTF);
         yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
         String header = buildHeader();
         String dump = yaml.dump(getValues(false));
 
-        if (dump.equals(BLANK_CONFIG))
+        if (dump.equals(BLANK_CONFIG)) {
             dump = "";
+        }
 
         return header + dump;
     }
@@ -121,7 +122,7 @@ public class YamlConfiguration extends FileConfiguration {
         if (options().copyHeader()) {
             Configuration def = getDefaults();
 
-            if ((def != null) && (def instanceof FileConfiguration)) {
+            if (def instanceof FileConfiguration) {
                 FileConfiguration filedefaults = (FileConfiguration) def;
                 String defaultsHeader = filedefaults.buildHeader();
 
@@ -157,7 +158,6 @@ public class YamlConfiguration extends FileConfiguration {
         if (options == null) {
             options = new YamlConfigurationOptions(this);
         }
-
         return (YamlConfigurationOptions) options;
     }
 
@@ -168,7 +168,8 @@ public class YamlConfiguration extends FileConfiguration {
      * If the specified input is not a valid config, a blank config will be
      * returned.
      * <p>
-     * The encoding used may follow the system dependent default.
+     * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
+     * which defaults to UTF8.
      *
      * @param file Input file
      * @return Resulting configuration
@@ -185,20 +186,20 @@ public class YamlConfiguration extends FileConfiguration {
      * Any errors loading the Configuration will be logged and then ignored.
      * If the specified input is not a valid config, a blank config will be
      * returned.
+     * <p>
+     * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
+     * which defaults to UTF8.
      *
      * @param stream Input stream
      * @return Resulting configuration
      * @throws IllegalArgumentException Thrown if stream is null
-     * @deprecated does not properly consider encoding
      * @see #load(InputStream)
      * @see #loadConfiguration(Reader)
      */
-    @Deprecated
     public static YamlConfiguration loadConfiguration(InputStream stream) {
         Validate.notNull(stream, "Stream cannot be null");
         return run(config -> config.load(stream));
     }
-
 
     /**
      * Creates a new {@link YamlConfiguration}, loading from the given reader.
@@ -222,7 +223,7 @@ public class YamlConfiguration extends FileConfiguration {
         try {
             runnable.run(config);
         } catch (IOException | InvalidConfigurationException ex) {
-            Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration from stream", ex);
+            Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration", ex);
         }
 
         return config;

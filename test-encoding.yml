@@ -1,7 +1,7 @@
-# Should be UTF-8
 encoding:
   default: UTF-8
   charset: UTF-8
+  # Should be true to display values properly
   unicode: true
 ö: ö
 umlauts: öüäß

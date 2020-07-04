@@ -7,7 +7,7 @@ package org.simpleyaml.configuration;
  */
 public class ConfigurationOptions {
     private char pathSeparator = '.';
-    private boolean copyDefaults = false;
+    private boolean copyDefaults = true;
     private final Configuration configuration;
 
     protected ConfigurationOptions(Configuration configuration) {

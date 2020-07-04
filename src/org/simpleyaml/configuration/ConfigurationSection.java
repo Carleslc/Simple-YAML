@@ -167,6 +167,16 @@ public interface ConfigurationSection {
     public void set(String path, Object value);
 
     /**
+     * Removes the specified path if it exists.
+     * The entry will be removed, either a value or an entire section.
+     *
+     * @param path Path of the object to remove.
+     */
+    default public void remove(String path) {
+        set(path, null);
+    }
+
+    /**
      * Creates an empty {@link ConfigurationSection} at the specified path.
      * <p>
      * Any value that was previously set at this path will be overwritten. If
