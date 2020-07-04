@@ -77,9 +77,11 @@ public final class Helper {
                 map.put(s, Helper.withoutMemorySection(((ConfigurationSection) o).getValues(false)));
             } else if (o instanceof ConfigurationSerializable) {
                 final ConfigurationSerializable serializable = (ConfigurationSerializable) o;
-                map.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY,
+                final Map<String, Object> inner = new HashMap<>();
+                inner.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY,
                     ConfigurationSerialization.getAlias(serializable.getClass()));
-                map.putAll(serializable.serialize());
+                inner.putAll(serializable.serialize());
+                map.put(s, inner);
             } else {
                 map.put(s, o);
             }
@@ -242,14 +244,16 @@ public final class Helper {
 
     private static void convertMapToSection(final Map<?, ?> input, final ConfigurationSection section) {
         final Map<String, Object> result = Helper.deserialize(input);
+        notfound:
         if (result.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
-            final Map<String, Object> typed = new LinkedHashMap<>(result.size());
-            for (final Map.Entry<?, ?> entry : result.entrySet()) {
-                typed.put(entry.getKey().toString(), entry.getValue());
+            final Map<String, Object> typed = result.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            final ConfigurationSection parent = section.getParent();
+            if (parent == null) {
+                break notfound;
             }
             try {
-                System.out.println(typed);
-                ConfigurationSerialization.deserializeObject(typed);
+                parent.set(section.getName(), ConfigurationSerialization.deserializeObject(typed));
             } catch (final IllegalArgumentException ex) {
                 throw new RuntimeException("Could not deserialize object", ex);
             }
