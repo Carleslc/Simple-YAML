@@ -21,7 +21,7 @@ Filename extensions: `.yaml`, `.yml`
 
 This API is a port from [Bukkit](https://github.com/Bukkit/Bukkit) configuration wrapper with some features added, so you can use this library wherever you want without Bukkit dependency. Core internal configuration representation matches with the Bukkit one, but without the dependencies of Bukkit itself.
 
-Simplicity is added with the class `YamlFile`, which is an extension of `YamlConfiguration`, with easy use for creation, management and serialization of yaml files.
+Simplicity is added with the class [`YamlFile`](https://carleslc.me/Simple-YAML/doc/org/simpleyaml/configuration/file/YamlFile.html), which is an extension of `YamlConfiguration`, with easy use for creation, management and serialization of yaml files.
 
 Furthermore, you can optionally save your files with **comments** in mind. With the original `YamlConfiguration` that is not possible, because if you save the file from code then all previous comments in the file will be removed. You can write your comments with a text editor as usual. In addition, not only you can preserve your comments but also with this API you can add comments programmatically to your configuration. Sounds good, right?
 
@@ -57,13 +57,13 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 
 The best way to learn how to use this API is through some examples.
 
-You can find some examples to test at `src/org/simpleyaml/test/` [(here)](https://github.com/Carleslc/Simple-YAML/tree/master/src/org/simpleyaml/test).
+You can find some examples to test at [`src/org/simpleyaml/test/`](https://github.com/Carleslc/Simple-YAML/tree/master/src/org/simpleyaml/test).
 
-* `YamlTest`: An example to create YAML files, save or delete simple values and move through the file configuration.
-* `YamlTestComments`: An example to load and save YAML files keeping comments.
-* `YamlEncodingTest`: A minimal example to check your encoding with Unicode characters.
-* `YamlSerializationTest`: An example for saving complex objects using serialization.
-* `Person`: An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
+* [`YamlTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlTest.java): An example to create YAML files, save or delete simple values and move through the file configuration.
+* [`YamlTestComments`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlTestComments.java): An example to load and save YAML files keeping comments.
+* [`YamlEncodingTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlEncodingTest.java): A minimal example to check your encoding with Unicode characters.
+* [`YamlSerializationTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlSerializationTest.java): An example for saving complex objects using serialization.
+* [`Person`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/Person.java): An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
 
 For more information and methods see the Javadoc [here](https://carleslc.me/Simple-YAML/doc/).
 
