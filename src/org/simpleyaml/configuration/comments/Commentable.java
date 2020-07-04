@@ -10,7 +10,7 @@ public interface Commentable {
      * @param comment the comment to add, # symbol is not needed
      * @param type either above (block) or side
      */
-    void addComment(String path, String comment, CommentType type);
+    void setComment(String path, String comment, CommentType type);
 
     /**
      * Adds a block comment above the section or value selected by path.
@@ -19,7 +19,26 @@ public interface Commentable {
      * @param path path of desired section or value
      * @param comment the comment to add, # symbol is not needed
      */
-    default void addComment(String path, String comment) {
-        addComment(path, comment, CommentType.BLOCK);
+    default void setComment(String path, String comment) {
+        setComment(path, comment, CommentType.BLOCK);
+    }
+
+    /**
+     * Retrieve the comment of the section or value selected by path.
+     * @param path path of desired section or value
+     * @param type either above (block) or side
+     * @return the comment of the section or value selected by path,
+     * or null if that path does not have any comment of this type
+     */
+    String getComment(String path, CommentType type);
+
+    /**
+     * Retrieve the block comment of the section or value selected by path.
+     * @param path path of desired section or value
+     * @return the block comment of the section or value selected by path,
+     * or null if that path does not have any comment of type block
+     */
+    default String getComment(String path) {
+        return getComment(path, CommentType.BLOCK);
     }
 }

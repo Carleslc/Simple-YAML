@@ -1,0 +1,10 @@
+# Should be UTF-8
+encoding:
+  default: UTF-8
+  charset: UTF-8
+  unicode: true
+ö: ö
+umlauts: öüäß
+hiragana: ひらがな
+kanji: 漢字
+emoji: 😁

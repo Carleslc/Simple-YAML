@@ -5,7 +5,7 @@ import org.simpleyaml.utils.Validate;
 /**
  * Various settings for controlling the input and output of a {@link YamlConfiguration}
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConfigurationOptions.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConfigurationOptions.java">Bukkit Source</a>
  */
 public class YamlConfigurationOptions extends FileConfigurationOptions {
     private int indent = 2;

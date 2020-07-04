@@ -11,7 +11,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 
 /**
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConstructor.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConstructor.java">Bukkit Source</a>
  */
 public class YamlConstructor extends SafeConstructor {
 

@@ -3,7 +3,7 @@ package org.simpleyaml.configuration;
 /**
  * Various settings for controlling the input and output of a {@link Configuration}
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java">Source</a>
  */
 public class ConfigurationOptions {
     private char pathSeparator = '.';

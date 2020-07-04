@@ -6,7 +6,7 @@ import org.simpleyaml.configuration.MemoryConfigurationOptions;
 /**
  * Various settings for controlling the input and output of a {@link FileConfiguration}
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfigurationOptions.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfigurationOptions.java">Bukkit Source</a>
  */
 public class FileConfigurationOptions extends MemoryConfigurationOptions {
     private String header = null;

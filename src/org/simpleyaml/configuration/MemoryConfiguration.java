@@ -10,7 +10,7 @@ import org.simpleyaml.utils.Validate;
  * This is useful for temporary Configurations for providing defaults.
  * 
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemoryConfiguration.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/MemoryConfiguration.java">Bukkit Source</a>
  */
 public class MemoryConfiguration extends MemorySection implements Configuration {
     protected Configuration defaults;

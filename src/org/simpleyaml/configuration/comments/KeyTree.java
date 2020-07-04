@@ -1,5 +1,7 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -10,6 +12,12 @@ public class KeyTree {
     private Node root = new Node(null, 0, "");
 
     private Map<String, Node> nodes = new HashMap<>();
+
+    private YamlConfigurationOptions options;
+
+    public KeyTree(YamlConfigurationOptions options) {
+        this.options = options;
+    }
 
     public Node add(String path) {
         Node parent = root;
@@ -114,19 +122,19 @@ public class KeyTree {
 
         public String getPath() {
             if (path == null) {
-                path = getPath(parent, name);
+                path = getPath(parent, name, options.pathSeparator());
             }
             return path;
         }
 
-        private String getPath(Node parent, String name) {
+        private String getPath(Node parent, String name, char separator) {
             if (parent == null) {
                 return name;
             }
             if (parent != root) {
-                name = parent.name + "." + name;
+                name = parent.name + separator + name;
             }
-            return getPath(parent.parent, name);
+            return getPath(parent.parent, name, separator);
         }
 
         private Node add(Node child) {
@@ -136,7 +144,7 @@ public class KeyTree {
         }
 
         public Node add(String key) {
-            return add(this == root ? 0 : indent + 2, key);
+            return add(this == root ? 0 : indent + options.indent(), key);
         }
 
         public Node add(int indent, String key) {

@@ -1,5 +1,7 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.function.Function;
@@ -11,8 +13,8 @@ public class CommentDumper extends CommentReader {
 
     private StringBuilder builder;
 
-    public CommentDumper(CommentMapper commentMapper, Reader reader) {
-        super(reader);
+    public CommentDumper(YamlConfigurationOptions options, CommentMapper commentMapper, Reader reader) {
+        super(options, reader);
         this.commentMapper = commentMapper;
     }
 

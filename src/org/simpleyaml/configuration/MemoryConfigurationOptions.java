@@ -3,7 +3,7 @@ package org.simpleyaml.configuration;
 /**
  * Various settings for controlling the input and output of a {@link MemoryConfiguration}
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java">Bukkit Source</a>
  */
 public class MemoryConfigurationOptions extends ConfigurationOptions {
     protected MemoryConfigurationOptions(MemoryConfiguration configuration) {

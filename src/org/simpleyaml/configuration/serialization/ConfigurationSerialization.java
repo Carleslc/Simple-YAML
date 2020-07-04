@@ -15,7 +15,7 @@ import org.simpleyaml.configuration.Configuration;
 /**
  * Utility class for storing and retrieving classes for {@link Configuration}.
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java">Bukkit Source</a>
  */
 public class ConfigurationSerialization {
     public static final String SERIALIZED_TYPE_KEY = "==";

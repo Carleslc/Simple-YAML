@@ -3,10 +3,7 @@ package org.simpleyaml.test;
 import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.file.YamlFile;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * This class shows you how to use this API to load and save a YAML file with comments.
@@ -14,33 +11,36 @@ import java.io.Writer;
  */
 public final class YamlTestComments {
 	
-	public static void main(String[] args) throws IOException {
-		fileShouldPreserveComments("test-comments.yml");
+	public static void main(String[] args) throws Exception {
+		YamlFile yamlFile1 = fileShouldPreserveComments("test-comments.yml");
+
+		// Get comments programmatically
+		System.out.println(
+				yamlFile1.getComment("test.string") + " " +
+				yamlFile1.getComment("test.list.entry", CommentType.SIDE)
+		);
+
+		// Other files with comments
 		fileShouldPreserveComments("test-comments2.yml");
 		fileShouldPreserveComments("test-comments3.yml");
 	}
 
-	private static void fileShouldPreserveComments(String path) throws IOException {
+	private static YamlFile fileShouldPreserveComments(String path) throws Exception {
 		// Create new YAML file with relative path
 		YamlFile yamlFile = new YamlFile(path);
 
-		// Load the YAML file if is already created or create a new one otherwise
-		try {
-			if (!yamlFile.exists()) {
-				System.err.println(yamlFile.getFilePath() + " does not exist");
-				return;
-			}
-			System.out.println(yamlFile.getFilePath() + " exists, loading configurations...");
-			yamlFile.loadWithComments(); // Loads the entire file with existing comments
-		} catch (Exception e) {
-			e.printStackTrace();
+		// Load the YAML file if it is already created
+		if (!yamlFile.exists()) {
+			throw new FileNotFoundException(yamlFile.getFilePath() + " does not exist");
 		}
+		System.out.println(yamlFile.getFilePath() + " exists, loading configurations...");
+		yamlFile.loadWithComments(); // Loads the entire file with existing comments
 
-		String loaded = yamlFile.toString();
+		String loaded = yamlFile.fileToString();
 
 		// Add some comments programmatically
-		yamlFile.addComment("test.string", "Hello!");
-		yamlFile.addComment("test.list.entry", ":)", CommentType.SIDE);
+		yamlFile.setComment("test.string", "Hello!");
+		yamlFile.setComment("test.list.entry", ":)", CommentType.SIDE);
 
 		// Save the file with comments!
 		try {
@@ -49,7 +49,7 @@ public final class YamlTestComments {
 			e.printStackTrace();
 		}
 
-		String saved = yamlFile.toString();
+		String saved = yamlFile.fileToString();
 
 		boolean same = saved.trim().equals(loaded.trim());
 
@@ -64,6 +64,8 @@ public final class YamlTestComments {
 			// Fail test case
 			throw new AssertionError(path + " comments are not properly copied");
 		}
+
+		return yamlFile;
 	}
 
 }

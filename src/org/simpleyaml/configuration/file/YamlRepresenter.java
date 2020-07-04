@@ -11,7 +11,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 /**
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlRepresenter.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlRepresenter.java">Bukkit Source</a>
  */
 public class YamlRepresenter extends Representer {
 

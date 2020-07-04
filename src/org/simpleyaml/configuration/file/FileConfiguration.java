@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * This is a base class for all File based implementations of {@link Configuration}
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java">Bukkit Source</a>
  */
 public abstract class FileConfiguration extends MemoryConfiguration {
     /**
@@ -92,10 +92,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
 
         String data = saveToString();
 
-        try (Writer writer = new OutputStreamWriter(
-            new FileOutputStream(file),
-            UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset()
-        )) {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), getCharset())) {
             writer.write(data);
         }
     }
@@ -155,12 +152,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
 
         final FileInputStream stream = new FileInputStream(file);
 
-        load(
-            new InputStreamReader(
-                stream,
-                UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset()
-            )
-        );
+        load(new InputStreamReader(stream, getCharset()));
     }
 
     /**
@@ -185,11 +177,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     public void load(InputStream stream) throws IOException, InvalidConfigurationException {
         Validate.notNull(stream, "Stream cannot be null");
 
-        load(
-            new InputStreamReader(
-                stream, UTF8_OVERRIDE ? StandardCharsets.UTF_8 : Charset.defaultCharset()
-            )
-        );
+        load(new InputStreamReader(stream, getCharset()));
     }
 
     /**
@@ -277,12 +265,15 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      */
     protected abstract String buildHeader();
 
+    public static Charset getCharset() {
+        return UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset();
+    }
+
     @Override
     public FileConfigurationOptions options() {
         if (options == null) {
             options = new FileConfigurationOptions(this);
         }
-
         return (FileConfigurationOptions) options;
     }
 }

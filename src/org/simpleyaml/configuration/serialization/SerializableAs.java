@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * ConfigurationSerializable} will have no effect.
  *
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/SerializableAs.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/SerializableAs.java">Bukkit Source</a>
  * @see ConfigurationSerialization#registerClass(Class, String)
  */
 @Retention(RetentionPolicy.RUNTIME)

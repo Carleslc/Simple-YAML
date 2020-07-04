@@ -19,7 +19,7 @@ import java.util.Map;
  * with {@link ConfigurationSerialization#registerClass(Class)}.
  *
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerializable.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerializable.java">Bukkit Source</a>
  * @see DelegateDeserialization
  * @see SerializableAs
  */

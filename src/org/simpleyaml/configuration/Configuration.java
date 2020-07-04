@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Represents a source of configurable options and settings
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/Configuration.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/Configuration.java">Bukkit Source</a>
  */
 public interface Configuration extends ConfigurationSection {
     /**

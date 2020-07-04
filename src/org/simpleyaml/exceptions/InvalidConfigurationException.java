@@ -4,7 +4,8 @@ import org.simpleyaml.configuration.Configuration;
 
 /**
  * Exception thrown when attempting to load an invalid {@link Configuration}
- * @author Bukkit <https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/InvalidConfigurationException.java>
+ * @author Bukkit
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/InvalidConfigurationException.java">Bukkit Source</a>
  */
 @SuppressWarnings("serial")
 public class InvalidConfigurationException extends Exception {

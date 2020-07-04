@@ -5,8 +5,6 @@ import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
@@ -106,12 +104,20 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 		}
 
 		// Write file with comments
-		try (Writer writer = new OutputStreamWriter(
-				new FileOutputStream(configFile),
-				UTF8_OVERRIDE && !UTF_BIG ? StandardCharsets.UTF_8 : Charset.defaultCharset()
-		)) {
-			writer.write(new CommentDumper(parseComments(), new StringReader(saveToString())).dump());
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFile), getCharset())) {
+			writer.write(saveToStringWithComments());
 		}
+	}
+
+	/**
+	 * Saves this {@link FileConfiguration} to a string, comments included, and returns it.
+	 *
+	 * @return String containing this configuration with comments.
+	 * @throws IOException if it hasn't been possible to save configuration file
+	 * @see #saveToString
+	 */
+	public String saveToStringWithComments() throws IOException {
+		return new CommentDumper(options(), parseComments(), new StringReader(saveToString())).dump();
 	}
 
 	/**
@@ -122,10 +128,40 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 	 */
 	private CommentMapper parseComments() throws IOException {
 		if (commentMapper == null) {
-			commentMapper = new CommentParser(new StringReader(fileToString()));
+			commentMapper = new CommentParser(options(), new StringReader(fileToString()));
 			((CommentParser) commentMapper).parse();
 		}
 		return commentMapper;
+	}
+
+	/**
+	 * Adds a comment to the section or value selected by path.
+	 * Comment will be indented automatically.
+	 * Multi-line comments can be provided using \n character.
+	 *
+	 * @param path path of desired section or value
+	 * @param comment the comment to add, # symbol is not needed
+	 * @param type either above (block) or side
+	 */
+	@Override
+	public void setComment(String path, String comment, CommentType type) {
+		if (commentMapper == null) {
+			commentMapper = new CommentMapper(options());
+		}
+		commentMapper.setComment(path, comment, type);
+	}
+
+	/**
+	 * Retrieve the comment of the section or value selected by path.
+	 *
+	 * @param path path of desired section or value
+	 * @param type either above (block) or side
+	 * @return the comment of the section or value selected by path,
+	 * or null if that path does not have any comment of this type
+	 */
+	@Override
+	public String getComment(String path, CommentType type) {
+		return commentMapper != null ? commentMapper.getComment(path, type) : null;
 	}
 	
 	/**
@@ -314,26 +350,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
 	/**
-	 * Adds a comment to the section or value selected by path.
-	 * Comment will be indented automatically.
-	 * Multi-line comments can be provided using \n character.
+	 * Returns a representation of the already saved configuration file.
 	 *
-	 * @param path path of desired section or value
-	 * @param comment the comment to add, # symbol is not needed
-	 * @param type either above (block) or side
-	 */
-    @Override
-	public void addComment(String path, String comment, CommentType type) {
-		if (commentMapper == null) {
-			commentMapper = new CommentMapper();
-		}
-		commentMapper.addComment(path, comment, type);
-	}
-
-	/**
-	 * Returns a representation of the configuration file.
-	 *
-	 * @return the configuration file contents
+	 * @return the configuration file disk contents
 	 * @throws IOException if configuration file cannot be read
 	 */
     public String fileToString() throws IOException {
@@ -341,15 +360,15 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 	}
 
 	/**
-	 * Returns a representation of the configuration file.
+	 * Returns a representation of this configuration file.
 	 *
-	 * @return the configuration file contents.
+	 * @return a representation of this configuration file
 	 * If something goes wrong then this string is an error message.
 	 */
 	@Override
     public String toString() {
 		try {
-			return fileToString();
+			return commentMapper == null ? saveToString() : saveToStringWithComments();
 		} catch (IOException e) {
 			return e.getMessage();
 		}

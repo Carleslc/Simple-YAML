@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Represents a section of a {@link Configuration}
  * @author Bukkit
- * @see "https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationSection.java"
+ * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationSection.java">Bukkit Source</a>
  */
 public interface ConfigurationSection {
     /**

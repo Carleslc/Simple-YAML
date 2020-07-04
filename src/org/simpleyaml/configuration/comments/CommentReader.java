@@ -1,5 +1,6 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.utils.Validate;
 
 import java.io.BufferedReader;
@@ -23,7 +24,8 @@ public class CommentReader extends CommentMapper {
 
     protected String trim;
 
-    protected CommentReader(Reader reader) {
+    protected CommentReader(YamlConfigurationOptions options, Reader reader) {
+        super(options);
         Validate.notNull(reader, "Reader is null!");
         this.reader = new BufferedReader(reader);
     }

@@ -1,5 +1,7 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.regex.Matcher;
@@ -11,8 +13,8 @@ public class CommentParser extends CommentReader {
 
     private StringBuilder currentComment; // block comment
 
-    public CommentParser(Reader reader) {
-        super(reader);
+    public CommentParser(YamlConfigurationOptions options, Reader reader) {
+        super(options, reader);
     }
 
     private void appendLine() {
