@@ -31,7 +31,7 @@ public final class YamlSerializationTest {
 
                 // If the registered class have methods to serialize and deserialize objects,
                 // this will load the object correctly.
-                Person p = (Person) yamlFile.get("test.people.12345678A");
+                Person p = (Person) yamlFile.get("org.simple.yaml.test.people.12345678A");
                 System.out.println("Loaded object:\n " + p);
             } else {
                 yamlFile.createNewFile(true);
@@ -40,7 +40,7 @@ public final class YamlSerializationTest {
                 // Write an object to the YAML file
                 Person p = new Person("12345678A", "John", 1990);
 
-                yamlFile.set("test.people." + p.getDni(), p);
+                yamlFile.set("org.simple.yaml.test.people." + p.getDni(), p);
 
                 // Don't forget to save the file!
                 yamlFile.save();

@@ -57,13 +57,13 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 
 The best way to learn how to use this API is through some examples.
 
-You can find some examples to test at [`src/org/simpleyaml/test/`](https://github.com/Carleslc/Simple-YAML/tree/master/src/org/simpleyaml/test).
+You can find some examples to org.simpleyaml.test at [`src/org/simpleyaml/org.simpleyaml.test/`](https://github.com/Carleslc/Simple-YAML/tree/master/src/org/simpleyaml/org.simple.yaml.test).
 
-* [`YamlTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlTest.java): An example to create YAML files, save or delete simple values and move through the file configuration.
-* [`YamlTestComments`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlTestComments.java): An example to load and save YAML files keeping comments.
-* [`YamlEncodingTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlEncodingTest.java): A minimal example to check your encoding with Unicode characters.
-* [`YamlSerializationTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/YamlSerializationTest.java): An example for saving complex objects using serialization.
-* [`Person`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/test/Person.java): An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
+* [`YamlTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/org.simple.yaml.test/YamlTest.java): An example to create YAML files, save or delete simple values and move through the file configuration.
+* [`YamlTestComments`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/org.simple.yaml.test/YamlTestComments.java): An example to load and save YAML files keeping comments.
+* [`YamlEncodingTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/org.simple.yaml.test/YamlEncodingTest.java): A minimal example to check your encoding with Unicode characters.
+* [`YamlSerializationTest`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/org.simple.yaml.test/YamlSerializationTest.java): An example for saving complex objects using serialization.
+* [`Person`](https://github.com/Carleslc/Simple-YAML/blob/master/src/org/simpleyaml/org.simple.yaml.test/Person.java): An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
 
 For more information and methods see the Javadoc [here](https://carleslc.me/Simple-YAML/doc/).
 
