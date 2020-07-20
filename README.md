@@ -57,7 +57,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 
 The best way to learn how to use this API is through some examples.
 
-You can find some examples to test at [`Simple-YAML/src/test/java/org/simpleyaml/test/`](https://github.com/Carleslc/Simple-YAML/tree/master/Simple-YAML/src/main/test/org/simpleyaml/test).
+You can find some examples to test at [`Simple-YAML/src/test/java/org/simpleyaml/test/`](https://github.com/Carleslc/Simple-YAML/tree/master/Simple-YAML/src/test/java/org/simpleyaml/test).
 
 * [`YamlTest`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-YAML/src/test/java/org/simpleyaml/test/YamlTest.java): An example to create YAML files, save or delete simple values and move through the file configuration.
 * [`YamlTestComments`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-YAML/src/test/java/org/simpleyaml/test/YamlTestComments.java): An example to load and save YAML files keeping comments.
