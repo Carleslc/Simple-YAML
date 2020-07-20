@@ -9,6 +9,7 @@ import java.util.Map;
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/Configuration.java">Bukkit Source</a>
  */
 public interface Configuration extends ConfigurationSection {
+
     /**
      * Sets the default value of the given path as provided.
      * <p>
@@ -19,10 +20,11 @@ public interface Configuration extends ConfigurationSection {
      * If value is null, the value will be removed from the default
      * Configuration source.
      *
-     * @param path  Path of the value to set.
+     * @param path Path of the value to set.
      * @param value Value to set the default to.
      * @throws IllegalArgumentException Thrown if path is null.
      */
+    @Override
     void addDefault(String path, Object value);
 
     /**
@@ -84,4 +86,5 @@ public interface Configuration extends ConfigurationSection {
      * @return Options for this configuration
      */
     ConfigurationOptions options();
+
 }

@@ -1,9 +1,8 @@
 package org.simpleyaml.test;
 
-import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 
 /**
  * Class that represents a Person that is used only for the org.simple.yaml.test examples.<br>
@@ -12,9 +11,13 @@ import java.util.Map;
  * @author Carlos Lazaro Costa
  */
 public class Person implements ConfigurationSerializable {
+
     private final String dni;
+
     private final String name;
+
     private final int birthYear;
+
     private boolean isAlive;
 
     public Person(String dni, String name, int birthYear, boolean isAlive) {
@@ -77,4 +80,5 @@ public class Person implements ConfigurationSerializable {
     public String toString() {
         return "Person [dni= " + dni + ", name= " + name + ", birthYear= " + birthYear + ", isAlive= " + isAlive + "]";
     }
+
 }

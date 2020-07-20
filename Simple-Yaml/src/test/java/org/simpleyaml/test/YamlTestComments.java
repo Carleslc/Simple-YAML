@@ -1,9 +1,8 @@
 package org.simpleyaml.test;
 
+import java.io.*;
 import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.file.YamlFile;
-
-import java.io.*;
 
 /**
  * This class shows you how to use this API to load and save a YAML file with comments.

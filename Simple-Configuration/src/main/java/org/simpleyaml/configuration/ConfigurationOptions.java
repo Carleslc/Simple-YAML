@@ -7,11 +7,14 @@ package org.simpleyaml.configuration;
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java">Source</a>
  */
 public class ConfigurationOptions {
+
     private final Configuration configuration;
+
     private char pathSeparator = '.';
+
     private boolean copyDefaults = true;
 
-    protected ConfigurationOptions(Configuration configuration) {
+    protected ConfigurationOptions(final Configuration configuration) {
         this.configuration = configuration;
     }
 
@@ -21,7 +24,7 @@ public class ConfigurationOptions {
      * @return Parent configuration
      */
     public Configuration configuration() {
-        return configuration;
+        return this.configuration;
     }
 
     /**
@@ -34,7 +37,7 @@ public class ConfigurationOptions {
      * @return Path separator
      */
     public char pathSeparator() {
-        return pathSeparator;
+        return this.pathSeparator;
     }
 
     /**
@@ -47,7 +50,7 @@ public class ConfigurationOptions {
      * @param value Path separator
      * @return This object, for chaining
      */
-    public ConfigurationOptions pathSeparator(char value) {
+    public ConfigurationOptions pathSeparator(final char value) {
         this.pathSeparator = value;
         return this;
     }
@@ -59,15 +62,15 @@ public class ConfigurationOptions {
      * If this is true, all values in the default Configuration will be
      * directly copied, making it impossible to distinguish between values
      * that were set and values that are provided by default. As a result,
-     * {@link ConfigurationSection#contains(java.lang.String)} will always
+     * {@link ConfigurationSection#contains(String)} will always
      * return the same value as {@link
-     * ConfigurationSection#isSet(java.lang.String)}. The default value is
+     * ConfigurationSection#isSet(String)}. The default value is
      * false.
      *
      * @return Whether or not defaults are directly copied
      */
     public boolean copyDefaults() {
-        return copyDefaults;
+        return this.copyDefaults;
     }
 
     /**
@@ -77,16 +80,17 @@ public class ConfigurationOptions {
      * If this is true, all values in the default Configuration will be
      * directly copied, making it impossible to distinguish between values
      * that were set and values that are provided by default. As a result,
-     * {@link ConfigurationSection#contains(java.lang.String)} will always
+     * {@link ConfigurationSection#contains(String)} will always
      * return the same value as {@link
-     * ConfigurationSection#isSet(java.lang.String)}. The default value is
+     * ConfigurationSection#isSet(String)}. The default value is
      * false.
      *
      * @param value Whether or not defaults are directly copied
      * @return This object, for chaining
      */
-    public ConfigurationOptions copyDefaults(boolean value) {
+    public ConfigurationOptions copyDefaults(final boolean value) {
         this.copyDefaults = value;
         return this;
     }
+
 }

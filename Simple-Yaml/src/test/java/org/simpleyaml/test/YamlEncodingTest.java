@@ -1,9 +1,8 @@
 package org.simpleyaml.test;
 
-import org.simpleyaml.configuration.file.YamlFile;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
+import org.simpleyaml.configuration.file.YamlFile;
 
 public class YamlEncodingTest {
 
@@ -26,4 +25,5 @@ public class YamlEncodingTest {
 
         yamlFile.saveWithComments();
     }
+
 }

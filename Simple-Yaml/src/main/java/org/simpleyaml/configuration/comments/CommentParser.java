@@ -1,11 +1,10 @@
 package org.simpleyaml.configuration.comments;
 
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class CommentParser extends CommentReader {
 
@@ -13,49 +12,50 @@ public class CommentParser extends CommentReader {
 
     private StringBuilder currentComment; // block comment
 
-    public CommentParser(YamlConfigurationOptions options, Reader reader) {
+    public CommentParser(final YamlConfigurationOptions options, final Reader reader) {
         super(options, reader);
     }
 
-    private void appendLine() {
-        if (currentComment == null) {
-            currentComment = new StringBuilder(currentLine);
-        } else {
-            currentComment.append(currentLine);
+    public void parse() throws IOException {
+        while (this.nextLine()) {
+            if (this.isBlank() || this.isComment()) {
+                this.appendLine();
+            } else {
+                this.trackComment();
+            }
         }
-        currentComment.append('\n');
+
+        // Last comment
+        this.trackComment();
+
+        this.reader.close();
+    }
+
+    private void appendLine() {
+        if (this.currentComment == null) {
+            this.currentComment = new StringBuilder(this.currentLine);
+        } else {
+            this.currentComment.append(this.currentLine);
+        }
+        this.currentComment.append('\n');
     }
 
     private void trackComment() {
-        KeyTree.Node node = track();
-        if (currentComment != null) {
-            node.setComment(currentComment.toString());
-            currentComment = null;
+        final KeyTree.Node node = this.track();
+        if (this.currentComment != null) {
+            node.setComment(this.currentComment.toString());
+            this.currentComment = null;
         }
-        setSideComment(node);
+        this.setSideComment(node);
     }
 
-    private void setSideComment(KeyTree.Node node) {
-        if (currentLine != null) {
-            Matcher sideCommentMatcher = SIDE_COMMENT_REGEX.matcher(currentLine);
+    private void setSideComment(final KeyTree.Node node) {
+        if (this.currentLine != null) {
+            final Matcher sideCommentMatcher = CommentParser.SIDE_COMMENT_REGEX.matcher(this.currentLine);
             if (sideCommentMatcher.matches()) {
                 node.setSideComment(sideCommentMatcher.group(1));
             }
         }
     }
 
-    public void parse() throws IOException {
-        while (nextLine()) {
-            if (isBlank() || isComment()) {
-                appendLine();
-            } else {
-                trackComment();
-            }
-        }
-
-        // Last comment
-        trackComment();
-
-        reader.close();
-    }
 }

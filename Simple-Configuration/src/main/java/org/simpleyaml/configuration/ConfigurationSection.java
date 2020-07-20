@@ -11,6 +11,7 @@ import java.util.Set;
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationSection.java">Bukkit Source</a>
  */
 public interface ConfigurationSection {
+
     /**
      * Gets a set containing all keys in this section.
      * <p>
@@ -22,7 +23,7 @@ public interface ConfigurationSection {
      * direct children, and not their own children.
      *
      * @param deep Whether or not to get a deep list, as opposed to a shallow
-     *             list.
+     * list.
      * @return Set of keys contained within this ConfigurationSection.
      */
     Set<String> getKeys(boolean deep);
@@ -38,7 +39,7 @@ public interface ConfigurationSection {
      * values of any direct children, and not their own children.
      *
      * @param deep Whether or not to get a deep list, as opposed to a shallow
-     *             list.
+     * list.
      * @return Map of keys and values of this section.
      */
     Map<String, Object> getValues(boolean deep);
@@ -146,7 +147,7 @@ public interface ConfigurationSection {
      * {@link Configuration}.
      *
      * @param path Path of the Object to get.
-     * @param def  The default value to return if the path is not found.
+     * @param def The default value to return if the path is not found.
      * @return Requested Object.
      */
     Object get(String path, Object def);
@@ -160,9 +161,9 @@ public interface ConfigurationSection {
      * Some implementations may have limitations on what you may store. See
      * their individual javadocs for details. No implementations should allow
      * you to store {@link Configuration}s or {@link ConfigurationSection}s,
-     * please use {@link #createSection(java.lang.String)} for that.
+     * please use {@link #createSection(String)} for that.
      *
-     * @param path  Path of the object to set.
+     * @param path Path of the object to set.
      * @param value New value to set the path to.
      */
     void set(String path, Object value);
@@ -173,8 +174,8 @@ public interface ConfigurationSection {
      *
      * @param path Path of the object to remove.
      */
-    default void remove(String path) {
-        set(path, null);
+    default void remove(final String path) {
+        this.set(path, null);
     }
 
     /**
@@ -198,7 +199,7 @@ public interface ConfigurationSection {
      * be orphaned.
      *
      * @param path Path to create the section at.
-     * @param map  The values to used.
+     * @param map The values to used.
      * @return Newly created section
      */
     ConfigurationSection createSection(String path, Map<?, ?> map);
@@ -226,8 +227,8 @@ public interface ConfigurationSection {
      * {@link Configuration}.
      *
      * @param path Path of the String to get.
-     * @param def  The default value to return if the path is not found or is
-     *             not a String.
+     * @param def The default value to return if the path is not found or is
+     * not a String.
      * @return Requested String.
      */
     String getString(String path, String def);
@@ -265,8 +266,8 @@ public interface ConfigurationSection {
      * {@link Configuration}.
      *
      * @param path Path of the int to get.
-     * @param def  The default value to return if the path is not found or is
-     *             not an int.
+     * @param def The default value to return if the path is not found or is
+     * not an int.
      * @return Requested int.
      */
     int getInt(String path, int def);
@@ -305,8 +306,8 @@ public interface ConfigurationSection {
      * {@link Configuration}.
      *
      * @param path Path of the boolean to get.
-     * @param def  The default value to return if the path is not found or is
-     *             not a boolean.
+     * @param def The default value to return if the path is not found or is
+     * not a boolean.
      * @return Requested boolean.
      */
     boolean getBoolean(String path, boolean def);
@@ -345,8 +346,8 @@ public interface ConfigurationSection {
      * {@link Configuration}.
      *
      * @param path Path of the double to get.
-     * @param def  The default value to return if the path is not found or is
-     *             not a double.
+     * @param def The default value to return if the path is not found or is
+     * not a double.
      * @return Requested double.
      */
     double getDouble(String path, double def);
@@ -385,8 +386,8 @@ public interface ConfigurationSection {
      * {@link Configuration}.
      *
      * @param path Path of the long to get.
-     * @param def  The default value to return if the path is not found or is
-     *             not a long.
+     * @param def The default value to return if the path is not found or is
+     * not a long.
      * @return Requested long.
      */
     long getLong(String path, long def);
@@ -427,8 +428,8 @@ public interface ConfigurationSection {
      * {@link Configuration}.
      *
      * @param path Path of the List to get.
-     * @param def  The default value to return if the path is not found or is
-     *             not a List.
+     * @param def The default value to return if the path is not found or is
+     * not a List.
      * @return Requested List.
      */
     List<?> getList(String path, List<?> def);
@@ -649,9 +650,10 @@ public interface ConfigurationSection {
      * this will create a new section at the path, replacing anything that may
      * have existed there previously.
      *
-     * @param path  Path of the value to set.
+     * @param path Path of the value to set.
      * @param value Value to set the default to.
      * @throws IllegalArgumentException Thrown if path is null.
      */
     void addDefault(String path, Object value);
+
 }

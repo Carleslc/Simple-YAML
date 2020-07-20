@@ -1,14 +1,13 @@
 package org.simpleyaml.configuration.comments;
 
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.utils.Validate;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+import org.simpleyaml.utils.Validate;
 
 public class CommentReader extends CommentMapper {
 
@@ -24,24 +23,24 @@ public class CommentReader extends CommentMapper {
 
     protected String trim;
 
-    protected CommentReader(YamlConfigurationOptions options, Reader reader) {
+    protected CommentReader(final YamlConfigurationOptions options, final Reader reader) {
         super(options);
         Validate.notNull(reader, "Reader is null!");
         this.reader = new BufferedReader(reader);
     }
 
     protected boolean isBlank() {
-        return trim.isEmpty();
+        return this.trim.isEmpty();
     }
 
     protected boolean isComment() {
-        return trim.startsWith("#");
+        return this.trim.startsWith("#");
     }
 
     protected boolean nextLine() throws IOException {
-        currentLine = reader.readLine();
-        if (currentLine != null) {
-            trim = currentLine.trim();
+        this.currentLine = this.reader.readLine();
+        if (this.currentLine != null) {
+            this.trim = this.currentLine.trim();
             return true;
         }
         return false;
@@ -50,30 +49,31 @@ public class CommentReader extends CommentMapper {
     protected KeyTree.Node track() {
         int indent = 0;
         String key = null;
-        if (currentLine != null) {
-            MatchResult groups = match(currentLine);
+        if (this.currentLine != null) {
+            final MatchResult groups = this.match(this.currentLine);
             indent = groups.group(1).length();
             if (groups.groupCount() > 1) {
                 key = groups.group(2);
             }
         }
-        KeyTree.Node parent = keyTree.findParent(indent);
+        final KeyTree.Node parent = this.keyTree.findParent(indent);
         return parent.add(indent, key);
     }
 
-    private MatchResult match(String s) {
-        Matcher matcher = KEY_REGEX.matcher(s); // for comments of section keys
+    private MatchResult match(final String s) {
+        Matcher matcher = CommentReader.KEY_REGEX.matcher(s); // for comments of section keys
         if (matcher.matches()) {
             return matcher.toMatchResult();
         }
-        matcher = ELEMENT_REGEX.matcher(s); // for comments of section values
+        matcher = CommentReader.ELEMENT_REGEX.matcher(s); // for comments of section values
         if (matcher.matches()) {
             return matcher.toMatchResult();
         }
-        matcher = OTHER_REGEX.matcher(s); // for anything else
+        matcher = CommentReader.OTHER_REGEX.matcher(s); // for anything else
         if (matcher.matches()) {
             return matcher.toMatchResult();
         }
         throw new IllegalStateException(s + " cannot be matched");
     }
+
 }

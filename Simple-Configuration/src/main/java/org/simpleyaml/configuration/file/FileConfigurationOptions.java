@@ -1,11 +1,10 @@
 package org.simpleyaml.configuration.file;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.configuration.MemoryConfigurationOptions;
-
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Various settings for controlling the input and output of a {@link FileConfiguration}
@@ -17,10 +16,12 @@ import java.nio.charset.StandardCharsets;
 public class FileConfigurationOptions extends MemoryConfigurationOptions {
 
     private Charset charset = StandardCharsets.UTF_8;
+
     private String header = null;
+
     private boolean copyHeader = true;
 
-    protected FileConfigurationOptions(MemoryConfiguration configuration) {
+    protected FileConfigurationOptions(final MemoryConfiguration configuration) {
         super(configuration);
     }
 
@@ -30,28 +31,28 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
     }
 
     @Override
-    public FileConfigurationOptions copyDefaults(boolean value) {
-        super.copyDefaults(value);
-        return this;
-    }
-
-    @Override
-    public FileConfigurationOptions pathSeparator(char value) {
+    public FileConfigurationOptions pathSeparator(final char value) {
         super.pathSeparator(value);
         return this;
     }
 
-    public Charset charset() {
-        return charset;
+    @Override
+    public FileConfigurationOptions copyDefaults(final boolean value) {
+        super.copyDefaults(value);
+        return this;
     }
 
-    public FileConfigurationOptions charset(Charset charset) {
+    public Charset charset() {
+        return this.charset;
+    }
+
+    public FileConfigurationOptions charset(final Charset charset) {
         this.charset = charset;
         return this;
     }
 
     public boolean isUnicode() {
-        return charset.name().startsWith("UTF");
+        return this.charset.name().startsWith("UTF");
     }
 
     /**
@@ -69,7 +70,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * @return Header
      */
     public String header() {
-        return header;
+        return this.header;
     }
 
     /**
@@ -87,7 +88,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * @param value New header
      * @return This object, for chaining
      */
-    public FileConfigurationOptions header(String value) {
+    public FileConfigurationOptions header(final String value) {
         this.header = value;
         return this;
     }
@@ -111,7 +112,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * @return Whether or not to copy the header
      */
     public boolean copyHeader() {
-        return copyHeader;
+        return this.copyHeader;
     }
 
     /**
@@ -133,8 +134,9 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * @param value Whether or not to copy the header
      * @return This object, for chaining
      */
-    public FileConfigurationOptions copyHeader(boolean value) {
-        copyHeader = value;
+    public FileConfigurationOptions copyHeader(final boolean value) {
+        this.copyHeader = value;
         return this;
     }
+
 }

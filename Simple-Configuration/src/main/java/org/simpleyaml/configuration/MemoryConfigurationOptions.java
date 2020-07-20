@@ -7,7 +7,8 @@ package org.simpleyaml.configuration;
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/ConfigurationOptions.java">Bukkit Source</a>
  */
 public class MemoryConfigurationOptions extends ConfigurationOptions {
-    protected MemoryConfigurationOptions(MemoryConfiguration configuration) {
+
+    protected MemoryConfigurationOptions(final MemoryConfiguration configuration) {
         super(configuration);
     }
 
@@ -17,14 +18,15 @@ public class MemoryConfigurationOptions extends ConfigurationOptions {
     }
 
     @Override
-    public MemoryConfigurationOptions copyDefaults(boolean value) {
-        super.copyDefaults(value);
+    public MemoryConfigurationOptions pathSeparator(final char value) {
+        super.pathSeparator(value);
         return this;
     }
 
     @Override
-    public MemoryConfigurationOptions pathSeparator(char value) {
-        super.pathSeparator(value);
+    public MemoryConfigurationOptions copyDefaults(final boolean value) {
+        super.copyDefaults(value);
         return this;
     }
+
 }

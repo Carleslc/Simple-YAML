@@ -9,9 +9,9 @@ public interface Commentable {
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
      *
-     * @param path    path of desired section or value
+     * @param path path of desired section or value
      * @param comment the comment to add, # symbol is not needed
-     * @param type    either above (block) or side
+     * @param type either above (block) or side
      */
     void setComment(String path, String comment, CommentType type);
 
@@ -20,11 +20,11 @@ public interface Commentable {
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
      *
-     * @param path    path of desired section or value
+     * @param path path of desired section or value
      * @param comment the comment to add, # symbol is not needed
      */
-    default void setComment(String path, String comment) {
-        setComment(path, comment, CommentType.BLOCK);
+    default void setComment(final String path, final String comment) {
+        this.setComment(path, comment, CommentType.BLOCK);
     }
 
     /**
@@ -44,7 +44,8 @@ public interface Commentable {
      * @return the block comment of the section or value selected by path,
      * or null if that path does not have any comment of type block
      */
-    default String getComment(String path) {
-        return getComment(path, CommentType.BLOCK);
+    default String getComment(final String path) {
+        return this.getComment(path, CommentType.BLOCK);
     }
+
 }

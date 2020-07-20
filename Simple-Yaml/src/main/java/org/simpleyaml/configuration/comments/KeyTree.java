@@ -1,35 +1,34 @@
 package org.simpleyaml.configuration.comments;
 
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class KeyTree {
 
-    private final Node root = new Node(null, 0, "");
+    private final KeyTree.Node root = new KeyTree.Node(null, 0, "");
 
-    private final Map<String, Node> nodes = new HashMap<>();
+    private final Map<String, KeyTree.Node> nodes = new HashMap<>();
 
     private final YamlConfigurationOptions options;
 
-    public KeyTree(YamlConfigurationOptions options) {
+    public KeyTree(final YamlConfigurationOptions options) {
         this.options = options;
     }
 
-    public Node add(String path) {
-        Node parent = root;
+    public KeyTree.Node add(final String path) {
+        KeyTree.Node parent = this.root;
         String key = path;
         if (path != null) {
-            int i = path.lastIndexOf('.');
+            final int i = path.lastIndexOf('.');
             if (i >= 0) {
-                String parentPath = path.substring(0, i);
+                final String parentPath = path.substring(0, i);
                 key = path.substring(i + 1);
-                parent = get(parentPath);
+                parent = this.get(parentPath);
                 if (parent == null) {
-                    parent = add(parentPath);
+                    parent = this.add(parentPath);
                 }
             }
         }
@@ -42,19 +41,8 @@ public class KeyTree {
      * @param indent the indent to look for
      * @return the last most inner child that has less indent than the indent provided, or parent otherwise
      */
-    public Node findParent(int indent) {
-        return findParent(root, indent);
-    }
-
-    private Node findParent(Node parent, int indent) {
-        if (parent.children.isEmpty()) {
-            return parent;
-        }
-        Node last = parent.children.getLast();
-        if (last.indent < indent) {
-            return findParent(last, indent);
-        }
-        return parent;
+    public KeyTree.Node findParent(final int indent) {
+        return this.findParent(this.root, indent);
     }
 
     /**
@@ -63,103 +51,122 @@ public class KeyTree {
      * @param path the path of names separated by dot character to look for
      * @return the child that has the provided path or null if not found
      */
-    public Node get(String path) {
-        return nodes.get(path);
+    public KeyTree.Node get(final String path) {
+        return this.nodes.get(path);
     }
 
     public Set<String> keys() {
-        return nodes.keySet();
+        return this.nodes.keySet();
     }
 
-    public Set<Map.Entry<String, Node>> entries() {
-        return nodes.entrySet();
+    public Set<Map.Entry<String, KeyTree.Node>> entries() {
+        return this.nodes.entrySet();
     }
 
     @Override
     public String toString() {
-        return root.toString();
+        return this.root.toString();
+    }
+
+    private KeyTree.Node findParent(final KeyTree.Node parent, final int indent) {
+        if (parent.children.isEmpty()) {
+            return parent;
+        }
+        final KeyTree.Node last = parent.children.getLast();
+        if (last.indent < indent) {
+            return this.findParent(last, indent);
+        }
+        return parent;
     }
 
     public class Node {
 
         private final String name;
-        private final Node parent;
-        private final LinkedList<Node> children = new LinkedList<>();
+
+        private final KeyTree.Node parent;
+
+        private final LinkedList<KeyTree.Node> children = new LinkedList<>();
+
         private final int indent;
+
         private String comment;
+
         private String sideComment;
+
         private String path;
 
-        Node(Node parent, int indent, String name) {
+        Node(final KeyTree.Node parent, final int indent, final String name) {
             this.parent = parent;
             this.indent = indent;
             this.name = name;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public String getComment() {
-            return comment;
+            return this.comment;
         }
 
-        public void setComment(String comment) {
+        public void setComment(final String comment) {
             this.comment = comment;
         }
 
         public String getSideComment() {
-            return sideComment;
+            return this.sideComment;
         }
 
-        public void setSideComment(String sideComment) {
+        public void setSideComment(final String sideComment) {
             this.sideComment = sideComment;
         }
 
         public int getIndentation() {
-            return indent;
+            return this.indent;
         }
 
         public String getPath() {
-            if (path == null) {
-                path = getPath(parent, name, options.pathSeparator());
+            if (this.path == null) {
+                this.path = this.getPath(this.parent, this.name, KeyTree.this.options.pathSeparator());
             }
-            return path;
+            return this.path;
         }
 
-        private String getPath(Node parent, String name, char separator) {
-            if (parent == null) {
-                return name;
-            }
-            if (parent != root) {
-                name = parent.name + separator + name;
-            }
-            return getPath(parent.parent, name, separator);
+        public KeyTree.Node add(final String key) {
+            return this.add(this == KeyTree.this.root ? 0 : this.indent + KeyTree.this.options.indent(), key);
         }
 
-        private Node add(Node child) {
-            children.add(child);
-            nodes.put(child.getPath(), child);
-            return child;
-        }
-
-        public Node add(String key) {
-            return add(this == root ? 0 : indent + options.indent(), key);
-        }
-
-        public Node add(int indent, String key) {
-            return add(new Node(this, indent, key));
+        public KeyTree.Node add(final int indent, final String key) {
+            return this.add(new KeyTree.Node(this, indent, key));
         }
 
         @Override
         public String toString() {
             return "{" +
-                "indent=" + indent +
-                ", name='" + name + '\'' +
-                ", comment='" + comment + '\'' +
-                ", side='" + sideComment + '\'' +
-                ", children=" + children +
+                "indent=" + this.indent +
+                ", name='" + this.name + '\'' +
+                ", comment='" + this.comment + '\'' +
+                ", side='" + this.sideComment + '\'' +
+                ", children=" + this.children +
                 '}';
         }
+
+        private String getPath(final KeyTree.Node parent, String name, final char separator) {
+            if (parent == null) {
+                return name;
+            }
+            if (parent != KeyTree.this.root) {
+                name = parent.name + separator + name;
+            }
+            return this.getPath(parent.parent, name, separator);
+        }
+
+        private KeyTree.Node add(final KeyTree.Node child) {
+            this.children.add(child);
+            KeyTree.this.nodes.put(child.getPath(), child);
+            return child;
+        }
+
     }
+
 }
