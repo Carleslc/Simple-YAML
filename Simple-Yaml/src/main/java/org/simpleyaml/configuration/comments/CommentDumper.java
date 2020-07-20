@@ -1,10 +1,11 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class CommentDumper extends CommentReader {
 

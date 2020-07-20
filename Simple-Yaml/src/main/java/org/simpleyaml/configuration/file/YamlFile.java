@@ -1,10 +1,11 @@
 package org.simpleyaml.configuration.file;
 
-import java.io.*;
-import java.nio.file.Files;
 import org.simpleyaml.configuration.comments.*;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
+
+import java.io.*;
+import java.nio.file.Files;
 
 /**
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file
@@ -41,8 +42,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param path location for the configuration file
      * @throws IllegalArgumentException if path is null or is a directory.
-     * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
-     * configuration file will be <b>null</b>.
+     *                                  <br>Note that if <code>IllegalArgumentException</code> is thrown then this
+     *                                  configuration file will be <b>null</b>.
      */
     public YamlFile(final String path) throws IllegalArgumentException {
         this.setConfigurationFile(path);
@@ -53,8 +54,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param file the configuration file
      * @throws IllegalArgumentException if file is null or is a directory.
-     * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
-     * configuration file will be <b>null</b>.
+     *                                  <br>Note that if <code>IllegalArgumentException</code> is thrown then this
+     *                                  configuration file will be <b>null</b>.
      */
     public YamlFile(final File file) throws IllegalArgumentException {
         this.setConfigurationFile(file);
@@ -120,9 +121,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
      *
-     * @param path path of desired section or value
+     * @param path    path of desired section or value
      * @param comment the comment to add, # symbol is not needed
-     * @param type either above (block) or side
+     * @param type    either above (block) or side
      */
     @Override
     public void setComment(final String path, final String comment, final CommentType type) {
@@ -154,9 +155,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Note that this method will not load comments of original configuration file,
      * if needed use {@link #loadWithComments()} instead.
      *
-     * @throws IOException if it hasn't been possible to load file
+     * @throws IOException                   if it hasn't been possible to load file
      * @throws InvalidConfigurationException if there has been an error while parsing configuration file
-     * @throws FileNotFoundException if configuration file is not found
+     * @throws FileNotFoundException         if configuration file is not found
      */
     public void load() throws InvalidConfigurationException, IOException {
         Validate.notNull(this.configFile, "This configuration file is null!");
@@ -172,9 +173,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
      *
-     * @throws IOException if it hasn't been possible to load file
+     * @throws IOException                   if it hasn't been possible to load file
      * @throws InvalidConfigurationException if there has been an error while parsing configuration file
-     * @throws FileNotFoundException if configuration file is not found
+     * @throws FileNotFoundException         if configuration file is not found
      */
     public void loadWithComments() throws InvalidConfigurationException, IOException {
         this.load();
@@ -189,9 +190,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
      *
-     * @throws IOException if it hasn't been possible to load file
+     * @throws IOException                   if it hasn't been possible to load file
      * @throws InvalidConfigurationException if there has been an error while parsing configuration file
-     * @throws FileNotFoundException if configuration file is not found
+     * @throws FileNotFoundException         if configuration file is not found
      * @see #createOrLoadWithComments()
      */
     public void createOrLoad() throws IOException, InvalidConfigurationException {
@@ -207,9 +208,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
      *
-     * @throws IOException if it hasn't been possible to load file
+     * @throws IOException                   if it hasn't been possible to load file
      * @throws InvalidConfigurationException if there has been an error while parsing configuration file
-     * @throws FileNotFoundException if configuration file is not found
+     * @throws FileNotFoundException         if configuration file is not found
      * @see #createOrLoad()
      */
     public void createOrLoadWithComments() throws IOException, InvalidConfigurationException {
@@ -234,8 +235,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Parent directories will be created if they do not exist.
      *
      * @param overwrite indicates if file must be overwritten if it already exists.
-     * Note that if overwrite is set to false and there is already a file with that path file
-     * will not be created and no exception is thrown.
+     *                  Note that if overwrite is set to false and there is already a file with that path file
+     *                  will not be created and no exception is thrown.
      * @throws IOException if I/O error occurs creating the configuration file
      */
     public void createNewFile(final boolean overwrite) throws IOException {
@@ -298,8 +299,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param path location for the configuration file
      * @throws IllegalArgumentException if path is null or is a directory.
-     * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
-     * configuration file will be <b>null</b>.
+     *                                  <br>Note that if <code>IllegalArgumentException</code> is thrown then this
+     *                                  configuration file will be <b>null</b>.
      */
     public void setConfigurationFile(final String path) throws IllegalArgumentException {
         Validate.notNull(path, "Path cannot be null.");
@@ -315,8 +316,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param file the configuration file
      * @throws IllegalArgumentException if file is null or is a directory.
-     * <br>Note that if <code>IllegalArgumentException</code> is thrown then this
-     * configuration file will be <b>null</b>.
+     *                                  <br>Note that if <code>IllegalArgumentException</code> is thrown then this
+     *                                  configuration file will be <b>null</b>.
      */
     public void setConfigurationFile(final File file) throws IllegalArgumentException {
         Validate.notNull(file, "File cannot be null.");
@@ -333,9 +334,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param path the location of the new file, including name (mustn't be a directory)
      * @return the new copied file
-     * @throws FileNotFoundException if configuration file is not found as source to copy
+     * @throws FileNotFoundException    if configuration file is not found as source to copy
      * @throws IllegalArgumentException if path is a directory or it is null
-     * @throws IOException if there I/O error occurs copying file
+     * @throws IOException              if there I/O error occurs copying file
      */
     public File copyTo(final String path) throws FileNotFoundException, IllegalArgumentException, IOException {
         Validate.notNull(path, "Path cannot be null.");
@@ -348,9 +349,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Copy this configuration file to another file, without deleting configuration file.
      *
      * @param file destination file (mustn't be a directory)
-     * @throws FileNotFoundException if configuration file is not found as source to copy
+     * @throws FileNotFoundException    if configuration file is not found as source to copy
      * @throws IllegalArgumentException if path is a directory or it is null
-     * @throws IOException if there I/O error occurs copying file
+     * @throws IOException              if there I/O error occurs copying file
      */
     public void copyTo(final File file) throws FileNotFoundException, IllegalArgumentException, IOException {
         Validate.notNull(this.configFile, "This configuration file is null!");

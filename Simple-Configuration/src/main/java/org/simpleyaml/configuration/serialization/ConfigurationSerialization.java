@@ -1,5 +1,8 @@
 package org.simpleyaml.configuration.serialization;
 
+import org.simpleyaml.configuration.Configuration;
+import org.simpleyaml.utils.Validate;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,8 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.simpleyaml.configuration.Configuration;
-import org.simpleyaml.utils.Validate;
 
 /**
  * Utility class for storing and retrieving classes for {@link Configuration}.
@@ -40,7 +41,7 @@ public class ConfigurationSerialization {
      * If a new instance could not be made, an example being the class not
      * fully implementing the interface, null will be returned.
      *
-     * @param args Arguments for deserialization
+     * @param args  Arguments for deserialization
      * @param clazz Class to deserialize into
      * @return New instance of the specified class
      */

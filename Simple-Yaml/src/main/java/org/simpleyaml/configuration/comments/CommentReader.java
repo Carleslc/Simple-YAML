@@ -1,13 +1,14 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+import org.simpleyaml.utils.Validate;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.utils.Validate;
 
 public class CommentReader extends CommentMapper {
 

@@ -1,7 +1,8 @@
 package org.simpleyaml.configuration;
 
-import java.util.Map;
 import org.simpleyaml.utils.Validate;
+
+import java.util.Map;
 
 /**
  * This is a {@link Configuration} implementation that does not save or load

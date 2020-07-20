@@ -1,10 +1,11 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class KeyTree {
 

@@ -1,10 +1,11 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class CommentParser extends CommentReader {
 

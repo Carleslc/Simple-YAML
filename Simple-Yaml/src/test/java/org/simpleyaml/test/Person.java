@@ -1,8 +1,9 @@
 package org.simpleyaml.test;
 
+import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 
 /**
  * Class that represents a Person that is used only for the org.simple.yaml.test examples.<br>

@@ -3,6 +3,8 @@ package org.simpleyaml.configuration;
 import org.simpleyaml.utils.NumberConversions;
 import org.simpleyaml.utils.Validate;
 
+import java.util.*;
+
 /**
  * A type of {@link ConfigurationSection} that is stored in memory.
  *
@@ -30,7 +32,7 @@ public class MemorySection implements ConfigurationSection {
      * will throw an exception!
      *
      * @throws IllegalStateException Thrown if this is not a {@link
-     * Configuration} root.
+     *                               Configuration} root.
      */
     protected MemorySection() {
         if (!(this instanceof Configuration)) {
@@ -47,10 +49,10 @@ public class MemorySection implements ConfigurationSection {
      * Creates an empty MemorySection with the specified parent and path.
      *
      * @param parent Parent section that contains this own section.
-     * @param path Path that you may access this section from via the root
-     * {@link Configuration}.
+     * @param path   Path that you may access this section from via the root
+     *               {@link Configuration}.
      * @throws IllegalArgumentException Thrown is parent or path is null, or
-     * if parent contains no root Configuration.
+     *                                  if parent contains no root Configuration.
      */
     protected MemorySection(final ConfigurationSection parent, final String path) {
         Validate.notNull(parent, "Parent cannot be null");
@@ -73,7 +75,7 @@ public class MemorySection implements ConfigurationSection {
      * only {@link MemorySection}.
      *
      * @param section Section to create a path for.
-     * @param key Name of the specified section.
+     * @param key     Name of the specified section.
      * @return Full path of the section from its root.
      */
     public static String createPath(final ConfigurationSection section, final String key) {
@@ -87,8 +89,8 @@ public class MemorySection implements ConfigurationSection {
      * You may use this method for any given {@link ConfigurationSection}, not
      * only {@link MemorySection}.
      *
-     * @param section Section to create a path for.
-     * @param key Name of the specified section.
+     * @param section    Section to create a path for.
+     * @param key        Name of the specified section.
      * @param relativeTo Section to create the path relative to.
      * @return Full path of the section from its root.
      */

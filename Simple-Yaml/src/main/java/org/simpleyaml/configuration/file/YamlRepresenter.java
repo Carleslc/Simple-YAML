@@ -1,13 +1,13 @@
 package org.simpleyaml.configuration.file;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;
-import org.yaml.snakeyaml.representer.SafeRepresenter;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author Bukkit
@@ -20,7 +20,7 @@ public class YamlRepresenter extends Representer {
         this.multiRepresenters.put(ConfigurationSerializable.class, new RepresentConfigurationSerializable());
     }
 
-    private class RepresentConfigurationSection extends SafeRepresenter.RepresentMap {
+    private class RepresentConfigurationSection extends RepresentMap {
 
         @Override
         public Node representData(final Object data) {
@@ -29,7 +29,7 @@ public class YamlRepresenter extends Representer {
 
     }
 
-    private class RepresentConfigurationSerializable extends SafeRepresenter.RepresentMap {
+    private class RepresentConfigurationSerializable extends RepresentMap {
 
         @Override
         public Node representData(final Object data) {

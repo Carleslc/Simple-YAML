@@ -1,10 +1,11 @@
 package org.simpleyaml.configuration.file;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.configuration.MemoryConfigurationOptions;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Various settings for controlling the input and output of a {@link FileConfiguration}

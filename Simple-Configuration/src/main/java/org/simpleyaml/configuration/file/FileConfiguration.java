@@ -1,12 +1,11 @@
 package org.simpleyaml.configuration.file;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Reader;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
+
+import java.io.*;
 
 /**
  * This is a base class for all File based implementations of {@link Configuration}
@@ -44,8 +43,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * which defaults to UTF8.
      *
      * @param file File to save to.
-     * @throws IOException Thrown when the given file cannot be written to for
-     * any reason.
+     * @throws IOException              Thrown when the given file cannot be written to for
+     *                                  any reason.
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void save(final File file) throws IOException {
@@ -64,8 +63,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * which defaults to UTF8.
      *
      * @param file File to save to.
-     * @throws IOException Thrown when the given file cannot be written to for
-     * any reason.
+     * @throws IOException              Thrown when the given file cannot be written to for
+     *                                  any reason.
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void save(final String file) throws IOException {
@@ -94,11 +93,11 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * which defaults to UTF8.
      *
      * @param file File to load from.
-     * @throws FileNotFoundException Thrown when the given file cannot be opened.
-     * @throws IOException Thrown when the given file cannot be read.
+     * @throws FileNotFoundException         Thrown when the given file cannot be opened.
+     * @throws IOException                   Thrown when the given file cannot be read.
      * @throws InvalidConfigurationException Thrown when the given file is not
-     * a valid Configuration.
-     * @throws IllegalArgumentException Thrown when file is null.
+     *                                       a valid Configuration.
+     * @throws IllegalArgumentException      Thrown when file is null.
      */
     public void load(final String file) throws FileNotFoundException, IOException, InvalidConfigurationException {
         Validate.notNull(file, "File cannot be null");
@@ -119,11 +118,11 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * which defaults to UTF8.
      *
      * @param file File to load from.
-     * @throws FileNotFoundException Thrown when the given file cannot be opened.
-     * @throws IOException Thrown when the given file cannot be read.
+     * @throws FileNotFoundException         Thrown when the given file cannot be opened.
+     * @throws IOException                   Thrown when the given file cannot be read.
      * @throws InvalidConfigurationException Thrown when the given file is not
-     * a valid Configuration.
-     * @throws IllegalArgumentException Thrown when file is null.
+     *                                       a valid Configuration.
+     * @throws IllegalArgumentException      Thrown when file is null.
      */
     public void load(final File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
         Validate.notNull(file, "File cannot be null");
@@ -144,10 +143,10 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * which defaults to UTF8.
      *
      * @param stream Stream to load from
-     * @throws IOException Thrown when the given file cannot be read.
+     * @throws IOException                   Thrown when the given file cannot be read.
      * @throws InvalidConfigurationException Thrown when the given file is not
-     * a valid Configuration.
-     * @throws IllegalArgumentException Thrown when stream is null.
+     *                                       a valid Configuration.
+     * @throws IllegalArgumentException      Thrown when stream is null.
      * @see #load(Reader)
      */
     public void load(final InputStream stream) throws IOException, InvalidConfigurationException {
@@ -166,10 +165,10 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * thrown.
      *
      * @param reader the reader to load from
-     * @throws IOException thrown when underlying reader throws an IOException
+     * @throws IOException                   thrown when underlying reader throws an IOException
      * @throws InvalidConfigurationException thrown when the reader does not
-     * represent a valid Configuration
-     * @throws IllegalArgumentException thrown when reader is null
+     *                                       represent a valid Configuration
+     * @throws IllegalArgumentException      thrown when reader is null
      */
     public void load(final Reader reader) throws IOException, InvalidConfigurationException {
         try (final BufferedReader input = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
@@ -197,8 +196,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      *
      * @param contents Contents of a Configuration to load.
      * @throws InvalidConfigurationException Thrown if the specified string is
-     * invalid.
-     * @throws IllegalArgumentException Thrown if contents is null.
+     *                                       invalid.
+     * @throws IllegalArgumentException      Thrown if contents is null.
      */
     public abstract void loadFromString(String contents) throws InvalidConfigurationException;
 

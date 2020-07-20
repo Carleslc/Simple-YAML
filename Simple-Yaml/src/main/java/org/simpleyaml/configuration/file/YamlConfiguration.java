@@ -1,12 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.Commentable;
@@ -16,6 +9,14 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of {@link Configuration} which saves all files in Yaml.

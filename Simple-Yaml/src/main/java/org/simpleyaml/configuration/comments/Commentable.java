@@ -9,9 +9,9 @@ public interface Commentable {
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
      *
-     * @param path path of desired section or value
+     * @param path    path of desired section or value
      * @param comment the comment to add, # symbol is not needed
-     * @param type either above (block) or side
+     * @param type    either above (block) or side
      */
     void setComment(String path, String comment, CommentType type);
 
@@ -20,7 +20,7 @@ public interface Commentable {
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
      *
-     * @param path path of desired section or value
+     * @param path    path of desired section or value
      * @param comment the comment to add, # symbol is not needed
      */
     default void setComment(final String path, final String comment) {
