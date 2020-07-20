@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>me.carleslc</groupId>
-            <artifactId>simple-configuration</artifactId>
+            <artifactId>Simple-Configuration</artifactId>
             <version>1.6.1</version>
         </dependency>
         <dependency>
