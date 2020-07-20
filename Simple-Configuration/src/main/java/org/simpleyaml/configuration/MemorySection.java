@@ -3,8 +3,6 @@ package org.simpleyaml.configuration;
 import org.simpleyaml.utils.NumberConversions;
 import org.simpleyaml.utils.Validate;
 
-import java.util.*;
-
 /**
  * A type of {@link ConfigurationSection} that is stored in memory.
  *

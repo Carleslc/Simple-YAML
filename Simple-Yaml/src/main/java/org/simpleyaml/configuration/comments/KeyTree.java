@@ -83,15 +83,11 @@ public class KeyTree {
     public class Node {
 
         private final String name;
+        private final Node parent;
+        private final LinkedList<Node> children = new LinkedList<>();
+        private final int indent;
         private String comment;
         private String sideComment;
-
-        private final Node parent;
-
-        private final LinkedList<Node> children = new LinkedList<>();
-
-        private final int indent;
-
         private String path;
 
         Node(Node parent, int indent, String name) {

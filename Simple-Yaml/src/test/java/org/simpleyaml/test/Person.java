@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class Person implements ConfigurationSerializable {
     private final String dni;
-	private final String name;
+    private final String name;
     private final int birthYear;
     private boolean isAlive;
 

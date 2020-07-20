@@ -5,7 +5,9 @@ import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * This is a base class for all File based implementations of {@link Configuration}
