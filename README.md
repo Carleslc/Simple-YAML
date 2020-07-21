@@ -65,7 +65,7 @@ You can find some examples to test [`here`](https://github.com/Carleslc/Simple-Y
 * [`YamlSerializationTest`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/test/YamlSerializationTest.java): An example for saving complex objects using serialization.
 * [`Person`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/test/Person.java): An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
 
-## Dependences
+## Dependencies
 
 This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.6.1.jar**, so you don't have to worry about anything more than putting up the jar as dependency on your project.
 
@@ -74,3 +74,11 @@ This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.6.1.jar*
 As this API uses _SnakeYAML_ you can use all methods from that too.
 + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
 + [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
+
+## Looking for other file type configurations?
+
+Have a look to these repositories:
+
+- [XML](https://github.com/portlek/xmlgration)
+- [JSON](https://github.com/portlek/jsongration)
+- [HOCON](https://github.com/portlek/hocongration)
