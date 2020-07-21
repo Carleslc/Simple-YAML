@@ -82,3 +82,4 @@ Have a look to these repositories:
 - [XML](https://github.com/portlek/xmlgration)
 - [JSON](https://github.com/portlek/jsongration)
 - [HOCON](https://github.com/portlek/hocongration)
+- [TOML](https://github.com/portlek/tomlgration)
