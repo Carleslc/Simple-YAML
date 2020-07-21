@@ -1,4 +1,4 @@
-package org.simpleyaml.test;
+package org.simpleyaml.test.obj;
 
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 
@@ -39,7 +39,6 @@ public class Person implements ConfigurationSerializable {
      * If you want you can create a constructor that accepts a single Map<String, Object>
      * to deserialize instead using the method deserialize of below.
      */
-
     public static Person deserialize(Map<String, Object> mappedObject) { // note that is static
         return new Person((String) mappedObject.get("dni"),
             (String) mappedObject.get("name"),
