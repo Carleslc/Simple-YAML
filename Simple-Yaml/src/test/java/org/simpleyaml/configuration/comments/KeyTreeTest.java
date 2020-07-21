@@ -87,7 +87,6 @@ class KeyTreeTest {
         node.add("test-child-2");
         final KeyTree.Node parent = tree.findParent(2);
 
-        System.out.println(parent);
         MatcherAssert.assertThat(
             "The node has a root!",
             parent.getIndentation(),
@@ -158,6 +157,11 @@ class KeyTreeTest {
             "There are not 3 node in the tree!",
             keys.size(),
             new IsEqual<>(3)
+        );
+        MatcherAssert.assertThat(
+            "The node's key are not correct!",
+            keys,
+            new HasValues<>("nodekey1", "nodekey2", "nodekey3")
         );
     }
 
