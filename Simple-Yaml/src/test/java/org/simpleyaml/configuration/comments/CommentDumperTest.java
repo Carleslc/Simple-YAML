@@ -70,7 +70,7 @@ class CommentDumperTest {
         MatcherAssert.assertThat(
             "The side comment's node is wrong",
             testnode.getSideComment(),
-            new IsEqual<>("# test comment\n")
+            new IsEqual<>(" # test comment")
         );
 
         MatcherAssert.assertThat(
@@ -91,7 +91,7 @@ class CommentDumperTest {
         MatcherAssert.assertThat(
             "The side comment's node is wrong",
             test2node.getSideComment(),
-            new IsEqual<>("# test comment\n")
+            new IsEqual<>(" # test comment")
         );
     }
 
