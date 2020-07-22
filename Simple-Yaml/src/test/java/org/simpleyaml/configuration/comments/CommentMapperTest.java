@@ -56,6 +56,36 @@ class CommentMapperTest {
 
     @Test
     void getNode() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
+        final CommentMapper mapper = new CommentMapper(options);
+        final String test_comment = "test_comment";
+        final String test_side_comment = "test_side_comment";
+        final String nodename = "test";
+        mapper.setComment(nodename, test_comment);
+        mapper.setComment(nodename, test_side_comment, CommentType.SIDE);
+        final KeyTree.Node node = mapper.getNode(nodename);
+
+        MatcherAssert.assertThat(
+            "There is no node!",
+            node,
+            new IsNot<>(new IsNull<>())
+        );
+        MatcherAssert.assertThat(
+            "There is no comment on the node!",
+            node.getComment(),
+            new IsEqual<>(test_comment)
+        );
+        MatcherAssert.assertThat(
+            "There is no side comment near the node!",
+            node.getSideComment(),
+            new IsEqual<>(test_side_comment)
+        );
+        MatcherAssert.assertThat(
+            "The node name is not test!",
+            node.getName(),
+            new IsEqual<>(nodename)
+        );
     }
 
 }
