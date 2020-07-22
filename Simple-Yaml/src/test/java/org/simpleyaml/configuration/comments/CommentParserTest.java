@@ -2,10 +2,7 @@ package org.simpleyaml.configuration.comments;
 
 import java.io.IOException;
 import java.io.StringReader;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.IsNot;
 import org.junit.jupiter.api.Test;
-import org.llorllale.cactoos.matchers.Throws;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.obj.TestYamlConfigurationOptions;
@@ -14,8 +11,8 @@ final class CommentParserTest {
 
     @Test
     void parse() throws IOException {
-        final StringReader reader = new StringReader("# test comment\n"+
-            "test: 'test' # test side comment \n"+
+        final StringReader reader = new StringReader("# test comment\n" +
+            "test: 'test' # test side comment \n" +
             "# test comment 2");
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
