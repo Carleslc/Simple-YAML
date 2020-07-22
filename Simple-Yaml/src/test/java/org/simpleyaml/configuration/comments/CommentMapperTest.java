@@ -74,12 +74,12 @@ class CommentMapperTest {
         MatcherAssert.assertThat(
             "There is no comment on the node!",
             node.getComment(),
-            new IsEqual<>("# " +test_comment + "\n")
+            new IsEqual<>("# " + test_comment + '\n')
         );
         MatcherAssert.assertThat(
             "There is no side comment near the node!",
             node.getSideComment(),
-            new IsEqual<>(test_side_comment)
+            new IsEqual<>(" # " + test_side_comment)
         );
         MatcherAssert.assertThat(
             "The node name is not test!",
