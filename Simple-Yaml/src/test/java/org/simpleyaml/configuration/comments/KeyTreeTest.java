@@ -13,7 +13,7 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
-class KeyTreeTest {
+final class KeyTreeTest {
 
     @Test
     void add() {

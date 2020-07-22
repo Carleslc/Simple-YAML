@@ -12,7 +12,7 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
-class CommentReaderTest {
+final class CommentReaderTest {
 
     private static final String COMMENT = "#test comment\n" +
         "test: 'test'\n" +

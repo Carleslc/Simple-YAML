@@ -9,7 +9,7 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
-class CommentMapperTest {
+final class CommentMapperTest {
 
     @Test
     void setComment() {
