@@ -2,6 +2,8 @@ package org.simpleyaml.configuration.comments;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
@@ -35,6 +37,21 @@ class CommentMapperTest {
 
     @Test
     void getComment() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
+        final CommentMapper mapper = new CommentMapper(options);
+
+        MatcherAssert.assertThat(
+            "There is a comment on test path",
+            mapper.getComment("test"),
+            new IsNull<>()
+        );
+        mapper.setComment("test", "test_comment");
+        MatcherAssert.assertThat(
+            "There is a comment on test path",
+            mapper.getComment("test"),
+            new IsNot<>(new IsNull<>())
+        );
     }
 
     @Test

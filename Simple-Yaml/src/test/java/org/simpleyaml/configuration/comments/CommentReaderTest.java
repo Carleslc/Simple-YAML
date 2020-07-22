@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
@@ -30,8 +31,8 @@ class CommentReaderTest {
 
         MatcherAssert.assertThat(
             "The text is blank!",
-            !blank,
-            new IsTrue()
+            blank,
+            new IsNot<>(new IsTrue())
         );
     }
 
