@@ -163,8 +163,7 @@ public class MemorySection implements ConfigurationSection {
     @Override
     public Map<String, Object> getRealValues(final boolean deep) {
         final Map<String, Object> realValues = new HashMap<>();
-        final Map<String, Object> values = this.getValues(deep);
-        values.forEach((s, o) -> {
+        this.getValues(deep).forEach((s, o) -> {
             if (o instanceof ConfigurationSection) {
                 realValues.put(s, ((ConfigurationSection) o).getRealValues(deep));
             } else {
