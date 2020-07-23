@@ -45,6 +45,22 @@ public interface ConfigurationSection {
     Map<String, Object> getValues(boolean deep);
 
     /**
+     * Gets a Map containing all keys and their values for this section.
+     * <p>
+     * If deep is set to true, then this will contain all the keys and values
+     * within any child {@link Map}s (and their children, etc).
+     * These keys will be in a valid path notation for you to use.
+     * <p>
+     * If deep is set to false, then this will contain only the keys and
+     * values of any direct children, and not their own children.
+     *
+     * @param deep Whether or not to get a deep list, as opposed to a shallow
+     *             list.
+     * @return Map of keys and values of this section.
+     */
+    Map<String, Object> getRealValues(boolean deep);
+
+    /**
      * Checks if this {@link ConfigurationSection} contains the given path.
      * <p>
      * If the value for the requested path does not exist but a default value
