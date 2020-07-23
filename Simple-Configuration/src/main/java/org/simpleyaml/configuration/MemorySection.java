@@ -1,5 +1,6 @@
 package org.simpleyaml.configuration;
 
+import java.util.stream.Collectors;
 import org.simpleyaml.utils.NumberConversions;
 import org.simpleyaml.utils.Validate;
 
@@ -158,6 +159,20 @@ public class MemorySection implements ConfigurationSection {
         this.mapChildrenValues(result, this, deep);
 
         return result;
+    }
+
+    @Override
+    public Map<String, Object> getMapValues(final boolean deep) {
+        return this.getValues(deep).entrySet().stream()
+            .map(entry -> {
+                final String key = entry.getKey();
+                final Object value = entry.getValue();
+                if (value instanceof ConfigurationSection) {
+                    return new AbstractMap.SimpleEntry<>(key, ((ConfigurationSection) value).getMapValues(deep));
+                }
+                return new AbstractMap.SimpleEntry<>(key, value);
+            })
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
