@@ -58,7 +58,7 @@ public interface ConfigurationSection {
      *             list.
      * @return Map of keys and values of this section.
      */
-    Map<String, Object> getRealValues(boolean deep);
+    Map<String, Object> getMapValues(boolean deep);
 
     /**
      * Checks if this {@link ConfigurationSection} contains the given path.

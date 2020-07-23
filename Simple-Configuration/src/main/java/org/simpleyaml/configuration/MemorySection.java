@@ -162,13 +162,13 @@ public class MemorySection implements ConfigurationSection {
     }
 
     @Override
-    public Map<String, Object> getRealValues(final boolean deep) {
+    public Map<String, Object> getMapValues(final boolean deep) {
         return this.getValues(deep).entrySet().stream()
             .map(entry -> {
                 final String key = entry.getKey();
                 final Object value = entry.getValue();
                 if (value instanceof ConfigurationSection) {
-                    return new AbstractMap.SimpleEntry<>(key, ((ConfigurationSection) value).getRealValues(deep));
+                    return new AbstractMap.SimpleEntry<>(key, ((ConfigurationSection) value).getMapValues(deep));
                 }
                 return new AbstractMap.SimpleEntry<>(key, value);
             })
