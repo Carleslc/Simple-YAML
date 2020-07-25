@@ -232,7 +232,7 @@ public class YamlConfiguration extends FileConfiguration {
 
                 foundHeader = true;
             } else if (foundHeader && line.isEmpty()) {
-                result.append("\n");
+                result.append('\n');
             } else if (foundHeader) {
                 readingHeader = false;
             }
