@@ -1,6 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import java.util.regex.Matcher;
 import org.cactoos.io.InputStreamOf;
 import org.cactoos.io.ResourceOf;
 import org.hamcrest.MatcherAssert;
@@ -43,6 +42,33 @@ class YamlConfigurationTest {
 
     @Test
     void saveToString() {
+        final InputStreamOf stream = new InputStreamOf(
+            new ResourceOf("test.yml"));
+        final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
+        final String content = "test:\n" +
+            "  number: 5\n" +
+            "  string: Hello world\n" +
+            "  boolean: true\n" +
+            "  list:\n" +
+            "  - Each\n" +
+            "  - word\n" +
+            "  - will\n" +
+            "  - be\n" +
+            "  - in\n" +
+            "  - a\n" +
+            "  - separated\n" +
+            "  - entry\n" +
+            "math:\n" +
+            "  pi: 3.141592653589793\n" +
+            "timestamp:\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+            "  formattedDate: 04/07/2020 15:18:04\n";
+
+        MatcherAssert.assertThat(
+            "Couldn't get the content of the file!",
+            configuration.saveToString(),
+            new IsEqual<>(content)
+        );
     }
 
     @Test
