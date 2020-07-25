@@ -221,6 +221,16 @@ public class YamlConfiguration extends FileConfiguration {
                 }
 
                 foundHeader = true;
+            } else if (line.startsWith(Commentable.COMMENT_PREFIX.trim())) {
+                if (i > 0) {
+                    result.append('\n');
+                }
+
+                if (line.length() > Commentable.COMMENT_PREFIX.trim().length()) {
+                    result.append(line.substring(Commentable.COMMENT_PREFIX.trim().length()));
+                }
+
+                foundHeader = true;
             } else if (foundHeader && line.length() == 0) {
                 result.append("\n");
             } else if (foundHeader) {
