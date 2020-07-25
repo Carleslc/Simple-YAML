@@ -17,8 +17,8 @@ public final class YamlTestComments {
 
         // Get comments programmatically
         System.out.println(
-            yamlFile1.getComment("org.simple.yaml.test.string") + " " +
-                yamlFile1.getComment("org.simple.yaml.test.list.entry", CommentType.SIDE)
+            yamlFile1.getComment("test.string") + " " +
+                yamlFile1.getComment("test.list.entry", CommentType.SIDE)
         );
 
         // Other files with comments
@@ -40,8 +40,8 @@ public final class YamlTestComments {
         String loaded = yamlFile.fileToString();
 
         // Add some comments programmatically
-        yamlFile.setComment("org.simple.yaml.test.string", "Hello!");
-        yamlFile.setComment("org.simple.yaml.test.list.entry", ":)", CommentType.SIDE);
+        yamlFile.setComment("test.string", "Hello!");
+        yamlFile.setComment("test.list.entry", ":)", CommentType.SIDE);
 
         // Save the file with comments!
         try {

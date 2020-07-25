@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Class that represents a Person that is used only for the org.simple.yaml.test examples.<br>
+ * Class that represents a Person that is used only for the test examples.<br>
  * Note that has methods to serialize and deserialize Person objects to save them later.
  *
  * @author Carlos Lazaro Costa

@@ -41,9 +41,9 @@ public final class YamlTest {
         // You can manage hierarchies by separating the sections with a dot at path
         // Let's put some values to the file
 
-        yamlFile.addDefault("org.simple.yaml.test.number", 5);
-        yamlFile.addDefault("org.simple.yaml.test.string", "Hello world");
-        yamlFile.addDefault("org.simple.yaml.test.boolean", true);
+        yamlFile.addDefault("test.number", 5);
+        yamlFile.addDefault("test.string", "Hello world");
+        yamlFile.addDefault("test.boolean", true);
 
         yamlFile.set("math.pi", Math.PI);
         yamlFile.set("math.e", Math.E);
@@ -51,7 +51,7 @@ public final class YamlTest {
         // More additions, e.g. adding entire lists
 
         List<String> list = Arrays.asList("Each word will be in a separated entry".split("[\\s]+"));
-        yamlFile.set("org.simple.yaml.test.list", list);
+        yamlFile.set("test.list", list);
 
         // You can move between sections with a ConfigurationSection
 
@@ -67,12 +67,12 @@ public final class YamlTest {
 
         // Remove values or sections
 
-        yamlFile.remove("org.simple.yaml.test.number"); // Also with yamlFile.set("org.simple.yaml.test.number", null)
+        yamlFile.remove("test.number"); // Also with yamlFile.set("test.number", null)
         yamlFile.remove("math.e");
 
         // You can check if a value is already present at the selected path
 
-        section = yamlFile.getConfigurationSection("org/simpleyaml/test");
+        section = yamlFile.getConfigurationSection("test");
 
         // Default values are always set if options().copyDefaults() is set to true
         System.out.println("There is a default value at " + section.getName() + ".number?: "
@@ -117,7 +117,7 @@ public final class YamlTest {
             e.printStackTrace();
         }
 
-        // Now, you can restart this org.simple.yaml.test and see how the file is loaded due to it's already created
+        // Now, you can restart this test and see how the file is loaded due to it's already created
 
         // You can delete the generated file uncommenting next line and catching the I/O Exception
         // yamlFile.deleteFile();
