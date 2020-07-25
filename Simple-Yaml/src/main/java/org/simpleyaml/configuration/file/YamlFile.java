@@ -386,8 +386,11 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     @Override
     public String toString() {
+        if (this.commentMapper == null) {
+            return this.saveToString();
+        }
         try {
-            return this.commentMapper == null ? this.saveToString() : this.saveToStringWithComments();
+            return this.saveToStringWithComments();
         } catch (final IOException e) {
             return e.getMessage();
         }
