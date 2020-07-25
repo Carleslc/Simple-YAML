@@ -4,6 +4,7 @@ import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.*;
+import java.util.Objects;
 
 /**
  * This class shows you how to use this API to load and save a YAML file with comments.
@@ -12,10 +13,8 @@ import java.io.*;
  */
 public final class YamlCommentsExample {
 
-    private static final String RESOURCES = "Simple-Yaml/src/test/resources/";
-
     public static void main(String[] args) throws Exception {
-        YamlFile yamlFile1 = fileShouldPreserveComments(RESOURCES + "test-comments.yml");
+        YamlFile yamlFile1 = fileShouldPreserveComments(getResource("test-comments.yml"));
 
         // Get comments programmatically
         System.out.println(
@@ -23,8 +22,8 @@ public final class YamlCommentsExample {
         );
 
         // Other files with comments
-        fileShouldPreserveComments(RESOURCES + "test-comments2.yml");
-        fileShouldPreserveComments(RESOURCES + "test-comments3.yml");
+        fileShouldPreserveComments(getResource( "test-comments2.yml"));
+        fileShouldPreserveComments(getResource("test-comments3.yml"));
     }
 
     private static YamlFile fileShouldPreserveComments(String path) throws Exception {
@@ -70,6 +69,10 @@ public final class YamlCommentsExample {
         }
 
         return yamlFile;
+    }
+
+    private static String getResource(String file) {
+        return Objects.requireNonNull(YamlCommentsExample.class.getClassLoader().getResource(file)).getPath();
     }
 
 }
