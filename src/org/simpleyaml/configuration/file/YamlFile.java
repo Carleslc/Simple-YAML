@@ -119,8 +119,13 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     private CommentMapper parseComments() throws IOException {
         if (commentMapper == null) {
-            commentMapper = new CommentParser(options(), new StringReader(fileToString()));
-            ((CommentParser) commentMapper).parse();
+            String contents = fileToString();
+            if (contents != null) {
+                commentMapper = new CommentParser(options(), new StringReader(contents));
+                ((CommentParser) commentMapper).parse();
+            } else {
+                commentMapper = new CommentMapper(options());
+            }
         }
         return commentMapper;
     }
@@ -383,7 +388,10 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if configuration file cannot be read
      */
     public String fileToString() throws IOException {
-        return new String(Files.readAllBytes(getConfigurationFile().toPath()));
+        if (configFile == null) {
+            return null;
+        }
+        return new String(Files.readAllBytes(configFile.toPath()));
     }
 
     /**
