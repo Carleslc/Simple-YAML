@@ -224,7 +224,7 @@ public class YamlConfiguration extends FileConfiguration {
             } else if (foundHeader && line.isEmpty()) {
                 result.append('\n');
             } else if (line.startsWith(Commentable.COMMENT_PREFIX.trim())) {
-                if (i > 0) {
+                if (lineindex > 0) {
                     result.append('\n');
                 }
 
