@@ -10,20 +10,21 @@ import java.io.*;
  *
  * @author Carlos Lazaro Costa
  */
-public final class YamlTestComments {
+public final class YamlCommentsExample {
+
+    private static final String RESOURCES = "Simple-Yaml/src/test/resources/";
 
     public static void main(String[] args) throws Exception {
-        YamlFile yamlFile1 = fileShouldPreserveComments("test-comments.yml");
+        YamlFile yamlFile1 = fileShouldPreserveComments(RESOURCES + "test-comments.yml");
 
         // Get comments programmatically
         System.out.println(
-            yamlFile1.getComment("test.string") + " " +
-                yamlFile1.getComment("test.list.entry", CommentType.SIDE)
+            yamlFile1.getComment("test.string") + " " + yamlFile1.getComment("test.list.entry", CommentType.SIDE)
         );
 
         // Other files with comments
-        fileShouldPreserveComments("test-comments2.yml");
-        fileShouldPreserveComments("test-comments3.yml");
+        fileShouldPreserveComments(RESOURCES + "test-comments2.yml");
+        fileShouldPreserveComments(RESOURCES + "test-comments3.yml");
     }
 
     private static YamlFile fileShouldPreserveComments(String path) throws Exception {
@@ -58,6 +59,8 @@ public final class YamlTestComments {
         System.out.println("File is the same after save with comments?: " + same);
 
         if (!same) {
+            System.out.println(saved);
+
             // Restore original file
             try (Writer writer = new OutputStreamWriter(new FileOutputStream(yamlFile.getConfigurationFile()))) {
                 writer.write(loaded);

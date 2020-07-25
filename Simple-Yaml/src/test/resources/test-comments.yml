@@ -10,15 +10,15 @@ test:
   boolean: true
   # List of words
   list:
-    - Each
-    - word
-    - will
-    - be
-    - in
-    - a
-    - separated
-    # Comment on a list item
-    - entry # :)
+  - Each
+  - word
+  - will
+  - be
+  - in
+  - a
+  - separated
+  # Comment on a list item
+  - entry # :)
 
 # Wonderful number
 math:

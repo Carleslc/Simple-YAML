@@ -8,7 +8,7 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
  *
  * @author Carlos Lazaro Costa
  */
-public final class YamlSerializationTest {
+public final class YamlSerializationExample {
 
     public static void main(String[] args) {
 
@@ -23,7 +23,7 @@ public final class YamlSerializationTest {
          */
         ConfigurationSerialization.registerClass(Person.class);
 
-        YamlFile yamlFile = new YamlFile("test2.yml");
+        YamlFile yamlFile = new YamlFile("examples/test-serialization.yml");
 
         try {
             if (yamlFile.exists()) {

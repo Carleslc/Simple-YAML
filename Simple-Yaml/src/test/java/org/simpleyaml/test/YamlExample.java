@@ -3,11 +3,13 @@ package org.simpleyaml.test;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * YAML is a human-readable data serialization language.<br>
@@ -15,12 +17,12 @@ import java.util.List;
  *
  * @author Carlos Lazaro Costa
  */
-public final class YamlTest {
+public final class YamlExample {
 
     public static void main(String[] args) {
 
         // Create new YAML file with relative path
-        YamlFile yamlFile = new YamlFile("test.yml");
+        YamlFile yamlFile = new YamlFile("examples/test.yml");
 
         // Load the YAML file if is already created or create new one otherwise
         try {
