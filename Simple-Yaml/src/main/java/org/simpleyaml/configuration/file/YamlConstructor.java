@@ -12,7 +12,7 @@ import org.yaml.snakeyaml.nodes.Tag;
  * @author Bukkit
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConstructor.java">Bukkit Source</a>
  */
-public class YamlConstructor extends SafeConstructor {
+public final class YamlConstructor extends SafeConstructor {
 
     public YamlConstructor() {
         this.yamlConstructors.put(Tag.MAP, new ConstructCustomObject());
@@ -25,23 +25,19 @@ public class YamlConstructor extends SafeConstructor {
             if (node.isTwoStepsConstruction()) {
                 throw new YAMLException("Unexpected referential mapping structure. Node: " + node);
             }
-
             final Map<?, ?> raw = (Map<?, ?>) super.construct(node);
-
-            if (raw.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
-                final Map<String, Object> typed = new LinkedHashMap<String, Object>(raw.size());
-                for (final Map.Entry<?, ?> entry : raw.entrySet()) {
-                    typed.put(entry.getKey().toString(), entry.getValue());
-                }
-
-                try {
-                    return ConfigurationSerialization.deserializeObject(typed);
-                } catch (final IllegalArgumentException ex) {
-                    throw new YAMLException("Could not deserialize object", ex);
-                }
+            if (!raw.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
+                return raw;
             }
-
-            return raw;
+            final Map<String, Object> typed = new LinkedHashMap<>(raw.size());
+            for (final Map.Entry<?, ?> entry : raw.entrySet()) {
+                typed.put(entry.getKey().toString(), entry.getValue());
+            }
+            try {
+                return ConfigurationSerialization.deserializeObject(typed);
+            } catch (final IllegalArgumentException ex) {
+                throw new YAMLException("Could not deserialize object", ex);
+            }
         }
 
         @Override
