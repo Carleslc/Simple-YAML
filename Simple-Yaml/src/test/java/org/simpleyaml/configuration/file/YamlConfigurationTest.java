@@ -205,7 +205,7 @@ class YamlConfigurationTest {
 
     @Test
     void parseHeader() {
-        final String content = "#test123\n" +
+        final String content = "# test123\n" +
             "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
