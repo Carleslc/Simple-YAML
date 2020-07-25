@@ -221,8 +221,6 @@ public class YamlConfiguration extends FileConfiguration {
                 }
 
                 foundHeader = true;
-            } else if (foundHeader && line.isEmpty()) {
-                result.append('\n');
             } else if (line.startsWith(Commentable.COMMENT_PREFIX.trim())) {
                 if (lineindex > 0) {
                     result.append('\n');
@@ -233,7 +231,7 @@ public class YamlConfiguration extends FileConfiguration {
                 }
 
                 foundHeader = true;
-            } else if (foundHeader && line.length() == 0) {
+            } else if (foundHeader && line.isEmpty()) {
                 result.append("\n");
             } else if (foundHeader) {
                 readingHeader = false;
