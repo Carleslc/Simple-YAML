@@ -1,13 +1,12 @@
 package org.simpleyaml.configuration.file;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author Bukkit
@@ -19,7 +18,7 @@ public class YamlConstructor extends SafeConstructor {
         this.yamlConstructors.put(Tag.MAP, new ConstructCustomObject());
     }
 
-    private class ConstructCustomObject extends SafeConstructor.ConstructYamlMap {
+    private final class ConstructCustomObject extends SafeConstructor.ConstructYamlMap {
 
         @Override
         public Object construct(final Node node) {
