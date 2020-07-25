@@ -205,9 +205,6 @@ class YamlConfigurationTest {
 
     @Test
     void parseHeader() {
-        final InputStreamOf stream = new InputStreamOf(
-            new ResourceOf("test.yml"));
-        final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
         final String content = "#test123\n" +
             "test:\n" +
             "  number: 5\n" +
