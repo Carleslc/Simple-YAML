@@ -1,12 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.Commentable;
@@ -16,6 +9,14 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of {@link Configuration} which saves all files in Yaml.
@@ -90,35 +91,6 @@ public class YamlConfiguration extends FileConfiguration {
         return YamlConfiguration.run(config -> config.load(reader));
     }
 
-    protected static String parseHeader(final String input) {
-        final String[] lines = input.split("\r?\n", -1);
-        final StringBuilder result = new StringBuilder();
-        boolean readingHeader = true;
-        boolean foundHeader = false;
-
-        for (int lineindex = 0; lineindex < lines.length && readingHeader; lineindex++) {
-            final String line = lines[lineindex];
-
-            if (line.startsWith(Commentable.COMMENT_PREFIX)) {
-                if (lineindex > 0) {
-                    result.append('\n');
-                }
-
-                if (line.length() > Commentable.COMMENT_PREFIX.length()) {
-                    result.append(line.substring(Commentable.COMMENT_PREFIX.length()));
-                }
-
-                foundHeader = true;
-            } else if (foundHeader && line.isEmpty()) {
-                result.append('\n');
-            } else if (foundHeader) {
-                readingHeader = false;
-            }
-        }
-
-        return result.toString();
-    }
-
     private static YamlConfiguration run(final YamlConfiguration.YamlRunnable runnable) {
         final YamlConfiguration config = new YamlConfiguration();
 
@@ -172,14 +144,6 @@ public class YamlConfiguration extends FileConfiguration {
     }
 
     @Override
-    public YamlConfigurationOptions options() {
-        if (this.options == null) {
-            this.options = new YamlConfigurationOptions(this);
-        }
-        return (YamlConfigurationOptions) this.options;
-    }
-
-    @Override
     protected String buildHeader() {
         final String header = this.options().header();
 
@@ -217,6 +181,14 @@ public class YamlConfiguration extends FileConfiguration {
         return builder.toString();
     }
 
+    @Override
+    public YamlConfigurationOptions options() {
+        if (this.options == null) {
+            this.options = new YamlConfigurationOptions(this);
+        }
+        return (YamlConfigurationOptions) this.options;
+    }
+
     protected void convertMapsToSections(final Map<?, ?> input, final ConfigurationSection section) {
         for (final Map.Entry<?, ?> entry : input.entrySet()) {
             final String key = entry.getKey().toString();
@@ -228,6 +200,35 @@ public class YamlConfiguration extends FileConfiguration {
                 section.set(key, value);
             }
         }
+    }
+
+    protected static String parseHeader(final String input) {
+        final String[] lines = input.split("\r?\n", -1);
+        final StringBuilder result = new StringBuilder();
+        boolean readingHeader = true;
+        boolean foundHeader = false;
+
+        for (int lineindex = 0; lineindex < lines.length && readingHeader; lineindex++) {
+            final String line = lines[lineindex];
+
+            if (line.startsWith(Commentable.COMMENT_PREFIX)) {
+                if (lineindex > 0) {
+                    result.append('\n');
+                }
+
+                if (line.length() > Commentable.COMMENT_PREFIX.length()) {
+                    result.append(line.substring(Commentable.COMMENT_PREFIX.length()));
+                }
+
+                foundHeader = true;
+            } else if (foundHeader && line.isEmpty()) {
+                result.append('\n');
+            } else if (foundHeader) {
+                readingHeader = false;
+            }
+        }
+
+        return result.toString();
     }
 
     private interface YamlRunnable {
