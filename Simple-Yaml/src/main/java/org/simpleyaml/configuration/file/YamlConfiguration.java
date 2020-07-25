@@ -133,8 +133,8 @@ public class YamlConfiguration extends FileConfiguration {
             throw new InvalidConfigurationException("Top level is not a Map.");
         }
 
-        final String header = this.parseHeader(contents);
-        if (header.length() > 0) {
+        final String header = YamlConfiguration.parseHeader(contents);
+        if (!header.isEmpty()) {
             this.options().header(header);
         }
 
@@ -202,18 +202,18 @@ public class YamlConfiguration extends FileConfiguration {
         }
     }
 
-    protected String parseHeader(final String input) {
+    protected static String parseHeader(final String input) {
         final String[] lines = input.split("\r?\n", -1);
         final StringBuilder result = new StringBuilder();
         boolean readingHeader = true;
         boolean foundHeader = false;
 
-        for (int i = 0; i < lines.length && readingHeader; i++) {
-            final String line = lines[i];
+        for (int lineindex = 0; lineindex < lines.length && readingHeader; lineindex++) {
+            final String line = lines[lineindex];
 
             if (line.startsWith(Commentable.COMMENT_PREFIX)) {
-                if (i > 0) {
-                    result.append("\n");
+                if (lineindex > 0) {
+                    result.append('\n');
                 }
 
                 if (line.length() > Commentable.COMMENT_PREFIX.length()) {
@@ -221,8 +221,8 @@ public class YamlConfiguration extends FileConfiguration {
                 }
 
                 foundHeader = true;
-            } else if (foundHeader && line.length() == 0) {
-                result.append("\n");
+            } else if (foundHeader && line.isEmpty()) {
+                result.append('\n');
             } else if (foundHeader) {
                 readingHeader = false;
             }
