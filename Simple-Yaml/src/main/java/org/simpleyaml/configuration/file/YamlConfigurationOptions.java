@@ -2,6 +2,8 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.utils.Validate;
 
+import java.util.Objects;
+
 /**
  * Various settings for controlling the input and output of a {@link YamlConfiguration}
  *
@@ -72,4 +74,17 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YamlConfigurationOptions)) return false;
+        if (!super.equals(o)) return false;
+        YamlConfigurationOptions that = (YamlConfigurationOptions) o;
+        return indent == that.indent;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), indent);
+    }
 }
