@@ -14,11 +14,15 @@ import java.util.Objects;
 public final class YamlCommentsExample {
 
     public static void main(String[] args) throws Exception {
-        YamlFile yamlFile1 = fileShouldPreserveComments(getResource("test-comments.yml"));
+        YamlFile yamlFile = fileShouldPreserveComments(getResource("test-comments.yml"));
+
+        // Add some comments programmatically
+        yamlFile.setComment("test.string", "Hello!");
+        yamlFile.setComment("test.list.entry", ":)", CommentType.SIDE);
 
         // Get comments programmatically
         System.out.println(
-            yamlFile1.getComment("test.string") + " " + yamlFile1.getComment("test.list.entry", CommentType.SIDE)
+            yamlFile.getComment("test.string") + " " + yamlFile.getComment("test.list.entry", CommentType.SIDE)
         );
 
         // Other files with comments
@@ -38,10 +42,6 @@ public final class YamlCommentsExample {
         yamlFile.loadWithComments(); // Loads the entire file with existing comments
 
         String loaded = yamlFile.fileToString();
-
-        // Add some comments programmatically
-        yamlFile.setComment("test.string", "Hello!");
-        yamlFile.setComment("test.list.entry", ":)", CommentType.SIDE);
 
         // Save the file with comments!
         try {
