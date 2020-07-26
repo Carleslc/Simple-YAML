@@ -143,6 +143,16 @@ public class YamlConfiguration extends FileConfiguration {
         }
     }
 
+    /**
+     * Compiles the header for this {@link FileConfiguration} and returns the
+     * result.
+     * <p>
+     * This will use the header from {@link #options()} {@link
+     * FileConfigurationOptions#header()}, respecting the rules of {@link
+     * FileConfigurationOptions#copyHeader()} if set.
+     *
+     * @return Compiled header
+     */
     @Override
     protected String buildHeader() {
         final String header = this.options().header();
@@ -208,26 +218,18 @@ public class YamlConfiguration extends FileConfiguration {
         boolean readingHeader = true;
         boolean foundHeader = false;
 
+        String commentPrefixTrimmed = Commentable.COMMENT_PREFIX.trim();
+
         for (int lineindex = 0; lineindex < lines.length && readingHeader; lineindex++) {
             final String line = lines[lineindex];
 
-            if (line.startsWith(Commentable.COMMENT_PREFIX)) {
+            if (line.startsWith(commentPrefixTrimmed)) {
                 if (lineindex > 0) {
                     result.append('\n');
                 }
 
-                if (line.length() > Commentable.COMMENT_PREFIX.length()) {
-                    result.append(line.substring(Commentable.COMMENT_PREFIX.length()));
-                }
-
-                foundHeader = true;
-            } else if (line.startsWith(Commentable.COMMENT_PREFIX.trim())) {
-                if (lineindex > 0) {
-                    result.append('\n');
-                }
-
-                if (line.length() > Commentable.COMMENT_PREFIX.trim().length()) {
-                    result.append(line.substring(Commentable.COMMENT_PREFIX.trim().length()));
+                if (line.length() > commentPrefixTrimmed.length()) {
+                    result.append(line.substring(commentPrefixTrimmed.length()));
                 }
 
                 foundHeader = true;
