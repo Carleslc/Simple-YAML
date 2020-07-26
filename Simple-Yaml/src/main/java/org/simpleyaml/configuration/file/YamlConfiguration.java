@@ -229,7 +229,7 @@ public class YamlConfiguration extends FileConfiguration {
                 }
 
                 if (line.length() > commentPrefixTrimmed.length()) {
-                    result.append(line.substring(commentPrefixTrimmed.length()));
+                    result.append(line.substring(commentPrefixTrimmed.length()).trim());
                 }
 
                 foundHeader = true;
