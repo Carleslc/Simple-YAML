@@ -1,15 +1,13 @@
-package org.simpleyaml.test;
+package org.simpleyaml.examples;
 
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * YAML is a human-readable data serialization language.<br>

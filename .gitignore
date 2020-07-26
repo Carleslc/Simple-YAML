@@ -8,4 +8,4 @@
 target
 .idea/
 *.iml
-examples/
+/examples

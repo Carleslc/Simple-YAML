@@ -1,4 +1,4 @@
-package org.simpleyaml.test;
+package org.simpleyaml.examples;
 
 import org.simpleyaml.configuration.file.YamlFile;
 
