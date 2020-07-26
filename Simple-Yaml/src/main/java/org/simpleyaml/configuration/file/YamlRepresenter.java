@@ -1,26 +1,25 @@
 package org.simpleyaml.configuration.file;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * @author Bukkit
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlRepresenter.java">Bukkit Source</a>
  */
-public class YamlRepresenter extends Representer {
+public final class YamlRepresenter extends Representer {
 
     public YamlRepresenter() {
         this.multiRepresenters.put(ConfigurationSection.class, new RepresentConfigurationSection());
         this.multiRepresenters.put(ConfigurationSerializable.class, new RepresentConfigurationSerializable());
     }
 
-    private class RepresentConfigurationSection extends RepresentMap {
+    private final class RepresentConfigurationSection extends RepresentMap {
 
         @Override
         public Node representData(final Object data) {
@@ -29,7 +28,7 @@ public class YamlRepresenter extends Representer {
 
     }
 
-    private class RepresentConfigurationSerializable extends RepresentMap {
+    private final class RepresentConfigurationSerializable extends RepresentMap {
 
         @Override
         public Node representData(final Object data) {
