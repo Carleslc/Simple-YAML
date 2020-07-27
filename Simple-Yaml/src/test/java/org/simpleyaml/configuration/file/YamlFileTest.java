@@ -146,7 +146,7 @@ class YamlFileTest {
     }
 
     @Test
-    void saveToStringWithComments() throws IOException, InvalidConfigurationException {
+    void saveToStringWithComments() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test-comments.yml"));
         yamlFile.loadWithComments();
 
@@ -198,7 +198,7 @@ class YamlFileTest {
     }
 
     @Test
-    void saveToStringWithComments2() throws IOException, InvalidConfigurationException {
+    void saveToStringWithComments2() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test-comments2.yml"));
         yamlFile.loadWithComments();
 
@@ -235,47 +235,47 @@ class YamlFileTest {
     }
 
     @Test
-    void saveToStringWithComments3() throws IOException, InvalidConfigurationException {
+    void saveToStringWithComments3() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test-comments3.yml"));
         yamlFile.loadWithComments();
 
         final String content = "backup-config:\n" +
-            "\n" +
+            '\n' +
             "  #######################################################################################################################\n" +
             "  # SERVER-FILES BACKUP\n" +
             "  #######################################################################################################################\n" +
-            "\n" +
+            '\n' +
             "  # Backups your server.jar and all setting files before startup to /backups/server/...zip\n" +
             "  server-files-backup:\n" +
             "    enable: false\n" +
-            "\n" +
+            '\n' +
             "    # Set max-days to 0 if you want to keep your server backups forever.\n" +
             "    max-days: 7\n" +
-            "\n" +
-            "\n" +
+            '\n' +
+            '\n' +
             "  #######################################################################################################################\n" +
             "  # WORLDS BACKUP\n" +
             "  #######################################################################################################################\n" +
-            "\n" +
+            '\n' +
             "  # Backups all folders starting with \"world\" to /backups/worlds/...zip\n" +
             "  worlds-backup:\n" +
             "    enable: false\n" +
-            "\n" +
+            '\n' +
             "    # Set max-days to 0 if you want to keep your world backups forever.\n" +
             "    max-days: 7\n" +
-            "\n" +
-            "\n" +
+            '\n' +
+            '\n' +
             "  #######################################################################################################################\n" +
             "  # PLUGINS BACKUP\n" +
             "  #######################################################################################################################\n" +
-            "\n" +
+            '\n' +
             "  # Backups your plugins folder before startup to /backups/plugins/...zip\n" +
             "  plugins-backup:\n" +
             "    enable: true\n" +
-            "\n" +
+            '\n' +
             "    # Set max-days to 0 if you want to keep your plugin backups forever.\n" +
             "    max-days: 7\n" +
-            "\n";
+            '\n';
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (saveToStringWithComments)!",
