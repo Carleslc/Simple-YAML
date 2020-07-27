@@ -48,7 +48,7 @@ class YamlFileTest {
     @Test
     void fileToString() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test.yml"));
-        final String content = "test:\n" +
+        final String linuxcontent = "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
             "  boolean: true\n" +
@@ -66,11 +66,30 @@ class YamlFileTest {
             "timestamp:\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  formattedDate: 04/07/2020 15:18:04\n";
+        final String windowscontent = "test:\r\n" +
+            "  number: 5\r\n" +
+            "  string: Hello world\n\n" +
+            "  boolean: true\r\n" +
+            "  list:\r\n" +
+            "    - Each\r\n" +
+            "    - word\r\n" +
+            "    - will\r\n" +
+            "    - be\r\n" +
+            "    - in\r\n" +
+            "    - a\r\n" +
+            "    - separated\r\n" +
+            "    - entry\r\n" +
+            "math:\r\n" +
+            "  pi: 3.141592653589793\r\n" +
+            "timestamp:\r\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\r\n" +
+            "  formattedDate: 04/07/2020 15:18:04\r\n";
 
+        final String system = System.getProperty("os.name");
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (fileToString)!",
             yamlFile.fileToString(),
-            new IsEqual<>(content)
+            new IsEqual<>(linuxcontent)
         );
 
         yamlFile.load();
@@ -79,7 +98,7 @@ class YamlFileTest {
         MatcherAssert.assertThat(
             "fileToString must not change until save!",
             yamlFile.fileToString(),
-            new IsEqual<>(content)
+            new IsEqual<>(linuxcontent)
         );
 
         final String newContent = "test:\n" +
