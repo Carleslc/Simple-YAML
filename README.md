@@ -1,6 +1,6 @@
 # Simple YAML API
 
-[![](https://jitpack.io/v/Carleslc/Simple-YAML.svg)](https://jitpack.io/#Carleslc/Simple-YAML)
+[![Latest version](https://jitpack.io/v/Carleslc/Simple-YAML.svg)](https://jitpack.io/#Carleslc/Simple-YAML) [![Build Status](https://travis-ci.com/Carleslc/Simple-YAML.svg?branch=master)](https://travis-ci.com/Carleslc/Simple-YAML)
 
 _This Java API provides an easy-to-use way to store data and provide configurations using the YAML format._
 
