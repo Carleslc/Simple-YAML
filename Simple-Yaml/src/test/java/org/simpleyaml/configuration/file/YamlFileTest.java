@@ -53,14 +53,14 @@ class YamlFileTest {
             "  string: Hello world\n\n" +
             "  boolean: true\n\n" +
             "  list:\n\n" +
-            "  - Each\n\n" +
-            "  - word\n\n" +
-            "  - will\n\n" +
-            "  - be\n\n" +
-            "  - in\n\n" +
-            "  - a\n\n" +
-            "  - separated\n\n" +
-            "  - entry\n\n" +
+            "    - Each\n\n" +
+            "    - word\n\n" +
+            "    - will\n\n" +
+            "    - be\n\n" +
+            "    - in\n\n" +
+            "    - a\n\n" +
+            "    - separated\n\n" +
+            "    - entry\n\n" +
             "math:\n\n" +
             "  pi: 3.141592653589793\n\n" +
             "timestamp:\n\n" +
