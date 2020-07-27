@@ -134,7 +134,6 @@ class YamlFileTest {
             "  - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
-            '\n' +
             "timestamp:\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  formattedDate: 04/07/2020 15:18:04\n";
