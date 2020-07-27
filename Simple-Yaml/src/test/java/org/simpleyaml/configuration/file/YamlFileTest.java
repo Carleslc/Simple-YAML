@@ -86,6 +86,7 @@ class YamlFileTest {
             "  formattedDate: 04/07/2020 15:18:04\r\n";
 
         final String system = System.getProperty("os.name");
+        System.out.println(system);
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (fileToString)!",
             yamlFile.fileToString(),
