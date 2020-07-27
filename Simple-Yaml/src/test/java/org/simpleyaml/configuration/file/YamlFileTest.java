@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration.file;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Objects;
 import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
@@ -9,13 +10,59 @@ import org.junit.jupiter.api.Test;
 
 class YamlFileTest {
 
-    private static String getResource(final String file) {
-        return Objects.requireNonNull(YamlFileTest.class.getClassLoader().getResource(file)).getPath();
+    private static String getResourcePath(final String file) {
+        return Objects.requireNonNull(YamlFileTest.getResourceURL(file)).getPath();
+    }
+
+    private static URL getResourceURL(final String file) {
+        return YamlFileTest.class.getClassLoader().getResource(file);
     }
 
     @Test
-    void load() {
-
+    void load() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test.yml"));
+        final String content = "test:\n" +
+            "  number: 5\n" +
+            "  string: Hello world\n" +
+            "  boolean: true\n" +
+            "  list:\n" +
+            "  - Each\n" +
+            "  - word\n" +
+            "  - will\n" +
+            "  - be\n" +
+            "  - in\n" +
+            "  - a\n" +
+            "  - separated\n" +
+            "  - entry\n" +
+            "math:\n" +
+            "  pi: 3.141592653589793\n" +
+            "timestamp:\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+            "  formattedDate: 04/07/2020 15:18:04\n";
+        yamlFile.load();
+        MatcherAssert.assertThat(
+            "Couldn't load the file!",
+            yamlFile.saveToStringWithComments(),
+            new IsEqual<>(content)
+        );
+        yamlFile.load(YamlFileTest.getResourcePath("test.yml"));
+        MatcherAssert.assertThat(
+            "Couldn't load the file!",
+            yamlFile.saveToStringWithComments(),
+            new IsEqual<>(content)
+        );
+        yamlFile.load(YamlFileTest.getResourceURL("test.yml").openStream());
+        MatcherAssert.assertThat(
+            "Couldn't load the file!",
+            yamlFile.saveToStringWithComments(),
+            new IsEqual<>(content)
+        );
+        yamlFile.load(new File(YamlFileTest.getResourceURL("test.yml").getFile()));
+        MatcherAssert.assertThat(
+            "Couldn't load the file!",
+            yamlFile.saveToStringWithComments(),
+            new IsEqual<>(content)
+        );
     }
 
     @Test
@@ -45,7 +92,7 @@ class YamlFileTest {
 
     @Test
     void fileToString() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test.yml"));
         final String linuxcontent = "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
@@ -134,7 +181,7 @@ class YamlFileTest {
 
     @Test
     void saveToString() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test.yml"));
         yamlFile.load();
         final String content = "test:\n" +
             "  number: 5\n" +
@@ -168,7 +215,7 @@ class YamlFileTest {
 
     @Test
     void saveToStringWithComments() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
         yamlFile.loadWithComments();
 
         final String content = "#####################\n" +
@@ -220,7 +267,7 @@ class YamlFileTest {
 
     @Test
     void saveToStringWithComments2() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test-comments2.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments2.yml"));
         yamlFile.loadWithComments();
 
         final String content = "# Section\n" +
@@ -257,7 +304,7 @@ class YamlFileTest {
 
     @Test
     void saveToStringWithComments3() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test-comments3.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments3.yml"));
         yamlFile.loadWithComments();
 
         final String content = "backup-config:\n" +
@@ -341,7 +388,7 @@ class YamlFileTest {
 
     @Test
     void getFilePath() {
-        final File file = new File(YamlFileTest.getResource("test.yml"));
+        final File file = new File(YamlFileTest.getResourcePath("test.yml"));
         final YamlFile yamlFile = new YamlFile(file);
 
         MatcherAssert.assertThat(
@@ -352,7 +399,7 @@ class YamlFileTest {
 
     @Test
     void getConfigurationFile() {
-        final File file = new File(YamlFileTest.getResource("test.yml"));
+        final File file = new File(YamlFileTest.getResourcePath("test.yml"));
         final YamlFile yamlFile = new YamlFile(file);
 
         MatcherAssert.assertThat(
@@ -363,7 +410,7 @@ class YamlFileTest {
 
     @Test
     void setConfigurationFile() {
-        final File file = new File(YamlFileTest.getResource("test.yml"));
+        final File file = new File(YamlFileTest.getResourcePath("test.yml"));
         final YamlFile yamlFile = new YamlFile();
 
         yamlFile.setConfigurationFile(file);
