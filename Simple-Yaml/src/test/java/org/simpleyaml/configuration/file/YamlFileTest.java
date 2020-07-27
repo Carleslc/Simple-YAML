@@ -117,7 +117,7 @@ class YamlFileTest {
         final String content = "# ####################\n" +
             "# # INITIAL COMMENT ##\n" +
             "# ####################\n" +
-            '\n' +
+            "# \n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -137,8 +137,7 @@ class YamlFileTest {
             '\n' +
             "timestamp:\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
-            "  formattedDate: 04/07/2020 15:18:04\n" +
-            '\n';
+            "  formattedDate: 04/07/2020 15:18:04\n";
         yamlFile.createOrLoad();
         MatcherAssert.assertThat(
             "Couldn't load the file with comments!",
