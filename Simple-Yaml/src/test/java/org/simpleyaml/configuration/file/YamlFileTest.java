@@ -1,13 +1,11 @@
 package org.simpleyaml.configuration.file;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
-import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 class YamlFileTest {
 
@@ -68,7 +66,7 @@ class YamlFileTest {
             "  formattedDate: 04/07/2020 15:18:04\n";
         final String windowscontent = "test:\r\n" +
             "  number: 5\r\n" +
-            "  string: Hello world\n\n" +
+            "  string: Hello world\r\n" +
             "  boolean: true\r\n" +
             "  list:\r\n" +
             "    - Each\r\n" +
@@ -84,13 +82,16 @@ class YamlFileTest {
             "timestamp:\r\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\r\n" +
             "  formattedDate: 04/07/2020 15:18:04\r\n";
-
-        final String system = System.getProperty("os.name");
-        System.out.println(system);
+        final String content;
+        if (System.getProperty("os.name").contains("Windows")) {
+            content = windowscontent;
+        } else {
+            content = linuxcontent;
+        }
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (fileToString)!",
             yamlFile.fileToString(),
-            new IsEqual<>(linuxcontent)
+            new IsEqual<>(content)
         );
 
         yamlFile.load();
@@ -99,7 +100,7 @@ class YamlFileTest {
         MatcherAssert.assertThat(
             "fileToString must not change until save!",
             yamlFile.fileToString(),
-            new IsEqual<>(linuxcontent)
+            new IsEqual<>(content)
         );
 
         final String newContent = "test:\n" +
