@@ -34,24 +34,75 @@ and put it as dependency on your project.
 
 If you are using Maven you do not need to download the jar. Instead, add this repository and dependency to your `pom.xml`:
 
-```xml
+
+  ```xml
 <repositories>
     <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
     </repository>
 </repositories>
-```
+  ```
+
+<details>
+  <summary>Yaml + Configuration</summary>
 
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>com.github.Carleslc</groupId>
-        <artifactId>Simple-YAML</artifactId>
-        <version>1.6.1</version>
-    </dependency>
-</dependencies>
+<dependency>
+    <groupId>com.github.Carleslc.Simple-YAML</groupId>
+    <artifactId>Simple-Yaml</artifactId>
+    <version>1.7</version>
+</dependency>
 ```
+
+</details>
+
+<details>
+  <summary>Configuration only</summary>
+
+```xml
+<dependency>
+    <groupId>com.github.Carleslc.Simple-YAML</groupId>
+    <artifactId>Simple-Configuration</artifactId>
+    <version>1.7</version>
+</dependency>
+```
+
+</details>
+
+### Gradle
+
+If you are using Gradle you do not need to download the jar. Instead, add this repository and dependency to your build file:
+
+```gradle
+allprojects {
+  repositories {
+    maven { url 'https://jitpack.io' }
+  }
+}
+```
+
+<details>
+  <summary>Yaml + Configuration</summary>
+
+```gradle
+dependencies {
+  implementation 'com.github.Carleslc.Simple-YAML:Simple-Yaml:1.7'
+}
+```
+
+</details>
+
+<details>
+  <summary>Configuration only</summary>
+
+```gradle
+dependencies {
+  implementation 'com.github.Carleslc.Simple-YAML:Simple-Configuration:1.7'
+}
+```
+
+</details>
 
 ## How to use
 
