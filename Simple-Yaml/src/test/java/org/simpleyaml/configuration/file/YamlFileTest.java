@@ -648,15 +648,15 @@ class YamlFileTest {
             "  boolean: true\n" +
             "  # List of words\n" +
             "  list:\n" +
-            "    - Each\n" +
-            "    - word\n" +
-            "    - will\n" +
-            "    - be\n" +
-            "    - in\n" +
-            "    - a\n" +
-            "    - separated\n" +
+            "  - Each\n" +
+            "  - word\n" +
+            "  - will\n" +
+            "  - be\n" +
+            "  - in\n" +
+            "  - a\n" +
+            "  - separated\n" +
             "    # Comment on a list item\n" +
-            "    - entry # :)\n" +
+            "  - entry # :)\n" +
             '\n' +
             "# Wonderful number\n" +
             "math:\n" +
