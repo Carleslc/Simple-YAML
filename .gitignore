@@ -4,8 +4,7 @@
 .project
 */*.class
 /bin/
-/target/.idea
-target
+**/target
 .idea/
 *.iml
 /examples
