@@ -76,6 +76,21 @@ class YamlConfigurationOptionsTest {
 
     @Test
     void copyHeader() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+
+        options.copyHeader(true);
+        MatcherAssert.assertThat(
+            "Couldn't set copy header!",
+            options.copyHeader(),
+            new IsTrue()
+        );
+        options.copyHeader(false);
+        MatcherAssert.assertThat(
+            "Couldn't set copy header!",
+            options.copyHeader(),
+            new IsNot<>(new IsTrue())
+        );
     }
 
     @Test
