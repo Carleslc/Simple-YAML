@@ -62,6 +62,16 @@ class YamlConfigurationOptionsTest {
 
     @Test
     void header() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+        final String header = "Test header!";
+        options.header(header);
+
+        MatcherAssert.assertThat(
+            "Couldn't set header!",
+            options.header(),
+            new IsEqual<>(header)
+        );
     }
 
     @Test
