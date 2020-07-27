@@ -63,7 +63,7 @@ public final class YamlCommentsExample {
             try (final Writer writer = new OutputStreamWriter(new FileOutputStream(yamlFile.getConfigurationFile()))) {
                 writer.write(loaded);
             }
-            // Fail org.simple.yaml.test case
+            // Fail test case
             throw new AssertionError(path + " comments are not properly copied");
         }
 

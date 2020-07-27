@@ -244,8 +244,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * <code>false</code> otherwise
      */
     public boolean exists() {
-        Validate.notNull(this.configFile, "This configuration file is null!");
-        return this.configFile.exists();
+        return this.configFile != null && this.configFile.exists();
     }
 
     /**
@@ -394,7 +393,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if configuration file cannot be read
      */
     public String fileToString() throws IOException {
-        if (this.configFile == null) {
+        if (!exists()) {
             return null;
         }
         return new String(Files.readAllBytes(this.configFile.toPath()));

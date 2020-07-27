@@ -1,12 +1,14 @@
 package org.simpleyaml.configuration.file;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
+import org.hamcrest.core.IsSame;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
 import org.simpleyaml.configuration.comments.CommentType;
@@ -19,6 +21,19 @@ class YamlFileTest {
 
     private static URL getResourceURL(final String file) {
         return YamlFileTest.class.getClassLoader().getResource(file);
+    }
+
+    private static File tempFile() throws Exception {
+        return new TempFile().value().toFile();
+    }
+
+    private static String fileToStringUnix(YamlFile yamlFile) throws IOException {
+        String content = yamlFile.fileToString();
+        if (content != null) {
+            // Strip Windows carriage to ensure testable contents are the same as in Unix
+            content = content.replace("\r", "");
+        }
+        return content;
     }
 
     @Test
@@ -45,25 +60,25 @@ class YamlFileTest {
         yamlFile.load();
         MatcherAssert.assertThat(
             "Couldn't load the file!",
-            yamlFile.saveToStringWithComments(),
+            yamlFile.saveToString(),
             new IsEqual<>(content)
         );
         yamlFile.load(YamlFileTest.getResourcePath("test.yml"));
         MatcherAssert.assertThat(
             "Couldn't load the file!",
-            yamlFile.saveToStringWithComments(),
+            yamlFile.saveToString(),
             new IsEqual<>(content)
         );
         yamlFile.load(YamlFileTest.getResourceURL("test.yml").openStream());
         MatcherAssert.assertThat(
             "Couldn't load the file!",
-            yamlFile.saveToStringWithComments(),
+            yamlFile.saveToString(),
             new IsEqual<>(content)
         );
         yamlFile.load(new File(YamlFileTest.getResourceURL("test.yml").getFile()));
         MatcherAssert.assertThat(
             "Couldn't load the file!",
-            yamlFile.saveToStringWithComments(),
+            yamlFile.saveToString(),
             new IsEqual<>(content)
         );
     }
@@ -196,24 +211,64 @@ class YamlFileTest {
 
     @Test
     void save() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-saved-comments.yml"));
-        yamlFile.createOrLoad();
+        final File temp = tempFile();
+        temp.delete();
+
+        final YamlFile yamlFile = new YamlFile(temp);
+
+        MatcherAssert.assertThat(
+            "File already exists!",
+            yamlFile.exists(),
+            new IsNot<>(new IsTrue())
+        );
+
+        final String content = "number: 5\n";
+        yamlFile.set("number", 5);
+
         yamlFile.save();
-        yamlFile.save(new File(YamlFileTest.getResourcePath("test-saved-comments.yml")));
-        yamlFile.save(YamlFileTest.getResourcePath("test-saved-comments.yml"));
+        yamlFile.save(temp);
+        yamlFile.save(temp.getAbsolutePath());
+
+        MatcherAssert.assertThat(
+            "File has not being correctly saved!",
+            fileToStringUnix(yamlFile),
+            new IsEqual<>(content)
+        );
     }
 
     @Test
     void saveWithComments() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-saved-comments.yml"));
-        yamlFile.createOrLoad();
+        final File temp = tempFile();
+        temp.delete();
+
+        final YamlFile yamlFile = new YamlFile(temp);
+
+        MatcherAssert.assertThat(
+            "File already exists!",
+            yamlFile.exists(),
+            new IsNot<>(new IsTrue())
+        );
+
+        final String content = "# Test\n" +
+            "number: 5 # Side\n";
+
+        yamlFile.set("number", 5);
+        yamlFile.setComment("number", "Test");
+        yamlFile.setComment("number", "Side", CommentType.SIDE);
+
         yamlFile.saveWithComments();
+
+        MatcherAssert.assertThat(
+            "File has not being correctly saved with comments!",
+            fileToStringUnix(yamlFile),
+            new IsEqual<>(content)
+        );
     }
 
     @Test
     void fileToString() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test.yml"));
-        final String linuxcontent = "test:\n" +
+        final String content = "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
             "  boolean: true\n" +
@@ -231,33 +286,10 @@ class YamlFileTest {
             "timestamp:\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  formattedDate: 04/07/2020 15:18:04\n";
-        final String windowscontent = "test:\r\n" +
-            "  number: 5\r\n" +
-            "  string: Hello world\r\n" +
-            "  boolean: true\r\n" +
-            "  list:\r\n" +
-            "    - Each\r\n" +
-            "    - word\r\n" +
-            "    - will\r\n" +
-            "    - be\r\n" +
-            "    - in\r\n" +
-            "    - a\r\n" +
-            "    - separated\r\n" +
-            "    - entry\r\n" +
-            "math:\r\n" +
-            "  pi: 3.141592653589793\r\n" +
-            "timestamp:\r\n" +
-            "  canonicalDate: 2020-07-04T13:18:04.458Z\r\n" +
-            "  formattedDate: 04/07/2020 15:18:04\r\n";
-        final String content;
-        if (System.getProperty("os.name").contains("Windows")) {
-            content = windowscontent;
-        } else {
-            content = linuxcontent;
-        }
+
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (fileToString)!",
-            yamlFile.fileToString(),
+            fileToStringUnix(yamlFile),
             new IsEqual<>(content)
         );
 
@@ -266,7 +298,7 @@ class YamlFileTest {
 
         MatcherAssert.assertThat(
             "fileToString must not change until save!",
-            yamlFile.fileToString(),
+            fileToStringUnix(yamlFile),
             new IsEqual<>(content)
         );
 
@@ -289,12 +321,12 @@ class YamlFileTest {
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  formattedDate: 04/07/2020 15:18:04\n";
 
-        yamlFile.setConfigurationFile(new TempFile().value().toFile());
+        yamlFile.setConfigurationFile(tempFile());
         yamlFile.save();
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file after save (fileToString)!",
-            yamlFile.fileToString(),
+            fileToStringUnix(yamlFile),
             new IsEqual<>(newContent)
         );
     }
@@ -486,6 +518,12 @@ class YamlFileTest {
             yamlFile.getComment("test.string"),
             new IsEqual<>("Hello!")
         );
+
+        MatcherAssert.assertThat(
+            "Couldn't parse the side comments correctly!",
+            yamlFile.getComment("test.list.entry", CommentType.SIDE),
+            new IsEqual<>(":)")
+        );
     }
 
     @Test
@@ -508,22 +546,39 @@ class YamlFileTest {
 
     @Test
     void exists() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
-        yamlFile.createOrLoadWithComments();
+        final YamlFile yamlFile = new YamlFile(tempFile());
 
         MatcherAssert.assertThat(
-            "The file couldn't found!",
+            "The file couldn't be found!",
             yamlFile.exists(),
             new IsTrue()
+        );
+
+        yamlFile.deleteFile();
+
+        MatcherAssert.assertThat(
+            "The file still exists!",
+            yamlFile.exists(),
+            new IsNot<>(new IsTrue())
         );
     }
 
     @Test
     void createNewFile() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
-        yamlFile.createNewFile(false);
+        final YamlFile yamlFile = new YamlFile(tempFile());
+
+        yamlFile.deleteFile();
+
         MatcherAssert.assertThat(
-            "The file couldn't found!",
+            "The file already exists!",
+            yamlFile.exists(),
+            new IsNot<>(new IsTrue())
+        );
+
+        yamlFile.createNewFile(false);
+
+        MatcherAssert.assertThat(
+            "The file couldn't be found!",
             yamlFile.exists(),
             new IsTrue()
         );
@@ -531,25 +586,31 @@ class YamlFileTest {
 
     @Test
     void deleteFile() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-deleted-comments.yml"));
-        yamlFile.createOrLoadWithComments();
+        final YamlFile yamlFile = new YamlFile(tempFile());
+        yamlFile.createOrLoad();
+
+        MatcherAssert.assertThat(
+            "The file does not exists!",
+            yamlFile.exists(),
+            new IsTrue()
+        );
+
         yamlFile.deleteFile();
 
         MatcherAssert.assertThat(
-            "The file found!",
+            "The file has not being deleted!",
             yamlFile.exists(),
             new IsNot<>(new IsTrue())
         );
     }
 
     @Test
-    void getSize() throws Exception {
+    void getSize() {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
-        yamlFile.loadWithComments();
-        final String content = "# ####################\n" +
-            "# # INITIAL COMMENT ##\n" +
-            "# ####################\n" +
-            "# \n" +
+        final String content = "#####################\n" +
+            "## INITIAL COMMENT ##\n" +
+            "#####################\n" +
+            '\n' +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -582,11 +643,11 @@ class YamlFileTest {
             '\n' +
             "# End\n";
 
-//        MatcherAssert.assertThat(
-//            "The file size is not correct!",
-//            yamlFile.getSize(),
-//            new IsEqual<>(((long) content.getBytes().length))
-//        );
+        MatcherAssert.assertThat(
+          "The file size is not correct!",
+          yamlFile.getSize(),
+          new IsEqual<>(((long) content.getBytes().length))
+        );
     }
 
     @Test
@@ -595,7 +656,7 @@ class YamlFileTest {
         final YamlFile yamlFile = new YamlFile(file);
 
         MatcherAssert.assertThat(
-            "Configuration file is not the same!",
+            "Configuration file path is not the same!",
             yamlFile.getFilePath(),
             new IsEqual<>(file.getAbsolutePath()));
     }
@@ -608,7 +669,7 @@ class YamlFileTest {
         MatcherAssert.assertThat(
             "Configuration file is not the same!",
             yamlFile.getConfigurationFile(),
-            new IsEqual<>(file));
+            new IsSame<>(file));
     }
 
     @Test
@@ -621,20 +682,16 @@ class YamlFileTest {
         MatcherAssert.assertThat(
             "Configuration file has not changed!",
             yamlFile.getConfigurationFile(),
-            new IsEqual<>(file));
+            new IsSame<>(file));
     }
 
     @Test
     void copyTo() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
-        yamlFile.loadWithComments();
-        final String resourcePath = YamlFileTest.getResourcePath("test-copy-to.yml");
-        final File copyto = new File(resourcePath);
-        copyto.createNewFile();
-        yamlFile.copyTo(copyto);
-        yamlFile.copyTo(resourcePath);
+        final File copy = tempFile();
+        yamlFile.copyTo(copy);
 
-        final YamlFile copied = new YamlFile(YamlFileTest.getResourcePath("test-copy-to.yml"));
+        final YamlFile copied = new YamlFile(copy);
         copied.loadWithComments();
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
@@ -672,8 +729,8 @@ class YamlFileTest {
             '\n' +
             "# End\n";
         MatcherAssert.assertThat(
-            "Couldn't copied the file!",
-            copied.saveToStringWithComments(),
+            "Couldn't copy the file!",
+            copied.toString(),
             new IsEqual<>(content)
         );
     }
