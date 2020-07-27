@@ -112,8 +112,34 @@ class YamlFileTest {
     }
 
     @Test
-    void createOrLoad() {
-
+    void createOrLoad() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final String content = "test:\n" +
+            "  number: 5\n" +
+            "  string: Hello world\n" +
+            "  boolean: true\n" +
+            "  list:\n" +
+            "  - Each\n" +
+            "  - word\n" +
+            "  - will\n" +
+            "  - be\n" +
+            "  - in\n" +
+            "  - a\n" +
+            "  - separated\n" +
+            "  - entry\n" +
+            "math:\n" +
+            "  pi: 3.141592653589793\n" +
+            '\n' +
+            "timestamp:\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+            "  formattedDate: 04/07/2020 15:18:04\n" +
+            '\n';
+        yamlFile.createOrLoad();
+        MatcherAssert.assertThat(
+            "Couldn't load the file with comments!",
+            yamlFile.saveToString(),
+            new IsEqual<>(content)
+        );
     }
 
     @Test
