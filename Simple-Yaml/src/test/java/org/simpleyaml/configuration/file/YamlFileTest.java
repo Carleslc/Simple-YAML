@@ -1,14 +1,12 @@
 package org.simpleyaml.configuration.file;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
-import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 class YamlFileTest {
 
@@ -194,13 +192,19 @@ class YamlFileTest {
     }
 
     @Test
-    void save() {
-
+    void save() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-saved-comments.yml"));
+        yamlFile.createOrLoad();
+        yamlFile.save();
+        yamlFile.save(new File(YamlFileTest.getResourcePath("test-saved-comments.yml")));
+        yamlFile.save(YamlFileTest.getResourcePath("test-saved-comments.yml"));
     }
 
     @Test
-    void saveWithComments() {
-
+    void saveWithComments() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-saved-comments.yml"));
+        yamlFile.createOrLoad();
+        yamlFile.saveWithComments();
     }
 
     @Test
@@ -471,7 +475,8 @@ class YamlFileTest {
 
     @Test
     void getComment() {
-
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        yamlFile.getComment("");
     }
 
     @Test
