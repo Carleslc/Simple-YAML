@@ -48,7 +48,6 @@ class YamlFileTest {
     @Test
     void fileToString() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test.yml"));
-
         final String content = "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
@@ -71,16 +70,17 @@ class YamlFileTest {
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (fileToString)!",
             yamlFile.fileToString(),
-            new IsEqual<>(content));
+            new IsEqual<>(content)
+        );
 
         yamlFile.load();
-
         yamlFile.set("test.number", 10);
 
         MatcherAssert.assertThat(
             "fileToString must not change until save!",
             yamlFile.fileToString(),
-            new IsEqual<>(content));
+            new IsEqual<>(content)
+        );
 
         final String newContent = "test:\n" +
             "  number: 10\n" +
@@ -102,20 +102,19 @@ class YamlFileTest {
             "  formattedDate: 04/07/2020 15:18:04\n";
 
         yamlFile.setConfigurationFile(new TempFile().value().toFile());
-
         yamlFile.save();
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file after save (fileToString)!",
             yamlFile.fileToString(),
-            new IsEqual<>(newContent));
+            new IsEqual<>(newContent)
+        );
     }
 
     @Test
-    void saveToString() throws IOException, InvalidConfigurationException {
+    void saveToString() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test.yml"));
         yamlFile.load();
-
         final String content = "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
