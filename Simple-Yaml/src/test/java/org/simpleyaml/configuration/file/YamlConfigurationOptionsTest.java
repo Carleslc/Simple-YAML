@@ -11,6 +11,14 @@ class YamlConfigurationOptionsTest {
 
     @Test
     void configuration() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+
+        MatcherAssert.assertThat(
+            "The configuration is different!",
+            options.configuration(),
+            new IsEqual<>(configuration)
+        );
     }
 
     @Test
