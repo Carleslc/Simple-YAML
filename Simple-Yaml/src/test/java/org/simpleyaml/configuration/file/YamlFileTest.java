@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
 import org.simpleyaml.configuration.comments.CommentType;
@@ -529,13 +530,63 @@ class YamlFileTest {
     }
 
     @Test
-    void deleteFile() {
+    void deleteFile() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-deleted-comments.yml"));
+        yamlFile.createOrLoadWithComments();
+        yamlFile.deleteFile();
 
+        MatcherAssert.assertThat(
+            "The file found!",
+            yamlFile.exists(),
+            new IsNot<>(new IsTrue())
+        );
     }
 
     @Test
-    void getSize() {
+    void getSize() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        yamlFile.loadWithComments();
+        final String content = "# ####################\n" +
+            "# # INITIAL COMMENT ##\n" +
+            "# ####################\n" +
+            "# \n" +
+            "# Test comments\n" +
+            "test:\n" +
+            "  number: 5\n" +
+            "  # Hello!\n" +
+            "  string: Hello world\n" +
+            "  boolean: true\n" +
+            "  # List of words\n" +
+            "  list:\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    # Comment on a list item\n" +
+            "    - entry # :)\n" +
+            '\n' +
+            "# Wonderful number\n" +
+            "math:\n" +
+            "  pi: 3.141592653589793\n" +
+            "  # Comment without direct key\n" +
+            '\n' +
+            "# Some timestamps\n" +
+            "timestamp:\n" +
+            "  # ISO\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+            "  # Date/Time with format\n" +
+            "  formattedDate: 04/07/2020 15:18:04\n" +
+            '\n' +
+            "# End\n";
 
+        MatcherAssert.assertThat(
+            "The file size is not correct!",
+            yamlFile.getSize(),
+            new IsEqual<>(((long) content.getBytes().length))
+        );
     }
 
     @Test
