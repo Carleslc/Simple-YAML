@@ -1,13 +1,16 @@
 package org.simpleyaml.configuration.file;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.IsTrue;
 import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 class YamlFileTest {
 
@@ -505,13 +508,26 @@ class YamlFileTest {
     }
 
     @Test
-    void exists() {
+    void exists() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        yamlFile.createOrLoadWithComments();
 
+        MatcherAssert.assertThat(
+            "The file couldn't found!",
+            yamlFile.exists(),
+            new IsTrue()
+        );
     }
 
     @Test
-    void createNewFile() {
-
+    void createNewFile() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        yamlFile.createNewFile(false);
+        MatcherAssert.assertThat(
+            "The file couldn't found!",
+            yamlFile.exists(),
+            new IsTrue()
+        );
     }
 
     @Test
