@@ -114,7 +114,12 @@ class YamlFileTest {
     @Test
     void createOrLoad() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
-        final String content = "test:\n" +
+        final String content = "# ####################\n" +
+            "# # INITIAL COMMENT ##\n" +
+            "# ####################\n" +
+            '\n' +
+            "# Test comments\n" +
+            "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
             "  boolean: true\n" +
