@@ -23,6 +23,21 @@ class YamlConfigurationOptionsTest {
 
     @Test
     void copyDefaults() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+
+        options.copyDefaults(true);
+        MatcherAssert.assertThat(
+            "Couldn't set copy default!",
+            options.copyDefaults(),
+            new IsTrue()
+        );
+        options.copyDefaults(false);
+        MatcherAssert.assertThat(
+            "Couldn't set copy default!",
+            options.copyDefaults(),
+            new IsNot<>(new IsTrue())
+        );
     }
 
     @Test
