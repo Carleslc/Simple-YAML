@@ -48,24 +48,24 @@ class YamlFileTest {
     @Test
     void fileToString() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test.yml"));
-        final String content = "test:\n" +
-            "  number: 5\n" +
-            "  string: Hello world\n" +
-            "  boolean: true\n" +
-            "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
-            "math:\n" +
-            "  pi: 3.141592653589793\n" +
-            "timestamp:\n" +
-            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
-            "  formattedDate: 04/07/2020 15:18:04\n";
+        final String content = "test:\n\n" +
+            "  number: 5\n\n" +
+            "  string: Hello world\n\n" +
+            "  boolean: true\n\n" +
+            "  list:\n\n" +
+            "  - Each\n\n" +
+            "  - word\n\n" +
+            "  - will\n\n" +
+            "  - be\n\n" +
+            "  - in\n\n" +
+            "  - a\n\n" +
+            "  - separated\n\n" +
+            "  - entry\n\n" +
+            "math:\n\n" +
+            "  pi: 3.141592653589793\n\n" +
+            "timestamp:\n\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n\n" +
+            "  formattedDate: 04/07/2020 15:18:04\r\n";
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (fileToString)!",
@@ -169,7 +169,7 @@ class YamlFileTest {
             "  - in\n" +
             "  - a\n" +
             "  - separated\n" +
-            "  # Comment on a list item\n" +
+            "    # Comment on a list item\n" +
             "  - entry # :)\n" +
             "\n" +
             "# Wonderful number\n" +
