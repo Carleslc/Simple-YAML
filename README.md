@@ -12,22 +12,22 @@ YAML is a human-readable data-oriented serialization language.
 
 Serialization is the process of translating data structures or object state into a format that can be stored and reconstructed later in the same or another computer environment.
 
-You can learn more about YAML language [here](http://www.yaml.org/spec/1.2/spec.html); Specifically, if you're interested to learn about the YAML syntax you can go to the
+You can learn more about YAML language [here](http://www.yaml.org/spec/1.2/spec.html). Specifically, if you're interested to learn about the YAML syntax you can go to the
 [Chapter 2 of the YAML specification](http://www.yaml.org/spec/1.2/spec.html#Preview).
 
 Filename extensions: `.yaml`, `.yml`
 
 ## What is Simple-YAML?
 
-This API is a port from [Bukkit](https://github.com/Bukkit/Bukkit) configuration wrapper with some features added, so you can use this library wherever you want without Bukkit dependency. Core internal configuration representation matches with the Bukkit one, but without the dependencies of Bukkit itself.
+This API is a port from [Bukkit](https://github.com/Bukkit/Bukkit) configuration wrapper with some features added, so you can use this library wherever you want without Bukkit dependency.
 
-Simplicity is added with the class `YamlFile`, which is an extension of `YamlConfiguration`, with easy use for creation, management and serialization of yaml files.
+Simplicity is added with the class [`YamlFile`](https://carleslc.me/Simple-YAML/doc/Simple-Yaml/org/simpleyaml/configuration/file/YamlFile.html), which is an extension of [`YamlConfiguration`](https://carleslc.me/Simple-YAML/doc/Simple-Yaml/org/simpleyaml/configuration/file/YamlConfiguration.html), with easy use for creation, management and serialization of yaml files. This class is probably the only class you will need.
 
-Furthermore, you can optionally save your files with **comments** in mind. With the original `YamlConfiguration` that is not possible, because if you save the file from code then all previous comments in the file will be removed. You can write your comments with a text editor as usual. In addition, not only you can preserve your comments but also with this API you can add comments programmatically to your configuration. Sounds good, right?
+Furthermore, you can optionally save your files with **comments** in mind. With the original [`YamlConfiguration`](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/configuration/file/YamlConfiguration.java) that is not possible, because if you save the file from code then all previous comments in the file will be removed. You can write your comments with a text editor as usual. In addition, not only you can preserve your comments but also with this API you can add comments programmatically to your configuration. Sounds good, right?
 
 ## How to install
 
-To use this API all you need is to download the **Simple-YAML-1.6.1.jar** from this repository
+To use this API all you need is to download the **Simple-YAML-1.7.jar** from this repository
 and put it as dependency on your project.
 
 ### Maven
@@ -57,17 +57,24 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 
 The best way to learn how to use this API is through some examples.
 
-You can find some examples to test [`here`](https://github.com/Carleslc/Simple-YAML/tree/master/Simple-Yaml/src/test/java/org/simpleyaml/test).
+You can find some examples to test [here](https://github.com/Carleslc/Simple-YAML/tree/master/Simple-Yaml/src/test/java/org/simpleyaml/examples).
 
-* [`YamlTest`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/test/YamlTest.java): An example to create YAML files, save or delete simple values and move through the file configuration.
-* [`YamlTestComments`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/test/YamlTestComments.java): An example to load and save YAML files keeping comments.
-* [`YamlEncodingTest`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/test/YamlEncodingTest.java): A minimal example to check your encoding with Unicode characters.
-* [`YamlSerializationTest`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/test/YamlSerializationTest.java): An example for saving complex objects using serialization.
-* [`Person`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/test/Person.java): An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
+* [`YamlExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlExample.java): An example to create YAML files, save or delete simple values and move through the file configuration.
+* [`YamlCommentsExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlCommentsExample.java): An example to load and save YAML files keeping comments.
+* [`YamlEncodingExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlEncodingExample.java): A minimal example to check your encoding with Unicode characters.
+* [`YamlSerializationExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlSerializationExample.java): An example for saving complex objects using serialization.
+* [`Person`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/Person.java): An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
+
+Example `.yml` files [here](https://github.com/Carleslc/Simple-YAML/tree/master/Simple-Yaml/src/test/resources).
+
+For more information and methods see the **Javadoc**:
+
+- [Simple-Yaml](https://carleslc.me/Simple-YAML/doc/Simple-Yaml)
+- [Simple-Configuration](https://carleslc.me/Simple-YAML/doc/Simple-Configuration)
 
 ## Dependencies
 
-This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.6.1.jar**, so you don't have to worry about anything more than putting up the jar as dependency on your project.
+This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.7.jar**, so you don't have to worry about anything more than putting up the jar as dependency on your project.
 
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
 
