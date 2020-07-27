@@ -48,24 +48,24 @@ class YamlFileTest {
     @Test
     void fileToString() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResource("test.yml"));
-        final String content = "test:\r\n" +
-            "  number: 5\r\n" +
-            "  string: Hello world\r\n" +
-            "  boolean: true\r\n" +
-            "  list:\r\n" +
-            "    - Each\r\n" +
-            "    - word\r\n" +
-            "    - will\r\n" +
-            "    - be\r\n" +
-            "    - in\r\n" +
-            "    - a\r\n" +
-            "    - separated\r\n" +
-            "    - entry\r\n" +
-            "math:\r\n" +
-            "  pi: 3.141592653589793\r\n" +
-            "timestamp:\r\n" +
-            "  canonicalDate: 2020-07-04T13:18:04.458Z\r\n" +
-            "  formattedDate: 04/07/2020 15:18:04\r\n";
+        final String content = "test:\n" +
+            "  number: 5\n" +
+            "  string: Hello world\n" +
+            "  boolean: true\n" +
+            "  list:\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
+            "math:\n" +
+            "  pi: 3.141592653589793\n" +
+            "timestamp:\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+            "  formattedDate: 04/07/2020 15:18:04\n";
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (fileToString)!",
