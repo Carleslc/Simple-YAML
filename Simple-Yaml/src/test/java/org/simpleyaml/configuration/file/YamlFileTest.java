@@ -153,7 +153,7 @@ class YamlFileTest {
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
-            "\n" +
+            '\n' +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -171,19 +171,19 @@ class YamlFileTest {
             "  - separated\n" +
             "    # Comment on a list item\n" +
             "  - entry # :)\n" +
-            "\n" +
+            '\n' +
             "# Wonderful number\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "  # Comment without direct key\n" +
-            "\n" +
+            '\n' +
             "# Some timestamps\n" +
             "timestamp:\n" +
             "  # ISO\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  # Date/Time with format\n" +
             "  formattedDate: 04/07/2020 15:18:04\n" +
-            "\n" +
+            '\n' +
             "# End\n";
 
         MatcherAssert.assertThat(
