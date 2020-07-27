@@ -10,7 +10,7 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
  */
 public final class YamlSerializationExample {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         /*
          * You can save entire objects in YAML files serializing them.
@@ -23,7 +23,7 @@ public final class YamlSerializationExample {
          */
         ConfigurationSerialization.registerClass(Person.class);
 
-        YamlFile yamlFile = new YamlFile("examples/test-serialization.yml");
+        final YamlFile yamlFile = new YamlFile("examples/test-serialization.yml");
 
         try {
             if (yamlFile.exists()) {
@@ -31,14 +31,14 @@ public final class YamlSerializationExample {
 
                 // If the registered class have methods to serialize and deserialize objects,
                 // this will load the object correctly.
-                Person p = (Person) yamlFile.get("test.people.12345678A");
+                final Person p = (Person) yamlFile.get("test.people.12345678A");
                 System.out.println("Loaded object:\n " + p);
             } else {
                 yamlFile.createNewFile(true);
                 System.out.println("New file has been created: " + yamlFile.getFilePath());
 
                 // Write an object to the YAML file
-                Person p = new Person("12345678A", "John", 1990);
+                final Person p = new Person("12345678A", "John", 1990);
 
                 yamlFile.set("test.people." + p.getDni(), p);
 
@@ -49,7 +49,7 @@ public final class YamlSerializationExample {
             }
             // You can delete the generated file uncommenting next line
             // yamlFile.deleteFile();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

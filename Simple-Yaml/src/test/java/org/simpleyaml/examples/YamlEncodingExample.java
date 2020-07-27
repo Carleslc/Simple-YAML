@@ -1,14 +1,13 @@
 package org.simpleyaml.examples;
 
-import org.simpleyaml.configuration.file.YamlFile;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
+import org.simpleyaml.configuration.file.YamlFile;
 
 public class YamlEncodingExample {
 
-    public static void main(String[] args) throws IOException {
-        YamlFile yamlFile = new YamlFile("examples/test-encoding.yml");
+    public static void main(final String[] args) throws IOException {
+        final YamlFile yamlFile = new YamlFile("examples/test-encoding.yml");
 
         yamlFile.set("encoding.default", Charset.defaultCharset().name());
         yamlFile.set("encoding.charset", yamlFile.options().charset().name());

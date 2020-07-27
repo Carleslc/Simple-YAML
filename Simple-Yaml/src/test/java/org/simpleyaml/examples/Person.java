@@ -1,9 +1,8 @@
 package org.simpleyaml.examples;
 
-import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 
 /**
  * Class that represents a Person that is used only for the test examples.<br>
@@ -21,14 +20,14 @@ public class Person implements ConfigurationSerializable {
 
     private boolean isAlive;
 
-    public Person(String dni, String name, int birthYear, boolean isAlive) {
+    public Person(final String dni, final String name, final int birthYear, final boolean isAlive) {
         this.dni = dni;
         this.name = name;
         this.birthYear = birthYear;
         this.isAlive = isAlive;
     }
 
-    public Person(String dni, String name, int birthYear) {
+    public Person(final String dni, final String name, final int birthYear) {
         this(dni, name, birthYear, true);
     }
 
@@ -40,7 +39,7 @@ public class Person implements ConfigurationSerializable {
      * to deserialize instead using the method deserialize of below.
      */
 
-    public static Person deserialize(Map<String, Object> mappedObject) { // note that is static
+    public static Person deserialize(final Map<String, Object> mappedObject) { // note that is static
         return new Person((String) mappedObject.get("dni"),
             (String) mappedObject.get("name"),
             (int) mappedObject.get("birthYear"),
@@ -49,37 +48,37 @@ public class Person implements ConfigurationSerializable {
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> mappedObject = new LinkedHashMap<String, Object>();
-        mappedObject.put("dni", dni);
-        mappedObject.put("name", name);
-        mappedObject.put("birthYear", birthYear);
-        mappedObject.put("isAlive", isAlive);
+        final Map<String, Object> mappedObject = new LinkedHashMap<String, Object>();
+        mappedObject.put("dni", this.dni);
+        mappedObject.put("name", this.name);
+        mappedObject.put("birthYear", this.birthYear);
+        mappedObject.put("isAlive", this.isAlive);
         return mappedObject;
     }
 
     public String getDni() {
-        return dni;
+        return this.dni;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public int getBirthYear() {
-        return birthYear;
+        return this.birthYear;
     }
 
     public boolean isAlive() {
-        return isAlive;
+        return this.isAlive;
     }
 
     public void kill() {
-        isAlive = false;
+        this.isAlive = false;
     }
 
     @Override
     public String toString() {
-        return "Person [dni= " + dni + ", name= " + name + ", birthYear= " + birthYear + ", isAlive= " + isAlive + "]";
+        return "Person [dni= " + this.dni + ", name= " + this.name + ", birthYear= " + this.birthYear + ", isAlive= " + this.isAlive + "]";
     }
 
 }

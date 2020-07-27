@@ -1,10 +1,9 @@
 package org.simpleyaml.examples;
 
-import org.simpleyaml.configuration.comments.CommentType;
-import org.simpleyaml.configuration.file.YamlFile;
-
 import java.io.*;
 import java.util.Objects;
+import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.file.YamlFile;
 
 /**
  * This class shows you how to use this API to load and save a YAML file with comments.
@@ -13,8 +12,8 @@ import java.util.Objects;
  */
 public final class YamlCommentsExample {
 
-    public static void main(String[] args) throws Exception {
-        YamlFile yamlFile = fileShouldPreserveComments(getResource("test-comments.yml"));
+    public static void main(final String[] args) throws Exception {
+        final YamlFile yamlFile = YamlCommentsExample.fileShouldPreserveComments(YamlCommentsExample.getResource("test-comments.yml"));
 
         // Add some comments programmatically
         yamlFile.setComment("test.string", "Hello!");
@@ -26,13 +25,13 @@ public final class YamlCommentsExample {
         );
 
         // Other files with comments
-        fileShouldPreserveComments(getResource( "test-comments2.yml"));
-        fileShouldPreserveComments(getResource("test-comments3.yml"));
+        YamlCommentsExample.fileShouldPreserveComments(YamlCommentsExample.getResource("test-comments2.yml"));
+        YamlCommentsExample.fileShouldPreserveComments(YamlCommentsExample.getResource("test-comments3.yml"));
     }
 
-    private static YamlFile fileShouldPreserveComments(String path) throws Exception {
+    private static YamlFile fileShouldPreserveComments(final String path) throws Exception {
         // Create new YAML file with relative path
-        YamlFile yamlFile = new YamlFile(path);
+        final YamlFile yamlFile = new YamlFile(path);
 
         // Load the YAML file if it is already created
         if (!yamlFile.exists()) {
@@ -41,18 +40,18 @@ public final class YamlCommentsExample {
         System.out.println(yamlFile.getFilePath() + " exists, loading configurations...");
         yamlFile.loadWithComments(); // Loads the entire file with existing comments
 
-        String loaded = yamlFile.fileToString();
+        final String loaded = yamlFile.fileToString();
 
         // Save the file with comments!
         try {
             yamlFile.saveWithComments();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
 
-        String saved = yamlFile.fileToString();
+        final String saved = yamlFile.fileToString();
 
-        boolean same = saved.trim().equals(loaded.trim());
+        final boolean same = saved.trim().equals(loaded.trim());
 
         // Check that comments have been properly copied
         System.out.println("File is the same after save with comments?: " + same);
@@ -61,7 +60,7 @@ public final class YamlCommentsExample {
             System.out.println(saved);
 
             // Restore original file
-            try (Writer writer = new OutputStreamWriter(new FileOutputStream(yamlFile.getConfigurationFile()))) {
+            try (final Writer writer = new OutputStreamWriter(new FileOutputStream(yamlFile.getConfigurationFile()))) {
                 writer.write(loaded);
             }
             // Fail org.simple.yaml.test case
@@ -71,7 +70,7 @@ public final class YamlCommentsExample {
         return yamlFile;
     }
 
-    private static String getResource(String file) {
+    private static String getResource(final String file) {
         return Objects.requireNonNull(YamlCommentsExample.class.getClassLoader().getResource(file)).getPath();
     }
 

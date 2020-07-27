@@ -173,12 +173,12 @@ class YamlConfigurationTest {
             new IsInstanceOf(YamlConfigurationOptions.class)
         );
 
-        YamlConfigurationOptions defaultOptions = new YamlConfigurationOptions(configuration);
+        final YamlConfigurationOptions defaultOptions = new YamlConfigurationOptions(configuration);
 
         MatcherAssert.assertThat(
-                "Options are not default!",
-                configuration.options(),
-                new IsEqual<>(defaultOptions)
+            "Options are not default!",
+            configuration.options(),
+            new IsEqual<>(defaultOptions)
         );
     }
 

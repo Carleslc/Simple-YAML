@@ -1,13 +1,12 @@
 package org.simpleyaml.examples;
 
-import org.simpleyaml.configuration.ConfigurationSection;
-import org.simpleyaml.configuration.file.YamlFile;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import org.simpleyaml.configuration.ConfigurationSection;
+import org.simpleyaml.configuration.file.YamlFile;
 
 /**
  * YAML is a human-readable data serialization language.<br>
@@ -17,10 +16,10 @@ import java.util.List;
  */
 public final class YamlExample {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         // Create new YAML file with relative path
-        YamlFile yamlFile = new YamlFile("examples/test.yml");
+        final YamlFile yamlFile = new YamlFile("examples/test.yml");
 
         // Load the YAML file if is already created or create new one otherwise
         try {
@@ -32,7 +31,7 @@ public final class YamlExample {
             }
             yamlFile.load(); // Loads the entire file
             // If your file has comments inside you have to load it with yamlFile.loadWithComments()
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
@@ -50,7 +49,7 @@ public final class YamlExample {
 
         // More additions, e.g. adding entire lists
 
-        List<String> list = Arrays.asList("Each word will be in a separated entry".split("[\\s]+"));
+        final List<String> list = Arrays.asList("Each word will be in a separated entry".split("[\\s]+"));
         yamlFile.set("test.list", list);
 
         // You can move between sections with a ConfigurationSection
@@ -62,7 +61,7 @@ public final class YamlExample {
         Date now = new Date();
         section.set("canonicalDate", now);
 
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         section.set("formattedDate", df.format(now));
 
         // Remove values or sections
@@ -98,22 +97,22 @@ public final class YamlExample {
 
         // You can use many methods to obtain some types without casting (String, int, double...)
 
-        double pi = yamlFile.getDouble("math.pi");
+        final double pi = yamlFile.getDouble("math.pi");
         System.out.println(pi);
 
         // And you can also use methods with default values if the path is unknown
 
-        String value = yamlFile.getString("randomSection.noValue"); // returns null
+        final String value = yamlFile.getString("randomSection.noValue"); // returns null
         System.out.println(value);
 
-        String defValue = yamlFile.getString("randomSection.noValue", "Default");
+        final String defValue = yamlFile.getString("randomSection.noValue", "Default");
         System.out.println(defValue);
 
         // Finally, save changes!
         try {
             yamlFile.save();
             // If your file has comments inside you have to save it with yamlFile.saveWithComments()
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
 

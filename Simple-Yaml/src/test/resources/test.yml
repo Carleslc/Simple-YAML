@@ -3,14 +3,14 @@ test:
   string: Hello world
   boolean: true
   list:
-  - Each
-  - word
-  - will
-  - be
-  - in
-  - a
-  - separated
-  - entry
+    - Each
+    - word
+    - will
+    - be
+    - in
+    - a
+    - separated
+    - entry
 math:
   pi: 3.141592653589793
 timestamp:

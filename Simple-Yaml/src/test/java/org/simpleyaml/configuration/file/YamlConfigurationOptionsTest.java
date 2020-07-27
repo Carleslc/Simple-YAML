@@ -1,12 +1,11 @@
 package org.simpleyaml.configuration.file;
 
+import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
-
-import java.nio.charset.StandardCharsets;
 
 class YamlConfigurationOptionsTest {
 
@@ -20,8 +19,8 @@ class YamlConfigurationOptionsTest {
 
     @Test
     void pathSeparator() {
-        YamlConfiguration configuration = new YamlConfiguration();
-        YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
 
         MatcherAssert.assertThat(
             "Default path separator is not a dot!",
@@ -32,9 +31,9 @@ class YamlConfigurationOptionsTest {
         options.pathSeparator('/');
 
         MatcherAssert.assertThat(
-                "Path separator has not changed!",
-                options.pathSeparator(),
-                new IsEqual<>('/')
+            "Path separator has not changed!",
+            options.pathSeparator(),
+            new IsEqual<>('/')
         );
     }
 
@@ -48,8 +47,8 @@ class YamlConfigurationOptionsTest {
 
     @Test
     void indent() {
-        YamlConfiguration configuration = new YamlConfiguration();
-        YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
 
         MatcherAssert.assertThat(
             "Default indent is not 2!",
@@ -68,41 +67,41 @@ class YamlConfigurationOptionsTest {
 
     @Test
     void charset() {
-        YamlConfiguration configuration = new YamlConfiguration();
-        YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
 
         MatcherAssert.assertThat(
-                "Default charset is not UTF-8!",
-                options.charset(),
-                new IsEqual<>(StandardCharsets.UTF_8)
+            "Default charset is not UTF-8!",
+            options.charset(),
+            new IsEqual<>(StandardCharsets.UTF_8)
         );
 
         options.charset(StandardCharsets.US_ASCII);
 
         MatcherAssert.assertThat(
-                "Charset has not changed!",
-                options.charset(),
-                new IsEqual<>(StandardCharsets.US_ASCII)
+            "Charset has not changed!",
+            options.charset(),
+            new IsEqual<>(StandardCharsets.US_ASCII)
         );
     }
 
     @Test
     void isUnicode() {
-        YamlConfiguration configuration = new YamlConfiguration();
-        YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
 
         MatcherAssert.assertThat(
-                "Default charset is not Unicode!",
-                options.isUnicode(),
-                new IsTrue()
+            "Default charset is not Unicode!",
+            options.isUnicode(),
+            new IsTrue()
         );
 
         options.charset(StandardCharsets.US_ASCII);
 
         MatcherAssert.assertThat(
-                "ASCII must not be Unicode!",
-                options.isUnicode(),
-                new IsNot<>(new IsTrue())
+            "ASCII must not be Unicode!",
+            options.isUnicode(),
+            new IsNot<>(new IsTrue())
         );
     }
 
