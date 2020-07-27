@@ -7,6 +7,7 @@ import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
+import org.simpleyaml.configuration.comments.CommentType;
 
 class YamlFileTest {
 
@@ -486,8 +487,21 @@ class YamlFileTest {
     }
 
     @Test
-    void setComment() {
-
+    void setComment() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        yamlFile.loadWithComments();
+        yamlFile.setComment("test.string", "Edited hello comment!");
+        yamlFile.setComment("test.string", "Edited hello side comment!", CommentType.SIDE);
+        MatcherAssert.assertThat(
+            "Couldn't parse the comments correctly!",
+            yamlFile.getComment("test.string"),
+            new IsEqual<>("Edited hello comment!")
+        );
+        MatcherAssert.assertThat(
+            "Couldn't parse the comments correctly!",
+            yamlFile.getComment("test.string", CommentType.SIDE),
+            new IsEqual<>("Edited hello side comment!")
+        );
     }
 
     @Test
