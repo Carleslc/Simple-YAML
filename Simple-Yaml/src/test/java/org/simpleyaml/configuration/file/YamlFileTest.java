@@ -1,7 +1,6 @@
 package org.simpleyaml.configuration.file;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import org.cactoos.io.TempFile;
@@ -10,7 +9,6 @@ import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
 import org.simpleyaml.configuration.comments.CommentType;
-import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 class YamlFileTest {
 
