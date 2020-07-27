@@ -633,6 +633,49 @@ class YamlFileTest {
         copyto.createNewFile();
         yamlFile.copyTo(copyto);
         yamlFile.copyTo(resourcePath);
+
+        final YamlFile copied = new YamlFile(YamlFileTest.getResourcePath("test-copy-to.yml"));
+        copied.loadWithComments();
+        final String content = "#####################\n" +
+            "## INITIAL COMMENT ##\n" +
+            "#####################\n" +
+            '\n' +
+            "# Test comments\n" +
+            "test:\n" +
+            "  number: 5\n" +
+            "  # Hello!\n" +
+            "  string: Hello world\n" +
+            "  boolean: true\n" +
+            "  # List of words\n" +
+            "  list:\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    # Comment on a list item\n" +
+            "    - entry # :)\n" +
+            '\n' +
+            "# Wonderful number\n" +
+            "math:\n" +
+            "  pi: 3.141592653589793\n" +
+            "  # Comment without direct key\n" +
+            '\n' +
+            "# Some timestamps\n" +
+            "timestamp:\n" +
+            "  # ISO\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+            "  # Date/Time with format\n" +
+            "  formattedDate: 04/07/2020 15:18:04\n" +
+            '\n' +
+            "# End\n";
+        MatcherAssert.assertThat(
+            "Couldn't copied the file!",
+            copied.saveToStringWithComments(),
+            new IsEqual<>(content)
+        );
     }
 
 }
