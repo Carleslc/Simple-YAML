@@ -474,9 +474,15 @@ class YamlFileTest {
     }
 
     @Test
-    void getComment() {
+    void getComment() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
-        yamlFile.getComment("");
+        yamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+            "Couldn't parse the comments correctly!",
+            yamlFile.getComment("test.string"),
+            new IsEqual<>("Hello!")
+        );
     }
 
     @Test
