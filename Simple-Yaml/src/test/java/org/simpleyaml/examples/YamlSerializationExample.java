@@ -1,4 +1,4 @@
-package org.simpleyaml.test;
+package org.simpleyaml.examples;
 
 import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
@@ -8,9 +8,9 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
  *
  * @author Carlos Lazaro Costa
  */
-public final class YamlSerializationTest {
+public final class YamlSerializationExample {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         /*
          * You can save entire objects in YAML files serializing them.
@@ -23,7 +23,7 @@ public final class YamlSerializationTest {
          */
         ConfigurationSerialization.registerClass(Person.class);
 
-        YamlFile yamlFile = new YamlFile("test2.yml");
+        final YamlFile yamlFile = new YamlFile("examples/test-serialization.yml");
 
         try {
             if (yamlFile.exists()) {
@@ -31,16 +31,16 @@ public final class YamlSerializationTest {
 
                 // If the registered class have methods to serialize and deserialize objects,
                 // this will load the object correctly.
-                Person p = (Person) yamlFile.get("org.simple.yaml.test.people.12345678A");
+                final Person p = (Person) yamlFile.get("test.people.12345678A");
                 System.out.println("Loaded object:\n " + p);
             } else {
                 yamlFile.createNewFile(true);
                 System.out.println("New file has been created: " + yamlFile.getFilePath());
 
                 // Write an object to the YAML file
-                Person p = new Person("12345678A", "John", 1990);
+                final Person p = new Person("12345678A", "John", 1990);
 
-                yamlFile.set("org.simple.yaml.test.people." + p.getDni(), p);
+                yamlFile.set("test.people." + p.getDni(), p);
 
                 // Don't forget to save the file!
                 yamlFile.save();
@@ -49,7 +49,7 @@ public final class YamlSerializationTest {
             }
             // You can delete the generated file uncommenting next line
             // yamlFile.deleteFile();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

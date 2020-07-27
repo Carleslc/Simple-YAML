@@ -133,8 +133,8 @@ public class YamlConfiguration extends FileConfiguration {
             throw new InvalidConfigurationException("Top level is not a Map.");
         }
 
-        final String header = this.parseHeader(contents);
-        if (header.length() > 0) {
+        final String header = YamlConfiguration.parseHeader(contents);
+        if (!header.isEmpty()) {
             this.options().header(header);
         }
 
@@ -143,6 +143,16 @@ public class YamlConfiguration extends FileConfiguration {
         }
     }
 
+    /**
+     * Compiles the header for this {@link FileConfiguration} and returns the
+     * result.
+     * <p>
+     * This will use the header from {@link #options()} {@link
+     * FileConfigurationOptions#header()}, respecting the rules of {@link
+     * FileConfigurationOptions#copyHeader()} if set.
+     *
+     * @return Compiled header
+     */
     @Override
     protected String buildHeader() {
         final String header = this.options().header();
@@ -202,37 +212,29 @@ public class YamlConfiguration extends FileConfiguration {
         }
     }
 
-    protected String parseHeader(final String input) {
+    protected static String parseHeader(final String input) {
         final String[] lines = input.split("\r?\n", -1);
         final StringBuilder result = new StringBuilder();
         boolean readingHeader = true;
         boolean foundHeader = false;
 
-        for (int i = 0; i < lines.length && readingHeader; i++) {
-            final String line = lines[i];
+        String commentPrefixTrimmed = Commentable.COMMENT_PREFIX.trim();
 
-            if (line.startsWith(Commentable.COMMENT_PREFIX)) {
-                if (i > 0) {
-                    result.append("\n");
-                }
+        for (int lineindex = 0; lineindex < lines.length && readingHeader; lineindex++) {
+            final String line = lines[lineindex];
 
-                if (line.length() > Commentable.COMMENT_PREFIX.length()) {
-                    result.append(line.substring(Commentable.COMMENT_PREFIX.length()));
-                }
-
-                foundHeader = true;
-            } else if (line.startsWith(Commentable.COMMENT_PREFIX.trim())) {
-                if (i > 0) {
+            if (line.startsWith(commentPrefixTrimmed)) {
+                if (lineindex > 0) {
                     result.append('\n');
                 }
 
-                if (line.length() > Commentable.COMMENT_PREFIX.trim().length()) {
-                    result.append(line.substring(Commentable.COMMENT_PREFIX.trim().length()));
+                if (line.length() > commentPrefixTrimmed.length()) {
+                    result.append(line.substring(commentPrefixTrimmed.length()).trim());
                 }
 
                 foundHeader = true;
-            } else if (foundHeader && line.length() == 0) {
-                result.append("\n");
+            } else if (foundHeader && line.isEmpty()) {
+                result.append('\n');
             } else if (foundHeader) {
                 readingHeader = false;
             }

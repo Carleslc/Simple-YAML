@@ -1,5 +1,7 @@
 package org.simpleyaml.configuration;
 
+import java.util.Objects;
+
 /**
  * Various settings for controlling the input and output of a {@link Configuration}
  *
@@ -93,4 +95,18 @@ public class ConfigurationOptions {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConfigurationOptions)) return false;
+        ConfigurationOptions that = (ConfigurationOptions) o;
+        return pathSeparator == that.pathSeparator &&
+                copyDefaults == that.copyDefaults &&
+                Objects.equals(configuration, that.configuration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(configuration, pathSeparator, copyDefaults);
+    }
 }

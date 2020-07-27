@@ -117,6 +117,25 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     /**
+     * Parse comments from the current file configuration.
+     *
+     * @return a comment mapper with comments parsed
+     * @throws IOException if it hasn't been possible to read the configuration file
+     */
+    private CommentMapper parseComments() throws IOException {
+        if (this.commentMapper == null) {
+            String contents = fileToString();
+            if (contents != null) {
+                this.commentMapper = new CommentParser(options(), new StringReader(contents));
+                ((CommentParser) this.commentMapper).parse();
+            } else {
+                this.commentMapper = new CommentMapper(options());
+            }
+        }
+        return this.commentMapper;
+    }
+
+    /**
      * Adds a comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
@@ -375,7 +394,10 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if configuration file cannot be read
      */
     public String fileToString() throws IOException {
-        return new String(Files.readAllBytes(this.getConfigurationFile().toPath()));
+        if (this.configFile == null) {
+            return null;
+        }
+        return new String(Files.readAllBytes(this.configFile.toPath()));
     }
 
     /**
@@ -386,25 +408,14 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     @Override
     public String toString() {
+        if (this.commentMapper == null) {
+            return this.saveToString();
+        }
         try {
-            return this.commentMapper == null ? this.saveToString() : this.saveToStringWithComments();
+            return this.saveToStringWithComments();
         } catch (final IOException e) {
             return e.getMessage();
         }
-    }
-
-    /**
-     * Parse comments from the current file configuration.
-     *
-     * @return a comment mapper with comments parsed
-     * @throws IOException if it hasn't been possible to read the configuration file
-     */
-    private CommentMapper parseComments() throws IOException {
-        if (this.commentMapper == null) {
-            this.commentMapper = new CommentParser(this.options(), new StringReader(this.fileToString()));
-            ((CommentParser) this.commentMapper).parse();
-        }
-        return this.commentMapper;
     }
 
 }

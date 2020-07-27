@@ -6,6 +6,7 @@ import org.simpleyaml.configuration.MemoryConfigurationOptions;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * Various settings for controlling the input and output of a {@link FileConfiguration}
@@ -140,4 +141,19 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FileConfigurationOptions)) return false;
+        if (!super.equals(o)) return false;
+        FileConfigurationOptions that = (FileConfigurationOptions) o;
+        return copyHeader == that.copyHeader &&
+                Objects.equals(charset, that.charset) &&
+                Objects.equals(header, that.header);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), charset, header, copyHeader);
+    }
 }
