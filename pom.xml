@@ -53,7 +53,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <show>private</show>
-                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                    <!--<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>-->
                 </configuration>
                 <executions>
                     <execution>
