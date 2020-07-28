@@ -49,7 +49,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 
 ```xml
 <dependency>
-    <groupId>com.github.Carleslc.Simple-YAML</groupId>
+    <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Yaml</artifactId>
     <version>1.7</version>
 </dependency>
@@ -62,7 +62,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 
 ```xml
 <dependency>
-    <groupId>com.github.Carleslc.Simple-YAML</groupId>
+    <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Configuration</artifactId>
     <version>1.7</version>
 </dependency>
@@ -87,7 +87,7 @@ allprojects {
 
 ```gradle
 dependencies {
-  implementation 'com.github.Carleslc.Simple-YAML:Simple-Yaml:1.7'
+  implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7'
 }
 ```
 
@@ -98,7 +98,7 @@ dependencies {
 
 ```gradle
 dependencies {
-  implementation 'com.github.Carleslc.Simple-YAML:Simple-Configuration:1.7'
+  implementation 'me.carleslc.Simple-YAML:Simple-Configuration:1.7'
 }
 ```
 
