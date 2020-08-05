@@ -2,7 +2,10 @@ package org.simpleyaml.configuration.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Objects;
 import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
@@ -15,8 +18,8 @@ import org.simpleyaml.configuration.comments.CommentType;
 
 class YamlFileTest {
 
-    private static String getResourcePath(final String file) {
-        return Objects.requireNonNull(YamlFileTest.getResourceURL(file)).getPath();
+    private static URI getResourceURI(final String file) throws URISyntaxException {
+        return Objects.requireNonNull(YamlFileTest.getResourceURL(file).toURI());
     }
 
     private static URL getResourceURL(final String file) {
@@ -38,7 +41,7 @@ class YamlFileTest {
 
     @Test
     void load() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test.yml"));
         final String content = "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
@@ -63,7 +66,7 @@ class YamlFileTest {
             yamlFile.saveToString(),
             new IsEqual<>(content)
         );
-        yamlFile.load(YamlFileTest.getResourcePath("test.yml"));
+        yamlFile.load(new File(YamlFileTest.getResourceURI("test.yml")));
         MatcherAssert.assertThat(
             "Couldn't load the file!",
             yamlFile.saveToString(),
@@ -75,17 +78,40 @@ class YamlFileTest {
             yamlFile.saveToString(),
             new IsEqual<>(content)
         );
-        yamlFile.load(new File(YamlFileTest.getResourceURL("test.yml").getFile()));
+    }
+    
+    @Test
+    void loadWithFolderSpaces() throws Exception {
+        final YamlFile yamlFile = new YamlFile(Paths.get(getClass().getClassLoader().getResource("./").toURI()).resolve("folder with space").resolve("test.yml").toUri());
+        final String content = "test:\n" +
+                "  number: 5\n" +
+                "  string: Hello world\n" +
+                "  boolean: true\n" +
+                "  list:\n" +
+                "  - Each\n" +
+                "  - word\n" +
+                "  - will\n" +
+                "  - be\n" +
+                "  - in\n" +
+                "  - a\n" +
+                "  - separated\n" +
+                "  - entry\n" +
+                "math:\n" +
+                "  pi: 3.141592653589793\n" +
+                "timestamp:\n" +
+                "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+                "  formattedDate: 04/07/2020 15:18:04\n";
+        yamlFile.load();
         MatcherAssert.assertThat(
-            "Couldn't load the file!",
-            yamlFile.saveToString(),
-            new IsEqual<>(content)
+                "Couldn't load the file!",
+                yamlFile.saveToString(),
+                new IsEqual<>(content)
         );
     }
 
     @Test
     void loadWithComments() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
@@ -131,7 +157,7 @@ class YamlFileTest {
 
     @Test
     void createOrLoad() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         final String content = "# ####################\n" +
             "# # INITIAL COMMENT ##\n" +
             "# ####################\n" +
@@ -165,7 +191,7 @@ class YamlFileTest {
 
     @Test
     void createOrLoadWithComments() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
@@ -267,7 +293,7 @@ class YamlFileTest {
 
     @Test
     void fileToString() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test.yml"));
         final String content = "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
@@ -333,7 +359,7 @@ class YamlFileTest {
 
     @Test
     void saveToString() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test.yml"));
         yamlFile.load();
         final String content = "test:\n" +
             "  number: 5\n" +
@@ -367,7 +393,7 @@ class YamlFileTest {
 
     @Test
     void saveToStringWithComments() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         yamlFile.loadWithComments();
 
         final String content = "#####################\n" +
@@ -419,7 +445,7 @@ class YamlFileTest {
 
     @Test
     void saveToStringWithComments2() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments2.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments2.yml"));
         yamlFile.loadWithComments();
 
         final String content = "# Section\n" +
@@ -456,7 +482,7 @@ class YamlFileTest {
 
     @Test
     void saveToStringWithComments3() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments3.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments3.yml"));
         yamlFile.loadWithComments();
 
         final String content = "backup-config:\n" +
@@ -510,7 +536,7 @@ class YamlFileTest {
 
     @Test
     void getComment() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         yamlFile.loadWithComments();
 
         MatcherAssert.assertThat(
@@ -528,7 +554,7 @@ class YamlFileTest {
 
     @Test
     void setComment() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         yamlFile.loadWithComments();
         yamlFile.setComment("test.string", "Edited hello comment!");
         yamlFile.setComment("test.string", "Edited hello side comment!", CommentType.SIDE);
@@ -605,8 +631,8 @@ class YamlFileTest {
     }
 
     @Test
-    void getSize() {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+    void getSize() throws URISyntaxException {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
@@ -651,8 +677,8 @@ class YamlFileTest {
     }
 
     @Test
-    void getFilePath() {
-        final File file = new File(YamlFileTest.getResourcePath("test.yml"));
+    void getFilePath() throws URISyntaxException {
+        final File file = new File(YamlFileTest.getResourceURI("test.yml"));
         final YamlFile yamlFile = new YamlFile(file);
 
         MatcherAssert.assertThat(
@@ -662,8 +688,8 @@ class YamlFileTest {
     }
 
     @Test
-    void getConfigurationFile() {
-        final File file = new File(YamlFileTest.getResourcePath("test.yml"));
+    void getConfigurationFile() throws URISyntaxException {
+        final File file = new File(YamlFileTest.getResourceURI("test.yml"));
         final YamlFile yamlFile = new YamlFile(file);
 
         MatcherAssert.assertThat(
@@ -673,8 +699,8 @@ class YamlFileTest {
     }
 
     @Test
-    void setConfigurationFile() {
-        final File file = new File(YamlFileTest.getResourcePath("test.yml"));
+    void setConfigurationFile() throws URISyntaxException {
+        final File file = new File(YamlFileTest.getResourceURI("test.yml"));
         final YamlFile yamlFile = new YamlFile();
 
         yamlFile.setConfigurationFile(file);
@@ -687,7 +713,7 @@ class YamlFileTest {
 
     @Test
     void copyTo() throws Exception {
-        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourcePath("test-comments.yml"));
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         final File copy = tempFile();
         yamlFile.copyTo(copy);
 

@@ -5,6 +5,7 @@ import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Files;
 
 /**
@@ -48,7 +49,19 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     public YamlFile(final String path) throws IllegalArgumentException {
         this.setConfigurationFile(path);
     }
-
+    
+    /**
+     * Builds this {@link FileConfiguration} with the file specified by uri.
+     *
+     * @param uri of the configuration file
+     * @throws IllegalArgumentException if file is null or is a directory.
+     *                                  <br>Note that if <code>IllegalArgumentException</code> is thrown then this
+     *                                  configuration file will be <b>null</b>.
+     */
+    public YamlFile(final URI uri) throws IllegalArgumentException {
+        this.setConfigurationFile(uri);
+    }
+    
     /**
      * Builds this {@link FileConfiguration} with a source file.
      *
@@ -328,7 +341,24 @@ public class YamlFile extends YamlConfiguration implements Commentable {
             throw new IllegalArgumentException(this.configFile.getName() + " is a directory!");
         }
     }
-
+    
+    /**
+     * Rebuilds this {@link FileConfiguration} with the file specified by uri.
+     *
+     * @param uri of the configuration file
+     * @throws IllegalArgumentException if file is null or is a directory.
+     *                                  <br>Note that if <code>IllegalArgumentException</code> is thrown then this
+     *                                  configuration file will be <b>null</b>.
+     */
+    public void setConfigurationFile(final URI uri) throws IllegalArgumentException {
+        Validate.notNull(uri, "URI cannot be null.");
+        this.configFile = new File(uri);
+        if (this.configFile.isDirectory()) {
+            this.configFile = null;
+            throw new IllegalArgumentException(this.configFile.getName() + " is a directory!");
+        }
+    }
+    
     /**
      * Rebuilds this {@link FileConfiguration} with a source file.
      *
