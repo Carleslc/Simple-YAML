@@ -7,6 +7,8 @@ import org.simpleyaml.utils.Validate;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file
@@ -446,5 +448,18 @@ public class YamlFile extends YamlConfiguration implements Commentable {
             return e.getMessage();
         }
     }
-
+    
+    public static YamlFile loadConfiguration(Reader reader) {
+        Validate.notNull(reader, "The reader is null");
+        
+        YamlFile config = new YamlFile();
+        
+        try {
+            config.load(reader);
+        } catch (IOException | InvalidConfigurationException ex) {
+            Logger.getLogger(YamlFile.class.getName()).log(Level.SEVERE, "Cannot load configuration from reader", ex);
+        }
+        
+        return config;
+    }
 }
