@@ -57,14 +57,14 @@ class YamlConfigurationTest {
             "  string: Hello world\n" +
             "  boolean: true\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "timestamp:\n" +
@@ -220,14 +220,14 @@ class YamlConfigurationTest {
             "  string: Hello world\n" +
             "  boolean: true\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
+            "   - Each\n" +
+            "   - word\n" +
+            "   - will\n" +
+            "   - be\n" +
+            "   - in\n" +
+            "   - a\n" +
+            "   - separated\n" +
+            "   - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "timestamp:\n" +
@@ -237,7 +237,7 @@ class YamlConfigurationTest {
         MatcherAssert.assertThat(
             "Couldn't parse the header of the content!",
             YamlConfiguration.parseHeader(content),
-            new IsEqual<>("test123")
+            new IsEqual<>("# test123")
         );
     }
 

@@ -126,11 +126,10 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if it hasn't been possible to save configuration file
      */
     public String saveToString() throws IOException {
-        String contents = super.saveToString();
         if (this.useComments) {
-            contents = new CommentDumper(this.options(), this.parseComments(), new StringReader(contents)).dump();
+            return new CommentDumper(this.options(), this.parseComments(), new StringReader(super.dump())).dump();
         }
-        return contents;
+        return super.saveToString();
     }
 
     /**

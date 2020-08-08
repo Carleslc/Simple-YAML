@@ -51,14 +51,14 @@ class YamlFileTest {
             "  string: Hello world\n" +
             "  boolean: true\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "timestamp:\n" +
@@ -88,23 +88,23 @@ class YamlFileTest {
     void loadWithFolderSpaces() throws Exception {
         final YamlFile yamlFile = new YamlFile(Objects.requireNonNull(getClass().getClassLoader().getResource("folder with space/test.yml")));
         final String content = "test:\n" +
-                "  number: 5\n" +
-                "  string: Hello world\n" +
-                "  boolean: true\n" +
-                "  list:\n" +
-                "  - Each\n" +
-                "  - word\n" +
-                "  - will\n" +
-                "  - be\n" +
-                "  - in\n" +
-                "  - a\n" +
-                "  - separated\n" +
-                "  - entry\n" +
-                "math:\n" +
-                "  pi: 3.141592653589793\n" +
-                "timestamp:\n" +
-                "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
-                "  formattedDate: 04/07/2020 15:18:04\n";
+            "  number: 5\n" +
+            "  string: Hello world\n" +
+            "  boolean: true\n" +
+            "  list:\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
+            "math:\n" +
+            "  pi: 3.141592653589793\n" +
+            "timestamp:\n" +
+            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
+            "  formattedDate: 04/07/2020 15:18:04\n";
         yamlFile.load();
         MatcherAssert.assertThat(
                 "Couldn't load the file!",
@@ -121,14 +121,14 @@ class YamlFileTest {
             "  string: Hello world\n" +
             "  boolean: true\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "timestamp:\n" +
@@ -159,7 +159,7 @@ class YamlFileTest {
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
-            '\n' +
+            "\n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -168,28 +168,28 @@ class YamlFileTest {
             "  boolean: true\n" +
             "  # List of words\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "    # Comment on a list item\n" +
-            "  - entry # :)\n" +
-            '\n' +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "      # Comment on a list item\n" +
+            "    - entry # :)\n" +
+            "\n" +
             "# Wonderful number\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "  # Comment without direct key\n" +
-            '\n' +
+            "\n" +
             "# Some timestamps\n" +
             "timestamp:\n" +
             "  # ISO\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  # Date/Time with format\n" +
             "  formattedDate: 04/07/2020 15:18:04\n" +
-            '\n' +
+            "\n" +
             "# End\n";
         yamlFile.loadWithComments();
         MatcherAssert.assertThat(
@@ -205,7 +205,7 @@ class YamlFileTest {
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
-            '\n' +
+            "\n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -214,28 +214,28 @@ class YamlFileTest {
             "  boolean: true\n" +
             "  # List of words\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "    # Comment on a list item\n" +
-            "  - entry # :)\n" +
-            '\n' +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "      # Comment on a list item\n" +
+            "    - entry # :)\n" +
+            "\n" +
             "# Wonderful number\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "  # Comment without direct key\n" +
-            '\n' +
+            "\n" +
             "# Some timestamps\n" +
             "timestamp:\n" +
             "  # ISO\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  # Date/Time with format\n" +
             "  formattedDate: 04/07/2020 15:18:04\n" +
-            '\n' +
+            "\n" +
             "# End\n";
         MatcherAssert.assertThat(
             "Couldn't load the file with comments!",
@@ -259,24 +259,24 @@ class YamlFileTest {
     @Test
     void createOrLoad() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
-        final String content = "# ####################\n" +
-            "# # INITIAL COMMENT ##\n" +
-            "# ####################\n" +
-            "# \n" +
+        final String content = "#####################\n" +
+            "## INITIAL COMMENT ##\n" +
+            "#####################\n" +
+            "\n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
             "  string: Hello world\n" +
             "  boolean: true\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "timestamp:\n" +
@@ -296,7 +296,7 @@ class YamlFileTest {
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
-            '\n' +
+            "\n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -305,28 +305,28 @@ class YamlFileTest {
             "  boolean: true\n" +
             "  # List of words\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "    # Comment on a list item\n" +
-            "  - entry # :)\n" +
-            '\n' +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "      # Comment on a list item\n" +
+            "    - entry # :)\n" +
+            "\n" +
             "# Wonderful number\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "  # Comment without direct key\n" +
-            '\n' +
+            "\n" +
             "# Some timestamps\n" +
             "timestamp:\n" +
             "  # ISO\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  # Date/Time with format\n" +
             "  formattedDate: 04/07/2020 15:18:04\n" +
-            '\n' +
+            "\n" +
             "# End\n";
         yamlFile.createOrLoadWithComments();
         MatcherAssert.assertThat(
@@ -434,14 +434,14 @@ class YamlFileTest {
             "  string: Hello world\n" +
             "  boolean: true\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "timestamp:\n" +
@@ -467,14 +467,14 @@ class YamlFileTest {
             "  string: Hello world\n" +
             "  boolean: true\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "  - entry\n" +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "    - entry\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "timestamp:\n" +
@@ -500,7 +500,7 @@ class YamlFileTest {
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
-            '\n' +
+            "\n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -509,28 +509,28 @@ class YamlFileTest {
             "  boolean: true\n" +
             "  # List of words\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "    # Comment on a list item\n" +
-            "  - entry # :)\n" +
-            '\n' +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "      # Comment on a list item\n" +
+            "    - entry # :)\n" +
+            "\n" +
             "# Wonderful number\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "  # Comment without direct key\n" +
-            '\n' +
+            "\n" +
             "# Some timestamps\n" +
             "timestamp:\n" +
             "  # ISO\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  # Date/Time with format\n" +
             "  formattedDate: 04/07/2020 15:18:04\n" +
-            '\n' +
+            "\n" +
             "# End\n";
 
         MatcherAssert.assertThat(
@@ -550,20 +550,20 @@ class YamlFileTest {
             "  sub-section-1:\n" +
             "    # List of numbers\n" +
             "    list:\n" +
-            "    - 1\n" +
-            "    - 2\n" +
-            "    - 3\n" +
+            "      - 1\n" +
+            "      - 2\n" +
+            "      - 3\n" +
             "  sub-section-2: # Side comment\n" +
             "    list:\n" +
-            "    - 1\n" +
-            "    - 2 # Side comment on an arbitrary element\n" +
-            "    - 3\n" +
+            "      - 1\n" +
+            "      - 2 # Side comment on an arbitrary element\n" +
+            "      - 3\n" +
             "  sub-section-3:\n" +
             "    # List of numbers\n" +
             "    list:        # Side comment with extra space\n" +
-            "    - 1\n" +
-            "    - 2\n" +
-            "    - 3\n";
+            "      - 1\n" +
+            "      - 2\n" +
+            "      - 3\n";
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (toString)!",
@@ -722,7 +722,7 @@ class YamlFileTest {
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
-            '\n' +
+            "\n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -738,21 +738,21 @@ class YamlFileTest {
             "    - in\n" +
             "    - a\n" +
             "    - separated\n" +
-            "    # Comment on a list item\n" +
+            "      # Comment on a list item\n" +
             "    - entry # :)\n" +
-            '\n' +
+            "\n" +
             "# Wonderful number\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "  # Comment without direct key\n" +
-            '\n' +
+            "\n" +
             "# Some timestamps\n" +
             "timestamp:\n" +
             "  # ISO\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  # Date/Time with format\n" +
             "  formattedDate: 04/07/2020 15:18:04\n" +
-            '\n' +
+            "\n" +
             "# End\n";
 
         MatcherAssert.assertThat(
@@ -808,7 +808,7 @@ class YamlFileTest {
         final String content = "#####################\n" +
             "## INITIAL COMMENT ##\n" +
             "#####################\n" +
-            '\n' +
+            "\n" +
             "# Test comments\n" +
             "test:\n" +
             "  number: 5\n" +
@@ -817,28 +817,28 @@ class YamlFileTest {
             "  boolean: true\n" +
             "  # List of words\n" +
             "  list:\n" +
-            "  - Each\n" +
-            "  - word\n" +
-            "  - will\n" +
-            "  - be\n" +
-            "  - in\n" +
-            "  - a\n" +
-            "  - separated\n" +
-            "    # Comment on a list item\n" +
-            "  - entry # :)\n" +
-            '\n' +
+            "    - Each\n" +
+            "    - word\n" +
+            "    - will\n" +
+            "    - be\n" +
+            "    - in\n" +
+            "    - a\n" +
+            "    - separated\n" +
+            "      # Comment on a list item\n" +
+            "    - entry # :)\n" +
+            "\n" +
             "# Wonderful number\n" +
             "math:\n" +
             "  pi: 3.141592653589793\n" +
             "  # Comment without direct key\n" +
-            '\n' +
+            "\n" +
             "# Some timestamps\n" +
             "timestamp:\n" +
             "  # ISO\n" +
             "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
             "  # Date/Time with format\n" +
             "  formattedDate: 04/07/2020 15:18:04\n" +
-            '\n' +
+            "\n" +
             "# End\n";
         MatcherAssert.assertThat(
             "Couldn't copy the file!",

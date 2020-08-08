@@ -93,19 +93,23 @@ public class YamlConfiguration extends FileConfiguration {
 
     @Override
     public String saveToString() throws IOException {
+        return this.buildHeader() + this.dump();
+    }
+
+    protected String dump() {
         this.yamlOptions.setIndent(this.options().indent());
+        this.yamlOptions.setIndicatorIndent(this.options().indent());
         this.yamlOptions.setAllowUnicode(this.options().isUnicode());
         this.yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         this.yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-        final String header = this.buildHeader();
         String dump = this.yaml.dump(this.getValues(false));
 
         if (dump.equals(YamlConfiguration.BLANK_CONFIG)) {
             dump = "";
         }
 
-        return header + dump;
+        return dump;
     }
 
     @Override
@@ -144,22 +148,21 @@ public class YamlConfiguration extends FileConfiguration {
     @Override
     protected String buildHeader() {
         final String header = this.options().header();
+        final boolean copyHeader = this.options().copyHeader();
 
-        if (this.options().copyHeader()) {
-            final Configuration def = this.getDefaults();
-
-            if (def instanceof FileConfiguration) {
-                final FileConfiguration filedefaults = (FileConfiguration) def;
-                final String defaultsHeader = filedefaults.buildHeader();
-
-                if (defaultsHeader != null && defaultsHeader.length() > 0) {
-                    return defaultsHeader;
-                }
-            }
+        if (!copyHeader || header == null) {
+            return "";
         }
 
-        if (header == null) {
-            return "";
+        final Configuration def = this.getDefaults();
+
+        if (def instanceof FileConfiguration) {
+            final FileConfiguration filedefaults = (FileConfiguration) def;
+            final String defaultsHeader = filedefaults.buildHeader();
+
+            if (defaultsHeader != null && defaultsHeader.length() > 0) {
+                return defaultsHeader;
+            }
         }
 
         final StringBuilder builder = new StringBuilder();
@@ -171,7 +174,6 @@ public class YamlConfiguration extends FileConfiguration {
 
             if (startedHeader || lines[i].length() != 0) {
                 builder.insert(0, lines[i]);
-                builder.insert(0, Commentable.COMMENT_PREFIX);
                 startedHeader = true;
             }
         }
@@ -217,7 +219,7 @@ public class YamlConfiguration extends FileConfiguration {
                 }
 
                 if (line.length() > commentPrefixTrimmed.length()) {
-                    result.append(line.substring(commentPrefixTrimmed.length()).trim());
+                    result.append(line.trim());
                 }
 
                 foundHeader = true;
