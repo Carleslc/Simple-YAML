@@ -23,7 +23,7 @@ public class YamlEncodingExample {
 
         System.out.println(yamlFile);
 
-        yamlFile.saveWithComments();
+        yamlFile.save();
     }
 
 }

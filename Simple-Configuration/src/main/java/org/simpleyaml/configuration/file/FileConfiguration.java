@@ -63,8 +63,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * which defaults to UTF8.
      *
      * @param file File to save to.
-     * @throws IOException              Thrown when the given file cannot be written to for
-     *                                  any reason.
+     * @throws IOException              Thrown when the given file cannot be written to for any reason.
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void save(final String file) throws IOException {
@@ -75,9 +74,10 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     /**
      * Saves this {@link FileConfiguration} to a string, and returns it.
      *
-     * @return String containing this configuration.
+     * @throws IOException Thrown when the contents cannot be written for any reason.
+     * @return a String containing this configuration.
      */
-    public abstract String saveToString();
+    public abstract String saveToString() throws IOException;
 
     /**
      * Loads this {@link FileConfiguration} from the specified location.

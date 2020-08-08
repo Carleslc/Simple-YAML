@@ -17,7 +17,7 @@ test:
     - in
     - a
     - separated
-    # Comment on a list item
+      # Comment on a list item
     - entry # :)
 
 # Wonderful number

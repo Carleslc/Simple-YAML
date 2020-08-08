@@ -51,7 +51,7 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public static YamlConfiguration loadConfiguration(final File file) {
         Validate.notNull(file, "File cannot be null");
-        return YamlConfiguration.run(config -> config.load(file));
+        return YamlConfiguration.load(config -> config.load(file));
     }
 
     /**
@@ -72,7 +72,7 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public static YamlConfiguration loadConfiguration(final InputStream stream) {
         Validate.notNull(stream, "Stream cannot be null");
-        return YamlConfiguration.run(config -> config.load(stream));
+        return YamlConfiguration.load(config -> config.load(stream));
     }
 
     /**
@@ -88,23 +88,11 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public static YamlConfiguration loadConfiguration(final Reader reader) {
         Validate.notNull(reader, "Reader cannot be null");
-        return YamlConfiguration.run(config -> config.load(reader));
-    }
-
-    private static YamlConfiguration run(final YamlConfiguration.YamlRunnable runnable) {
-        final YamlConfiguration config = new YamlConfiguration();
-
-        try {
-            runnable.run(config);
-        } catch (final IOException | InvalidConfigurationException ex) {
-            Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration", ex);
-        }
-
-        return config;
+        return YamlConfiguration.load(config -> config.load(reader));
     }
 
     @Override
-    public String saveToString() {
+    public String saveToString() throws IOException {
         this.yamlOptions.setIndent(this.options().indent());
         this.yamlOptions.setAllowUnicode(this.options().isUnicode());
         this.yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -243,9 +231,21 @@ public class YamlConfiguration extends FileConfiguration {
         return result.toString();
     }
 
-    private interface YamlRunnable {
+    private static YamlConfiguration load(final YamlConfigurationLoader loader) {
+        final YamlConfiguration config = new YamlConfiguration();
 
-        void run(YamlConfiguration config) throws IOException, InvalidConfigurationException;
+        try {
+            loader.load(config);
+        } catch (final IOException | InvalidConfigurationException ex) {
+            Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration", ex);
+        }
+
+        return config;
+    }
+
+    private interface YamlConfigurationLoader {
+
+        void load(YamlConfiguration config) throws IOException, InvalidConfigurationException;
 
     }
 

@@ -1,5 +1,6 @@
 package org.simpleyaml.configuration.file;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.cactoos.io.InputStreamOf;
@@ -47,7 +48,7 @@ class YamlConfigurationTest {
     }
 
     @Test
-    void saveToString() {
+    void saveToString() throws IOException {
         final InputStreamOf stream = new InputStreamOf(
             new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);

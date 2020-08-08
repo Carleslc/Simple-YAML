@@ -4,7 +4,7 @@
 
     <groupId>me.carleslc.simpleyaml</groupId>
     <artifactId>Simple-YAML-Parent</artifactId>
-    <version>1.7</version>
+    <version>1.7.1</version>
     <name>Simple-YAML-Parent</name>
     <packaging>pom</packaging>
 
