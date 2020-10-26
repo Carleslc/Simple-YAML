@@ -3,6 +3,7 @@ package org.simpleyaml.configuration.file;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.Commentable;
+import org.simpleyaml.configuration.comments.YamlCommentMapper;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 import org.yaml.snakeyaml.DumperOptions;
@@ -208,7 +209,7 @@ public class YamlConfiguration extends FileConfiguration {
         boolean readingHeader = true;
         boolean foundHeader = false;
 
-        String commentPrefixTrimmed = Commentable.COMMENT_PREFIX.trim();
+        String commentPrefixTrimmed = YamlCommentMapper.COMMENT_PREFIX.trim();
 
         for (int lineindex = 0; lineindex < lines.length && readingHeader; lineindex++) {
             final String line = lines[lineindex];

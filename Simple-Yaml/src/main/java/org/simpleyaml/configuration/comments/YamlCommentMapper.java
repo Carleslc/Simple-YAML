@@ -4,7 +4,7 @@ import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class YamlCommentMapper implements Commentable {
 
-    private static final String COMMENT_PREFIX = "# ";
+    public static final String COMMENT_PREFIX = "# ";
 
     protected KeyTree keyTree;
 
