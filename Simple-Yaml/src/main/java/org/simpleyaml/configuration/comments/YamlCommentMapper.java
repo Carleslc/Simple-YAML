@@ -26,8 +26,8 @@ public class YamlCommentMapper implements Commentable {
         } else if (comment.matches("\n+")) {
             this.setComment(node, comment, type);
         } else {
-            comment = Commentable.COMMENT_PREFIX + comment;
-            comment = comment.replaceAll("[ \\t]*\n", "\n" + Commentable.COMMENT_PREFIX);
+            comment = getCommentPrefix() + comment;
+            comment = comment.replaceAll("[ \\t]*\n", "\n" + getCommentPrefix());
             if (type == CommentType.BLOCK) {
                 node.setComment(this.indent(comment, node.getIndentation()));
             } else {
