@@ -3,13 +3,6 @@ package org.simpleyaml.configuration.comments;
 public interface Commentable {
 
     /**
-     * Obtains the comment prefix.
-     *
-     * @return the prefix of the comments.
-     */
-    String getCommentPrefix();
-
-    /**
      * Adds a comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
