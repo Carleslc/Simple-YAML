@@ -47,30 +47,12 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return this;
     }
 
-    /**
-     * Gets how much spaces should be used to indent each line.
-     * <p>
-     * The minimum value this may be is 2, and the maximum is 9.
-     *
-     * @return How much to indent by
-     */
-    public int indent() {
-        return this.indent;
-    }
-
-    /**
-     * Sets how much spaces should be used to indent each line.
-     * <p>
-     * The minimum value this may be is 2, and the maximum is 9.
-     *
-     * @param value New indent
-     * @return This object, for chaining
-     */
+    @Override
     public YamlConfigurationOptions indent(final int value) {
         Validate.isTrue(value >= 2, "Indent must be at least 2 characters");
         Validate.isTrue(value <= 9, "Indent cannot be greater than 9 characters");
 
-        this.indent = value;
+        super.indent(value);
         return this;
     }
 

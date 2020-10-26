@@ -16,6 +16,8 @@ public class ConfigurationOptions {
 
     private boolean copyDefaults = true;
 
+    private int indent = 2;
+
     protected ConfigurationOptions(final Configuration configuration) {
         this.configuration = configuration;
     }
@@ -92,6 +94,30 @@ public class ConfigurationOptions {
      */
     public ConfigurationOptions copyDefaults(final boolean value) {
         this.copyDefaults = value;
+        return this;
+    }
+
+    /**
+     * Gets how much spaces should be used to indent each line.
+     * <p>
+     * The minimum value this may be is 2, and the maximum is 9.
+     *
+     * @return How much to indent by
+     */
+    public int indent() {
+        return this.indent;
+    }
+
+    /**
+     * Sets how much spaces should be used to indent each line.
+     * <p>
+     * The minimum value this may be is 2, and the maximum is 9.
+     *
+     * @param value New indent
+     * @return This object, for chaining
+     */
+    public ConfigurationOptions indent(int value) {
+        this.indent = value;
         return this;
     }
 
