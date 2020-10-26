@@ -9,13 +9,13 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
-final class CommentMapperTest {
+final class YamlCommentMapperTest {
 
     @Test
     void setComment() {
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final CommentMapper mapper = new CommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(options);
         final String test_comment = "test comment";
         mapper.setComment("test", test_comment);
         final String test_side_comment = "test side comment";
@@ -39,7 +39,7 @@ final class CommentMapperTest {
     void getComment() {
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final CommentMapper mapper = new CommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(options);
 
         MatcherAssert.assertThat(
             "There is a comment on test path",
@@ -58,7 +58,7 @@ final class CommentMapperTest {
     void getNode() {
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final CommentMapper mapper = new CommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(options);
         final String test_comment = "test_comment";
         final String test_side_comment = "test_side_comment";
         final String nodename = "test";

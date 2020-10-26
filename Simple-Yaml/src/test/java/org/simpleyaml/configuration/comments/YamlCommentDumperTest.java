@@ -9,7 +9,7 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
-class CommentDumperTest {
+class YamlCommentDumperTest {
 
     @Test
     void dump() throws IOException {
@@ -17,12 +17,12 @@ class CommentDumperTest {
             "test-2: 'test-2'");
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final CommentMapper mapper = new CommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(options);
         mapper.setComment("test", "test comment");
         mapper.setComment("test", "test comment", CommentType.SIDE);
         mapper.setComment("test-2", "test comment");
         mapper.setComment("test-2", "test comment", CommentType.SIDE);
-        final CommentDumper dumper = new CommentDumper(options, mapper, reader);
+        final YamlYamlCommentDumper dumper = new YamlYamlCommentDumper(options, mapper, reader);
 
         MatcherAssert.assertThat(
             "Comments are wrong!",
@@ -40,12 +40,12 @@ class CommentDumperTest {
             "test-2: 'test-2'");
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final CommentMapper mapper = new CommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(options);
         mapper.setComment("test", "test comment");
         mapper.setComment("test", "test comment", CommentType.SIDE);
         mapper.setComment("test-2", "test comment");
         mapper.setComment("test-2", "test comment", CommentType.SIDE);
-        final CommentDumper dumper = new CommentDumper(options, mapper, reader);
+        final YamlYamlCommentDumper dumper = new YamlYamlCommentDumper(options, mapper, reader);
         final KeyTree.Node testnode = dumper.getNode("test");
         final KeyTree.Node test2node = dumper.getNode("test-2");
 

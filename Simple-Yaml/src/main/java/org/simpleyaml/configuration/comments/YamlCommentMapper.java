@@ -2,11 +2,11 @@ package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
-public class CommentMapper implements Commentable {
+public class YamlCommentMapper implements Commentable {
 
     protected KeyTree keyTree;
 
-    public CommentMapper(final YamlConfigurationOptions options) {
+    public YamlCommentMapper(final YamlConfigurationOptions options) {
         this.keyTree = new KeyTree(options);
     }
 

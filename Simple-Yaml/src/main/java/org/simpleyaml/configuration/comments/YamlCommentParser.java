@@ -7,13 +7,13 @@ import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommentParser extends CommentReader {
+public class YamlCommentParser extends YamlCommentReader {
 
     private static final Pattern SIDE_COMMENT_REGEX = Pattern.compile("^[ \\t]*[^#\\s].*?([ \\t]*#.*)");
 
     private StringBuilder currentComment; // block comment
 
-    public CommentParser(final YamlConfigurationOptions options, final Reader reader) {
+    public YamlCommentParser(final YamlConfigurationOptions options, final Reader reader) {
         super(options, reader);
     }
 
@@ -52,7 +52,7 @@ public class CommentParser extends CommentReader {
 
     private void setSideComment(final KeyTree.Node node) {
         if (this.currentLine != null) {
-            final Matcher sideCommentMatcher = CommentParser.SIDE_COMMENT_REGEX.matcher(this.currentLine);
+            final Matcher sideCommentMatcher = YamlCommentParser.SIDE_COMMENT_REGEX.matcher(this.currentLine);
             if (sideCommentMatcher.matches()) {
                 node.setSideComment(sideCommentMatcher.group(1));
             }

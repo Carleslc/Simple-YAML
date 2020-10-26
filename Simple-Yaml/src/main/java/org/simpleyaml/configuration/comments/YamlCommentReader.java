@@ -10,7 +10,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommentReader extends CommentMapper {
+public class YamlCommentReader extends YamlCommentMapper {
 
     private static final Pattern KEY_REGEX = Pattern.compile("^([ \\t-]*)([^#]*?)[ \\t]*:.*");
 
@@ -24,7 +24,7 @@ public class CommentReader extends CommentMapper {
 
     protected String trim;
 
-    protected CommentReader(final YamlConfigurationOptions options, final Reader reader) {
+    protected YamlCommentReader(final YamlConfigurationOptions options, final Reader reader) {
         super(options);
         Validate.notNull(reader, "Reader is null!");
         this.reader = new BufferedReader(reader);
@@ -62,15 +62,15 @@ public class CommentReader extends CommentMapper {
     }
 
     private MatchResult match(final String s) {
-        Matcher matcher = CommentReader.KEY_REGEX.matcher(s); // for comments of section keys
+        Matcher matcher = YamlCommentReader.KEY_REGEX.matcher(s); // for comments of section keys
         if (matcher.matches()) {
             return matcher.toMatchResult();
         }
-        matcher = CommentReader.ELEMENT_REGEX.matcher(s); // for comments of section values
+        matcher = YamlCommentReader.ELEMENT_REGEX.matcher(s); // for comments of section values
         if (matcher.matches()) {
             return matcher.toMatchResult();
         }
-        matcher = CommentReader.OTHER_REGEX.matcher(s); // for anything else
+        matcher = YamlCommentReader.OTHER_REGEX.matcher(s); // for anything else
         if (matcher.matches()) {
             return matcher.toMatchResult();
         }
