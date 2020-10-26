@@ -2,7 +2,12 @@ package org.simpleyaml.configuration.comments;
 
 public interface Commentable {
 
-    String COMMENT_PREFIX = "# ";
+    /**
+     * Obtains the comment prefix.
+     *
+     * @return the prefix of the comments.
+     */
+    String getCommentPrefix();
 
     /**
      * Adds a comment to the section or value selected by path.

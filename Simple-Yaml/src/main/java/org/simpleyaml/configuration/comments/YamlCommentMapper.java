@@ -11,6 +11,11 @@ public class YamlCommentMapper implements Commentable {
     }
 
     @Override
+    public String getCommentPrefix() {
+        return "# ";
+    }
+
+    @Override
     public void setComment(final String path, String comment, final CommentType type) {
         KeyTree.Node node = this.getNode(path);
         if (node == null) {
