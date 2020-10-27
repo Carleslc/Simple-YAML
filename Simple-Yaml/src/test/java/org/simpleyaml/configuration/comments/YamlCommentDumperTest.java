@@ -22,7 +22,7 @@ class YamlCommentDumperTest {
         mapper.setComment("test", "test comment", CommentType.SIDE);
         mapper.setComment("test-2", "test comment");
         mapper.setComment("test-2", "test comment", CommentType.SIDE);
-        final YamlYamlCommentDumper dumper = new YamlYamlCommentDumper(options, mapper, reader);
+        final YamlCommentDumper dumper = new YamlCommentDumper(options, mapper, reader);
 
         MatcherAssert.assertThat(
             "Comments are wrong!",
@@ -45,7 +45,7 @@ class YamlCommentDumperTest {
         mapper.setComment("test", "test comment", CommentType.SIDE);
         mapper.setComment("test-2", "test comment");
         mapper.setComment("test-2", "test comment", CommentType.SIDE);
-        final YamlYamlCommentDumper dumper = new YamlYamlCommentDumper(options, mapper, reader);
+        final YamlCommentDumper dumper = new YamlCommentDumper(options, mapper, reader);
         final KeyTree.Node testnode = dumper.getNode("test");
         final KeyTree.Node test2node = dumper.getNode("test-2");
 

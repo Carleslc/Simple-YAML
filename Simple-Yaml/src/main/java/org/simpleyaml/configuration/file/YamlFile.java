@@ -127,7 +127,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public String saveToString() throws IOException {
         if (this.useComments) {
-            return new YamlYamlCommentDumper(this.options(), this.parseComments(), new StringReader(super.dump())).dump();
+            return new YamlCommentDumper(this.options(), this.parseComments(), new StringReader(super.dump())).dump();
         }
         return super.saveToString();
     }

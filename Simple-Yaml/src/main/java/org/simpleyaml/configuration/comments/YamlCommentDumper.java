@@ -7,13 +7,13 @@ import java.io.Reader;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class YamlYamlCommentDumper extends YamlCommentReader {
+public class YamlCommentDumper extends YamlCommentReader {
 
     private final YamlCommentMapper yamlCommentMapper;
 
     private StringBuilder builder;
 
-    public YamlYamlCommentDumper(final YamlConfigurationOptions options, final YamlCommentMapper yamlCommentMapper, final Reader reader) {
+    public YamlCommentDumper(final YamlConfigurationOptions options, final YamlCommentMapper yamlCommentMapper, final Reader reader) {
         super(options, reader);
         this.yamlCommentMapper = yamlCommentMapper;
     }
