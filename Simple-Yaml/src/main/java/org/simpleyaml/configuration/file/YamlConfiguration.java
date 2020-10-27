@@ -2,7 +2,6 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
-import org.simpleyaml.configuration.comments.Commentable;
 import org.simpleyaml.configuration.comments.YamlCommentMapper;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
