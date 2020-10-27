@@ -29,7 +29,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     /**
      * A comment mapper to add comments to sections or values
      **/
-    private CommentMapper commentMapper;
+    private YamlCommentMapper yamlCommentMapper;
 
     /**
      * A flag that indicates if this configuration file should parse comments.
@@ -127,7 +127,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public String saveToString() throws IOException {
         if (this.useComments) {
-            return new CommentDumper(this.options(), this.parseComments(), new StringReader(super.dump())).dump();
+            return new YamlCommentDumper(this.options(), this.parseComments(), new StringReader(super.dump())).dump();
         }
         return super.saveToString();
     }
@@ -138,9 +138,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @return a comment mapper with comments parsed
      * @throws IOException if it hasn't been possible to parse the comments
      */
-    private CommentMapper parseComments() throws IOException {
-        if (this.commentMapper != null) {
-            return this.commentMapper;
+    private YamlCommentMapper parseComments() throws IOException {
+        if (this.yamlCommentMapper != null) {
+            return this.yamlCommentMapper;
         }
         try {
             return parseComments(fileToString());
@@ -156,15 +156,15 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @return a comment mapper with comments parsed
      * @throws InvalidConfigurationException if it hasn't been possible to read the contents
      */
-    private CommentMapper parseComments(final String contents) throws InvalidConfigurationException {
+    private YamlCommentMapper parseComments(final String contents) throws InvalidConfigurationException {
         try {
             if (contents != null) {
-                this.commentMapper = new CommentParser(options(), new StringReader(contents));
-                ((CommentParser) this.commentMapper).parse();
+                this.yamlCommentMapper = new YamlCommentParser(options(), new StringReader(contents));
+                ((YamlCommentParser) this.yamlCommentMapper).parse();
             } else {
-                this.commentMapper = new CommentMapper(options());
+                this.yamlCommentMapper = new YamlCommentMapper(options());
             }
-            return this.commentMapper;
+            return this.yamlCommentMapper;
         } catch (IOException e) {
             throw new InvalidConfigurationException(e);
         }
@@ -181,11 +181,11 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     @Override
     public void setComment(final String path, final String comment, final CommentType type) {
-        if (this.commentMapper == null) {
+        if (this.yamlCommentMapper == null) {
             this.useComments = true;
-            this.commentMapper = new CommentMapper(this.options());
+            this.yamlCommentMapper = new YamlCommentMapper(this.options());
         }
-        this.commentMapper.setComment(path, comment, type);
+        this.yamlCommentMapper.setComment(path, comment, type);
     }
 
     /**
@@ -198,7 +198,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     @Override
     public String getComment(final String path, final CommentType type) {
-        return this.commentMapper != null ? this.commentMapper.getComment(path, type) : null;
+        return this.yamlCommentMapper != null ? this.yamlCommentMapper.getComment(path, type) : null;
     }
 
     /**

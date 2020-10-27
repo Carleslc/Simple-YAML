@@ -1,6 +1,6 @@
 package org.simpleyaml.configuration.comments;
 
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+import org.simpleyaml.configuration.ConfigurationOptions;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,9 +13,9 @@ public class KeyTree {
 
     private final Map<String, KeyTree.Node> nodes = new HashMap<>();
 
-    private final YamlConfigurationOptions options;
+    private final ConfigurationOptions options;
 
-    public KeyTree(final YamlConfigurationOptions options) {
+    public KeyTree(final ConfigurationOptions options) {
         this.options = options;
     }
 

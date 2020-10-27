@@ -2,11 +2,13 @@ package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
-public class CommentMapper implements Commentable {
+public class YamlCommentMapper implements Commentable {
+
+    public static final String COMMENT_PREFIX = "# ";
 
     protected KeyTree keyTree;
 
-    public CommentMapper(final YamlConfigurationOptions options) {
+    public YamlCommentMapper(final YamlConfigurationOptions options) {
         this.keyTree = new KeyTree(options);
     }
 
@@ -21,8 +23,8 @@ public class CommentMapper implements Commentable {
         } else if (comment.matches("\n+")) {
             this.setComment(node, comment, type);
         } else {
-            comment = Commentable.COMMENT_PREFIX + comment;
-            comment = comment.replaceAll("[ \\t]*\n", "\n" + Commentable.COMMENT_PREFIX);
+            comment = COMMENT_PREFIX + comment;
+            comment = comment.replaceAll("[ \\t]*\n", "\n" + COMMENT_PREFIX);
             if (type == CommentType.BLOCK) {
                 node.setComment(this.indent(comment, node.getIndentation()));
             } else {

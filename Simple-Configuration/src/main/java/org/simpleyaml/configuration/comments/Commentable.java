@@ -2,8 +2,6 @@ package org.simpleyaml.configuration.comments;
 
 public interface Commentable {
 
-    String COMMENT_PREFIX = "# ";
-
     /**
      * Adds a comment to the section or value selected by path.
      * Comment will be indented automatically.

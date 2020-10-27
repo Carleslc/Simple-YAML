@@ -7,15 +7,15 @@ import java.io.Reader;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CommentDumper extends CommentReader {
+public class YamlCommentDumper extends YamlCommentReader {
 
-    private final CommentMapper commentMapper;
+    private final YamlCommentMapper yamlCommentMapper;
 
     private StringBuilder builder;
 
-    public CommentDumper(final YamlConfigurationOptions options, final CommentMapper commentMapper, final Reader reader) {
+    public YamlCommentDumper(final YamlConfigurationOptions options, final YamlCommentMapper yamlCommentMapper, final Reader reader) {
         super(options, reader);
-        this.commentMapper = commentMapper;
+        this.yamlCommentMapper = yamlCommentMapper;
     }
 
     /**
@@ -25,7 +25,7 @@ public class CommentDumper extends CommentReader {
      * @throws IOException if any problem while reading arise
      */
     public String dump() throws IOException {
-        if (this.commentMapper == null) {
+        if (this.yamlCommentMapper == null) {
             return this.reader.lines().collect(Collectors.joining("\n"));
         }
 
@@ -52,7 +52,7 @@ public class CommentDumper extends CommentReader {
 
     @Override
     protected KeyTree.Node getNode(final String path) {
-        return this.commentMapper.getNode(path);
+        return this.yamlCommentMapper.getNode(path);
     }
 
     private void append(final KeyTree.Node node, final Function<KeyTree.Node, String> getter) {
