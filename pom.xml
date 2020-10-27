@@ -4,7 +4,7 @@
 
     <groupId>me.carleslc.simpleyaml</groupId>
     <artifactId>Simple-YAML-Parent</artifactId>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
     <name>Simple-YAML-Parent</name>
     <packaging>pom</packaging>
 
@@ -53,7 +53,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <show>private</show>
-                    <!--<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>-->
+                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                 </configuration>
                 <executions>
                     <execution>

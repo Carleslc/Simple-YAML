@@ -27,22 +27,21 @@ Furthermore, you can optionally save your files with **comments** in mind. With 
 
 ## How to install
 
-To use this API all you need is to download the **Simple-YAML-1.7.1.jar** from this repository
+To use this API all you need is to download the **Simple-YAML-1.7.2.jar** from this repository
 and put it as dependency on your project.
 
 ### Maven
 
 If you are using Maven you do not need to download the jar. Instead, add this repository and dependency to your `pom.xml`:
 
-
-  ```xml
+```xml
 <repositories>
     <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
 </repositories>
-  ```
+```
 
 <details>
   <summary>Yaml + Configuration</summary>
@@ -51,7 +50,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 <dependency>
     <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Yaml</artifactId>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
 </dependency>
 ```
 
@@ -64,7 +63,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 <dependency>
     <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Configuration</artifactId>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
 </dependency>
 ```
 
@@ -87,7 +86,7 @@ allprojects {
 
 ```gradle
 dependencies {
-  implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7.1'
+  implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7.2'
 }
 ```
 
@@ -98,7 +97,7 @@ dependencies {
 
 ```gradle
 dependencies {
-  implementation 'me.carleslc.Simple-YAML:Simple-Configuration:1.7.1'
+  implementation 'me.carleslc.Simple-YAML:Simple-Configuration:1.7.2'
 }
 ```
 
@@ -125,13 +124,11 @@ For more information and methods see the **Javadoc**:
 
 ## Dependencies
 
-This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.7.1.jar**, so you don't have to worry about anything more than putting up the jar as dependency on your project.
+This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.7.2.jar**, so you don't have to worry about anything more than putting up the jar as dependency on your project.
 
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
-
-As this API uses _SnakeYAML_ you can use all methods from that too.
-+ [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
-+ [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
+    + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
+    + [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
 
 ## Looking for other file type configurations?
 
