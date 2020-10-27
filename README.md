@@ -27,8 +27,7 @@ Furthermore, you can optionally save your files with **comments** in mind. With 
 
 ## How to install
 
-To use this API all you need is to download the **Simple-YAML-1.7.2.jar** from this repository
-and put it as dependency on your project.
+To use this API all you need is to download the [latest Simple-Yaml.jar](https://github.com/Carleslc/Simple-YAML/releases) and put it as a dependency on your project.
 
 ### Maven
 
@@ -124,7 +123,7 @@ For more information and methods see the **Javadoc**:
 
 ## Dependencies
 
-This API uses _SnakeYAML_, which is already included in **Simple-YAML-1.7.2.jar**, so you don't have to worry about anything more than putting up the jar as dependency on your project.
+This API uses _SnakeYAML_, which is already included in the [latest Simple-Yaml.jar](https://github.com/Carleslc/Simple-YAML/releases), so you don't have to worry about anything more than putting up the jar as a dependency on your project.
 
 * [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
     + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
