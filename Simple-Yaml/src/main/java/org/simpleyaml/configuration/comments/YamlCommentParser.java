@@ -9,9 +9,9 @@ import java.util.regex.Pattern;
 
 public class YamlCommentParser extends YamlCommentReader {
 
-    private static final Pattern SIDE_COMMENT_REGEX = Pattern.compile("^[ \\t]*(?:.*(?:'|\\\").*?([ \\t]*#[^'\\\"]*)$|[^'\\\"]*?([ \\t]*#.*))");
-
     private StringBuilder currentComment; // block comment
+
+    private boolean inQuote = false;
 
     public YamlCommentParser(final YamlConfigurationOptions options, final Reader reader) {
         super(options, reader);
@@ -52,9 +52,25 @@ public class YamlCommentParser extends YamlCommentReader {
 
     private void setSideComment(final KeyTree.Node node) {
         if (this.currentLine != null) {
-            final Matcher sideCommentMatcher = YamlCommentParser.SIDE_COMMENT_REGEX.matcher(this.currentLine);
-            if (sideCommentMatcher.matches()) {
-                node.setSideComment(sideCommentMatcher.group(1) == null ? sideCommentMatcher.group(2) : sideCommentMatcher.group(1));
+            int lastSpace = 0;
+            char[] chars = this.currentLine.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char c = chars[i];
+                if (c == ' ') {
+                    lastSpace = i;
+                }
+                if (this.inQuote) {
+                    if (c == '\'' || c == '\"') {
+                        this.inQuote = false;
+                    }
+                } else {
+                    if (c == '\'' || c == '\"') {
+                        this.inQuote = true;
+                    } else if (c == '#') {
+                        node.setSideComment(this.currentComment.substring(lastSpace));
+                        break;
+                    }
+                }
             }
         }
     }
