@@ -67,7 +67,7 @@ public class YamlCommentParser extends YamlCommentReader {
                     if (c == '\'' || c == '\"') {
                         this.inQuote = true;
                     } else if (c == '#') {
-                        node.setSideComment(this.currentComment.substring(lastSpace));
+                        node.setSideComment(this.currentLine.substring(lastSpace));
                         break;
                     }
                 }
