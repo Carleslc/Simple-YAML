@@ -55,16 +55,17 @@ public class YamlCommentParser extends YamlCommentReader {
             int lastSpace = 0;
             char[] chars = this.currentLine.toCharArray();
             for (int i = 0; i < chars.length; i++) {
+                char lastC = i > 0 ? chars[i - 1] : ' ';
                 char c = chars[i];
                 if (c == ' ') {
                     lastSpace = i;
                 }
                 if (this.inQuote) {
-                    if (c == '\'' || c == '\"') {
+                    if ((c == '\'' && lastC != '\'' && lastC != '\'') || (c == '\"' && lastC != '\"')) {
                         this.inQuote = false;
                     }
                 } else {
-                    if (c == '\'' || c == '\"') {
+                    if ((c == '\'' && lastC != '\'' && lastC != '\'') || (c == '\"' && lastC != '\"')) {
                         this.inQuote = true;
                     } else if (c == '#') {
                         node.setSideComment(this.currentLine.substring(lastSpace));
