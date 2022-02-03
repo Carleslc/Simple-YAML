@@ -5,7 +5,7 @@
     <groupId>me.carleslc.simpleyaml</groupId>
     <artifactId>Simple-YAML-Parent</artifactId>
     <version>1.7.3</version>
-    <name>Simple-YAML-Parent</name>
+    <name>Simple-YAML</name>
     <packaging>pom</packaging>
 
     <properties>
@@ -52,14 +52,19 @@
                 <version>3.2.0</version>
                 <configuration>
                     <source>${java.version}</source>
-                    <show>private</show>
-                    <!--<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>-->
+                    <show>protected</show>
                 </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>aggregate</id>
+                        <goals>
+                            <goal>aggregate</goal>
                         </goals>
                     </execution>
                 </executions>

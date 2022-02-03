@@ -49,7 +49,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 <dependency>
     <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Yaml</artifactId>
-    <version>1.7.2</version>
+    <version>1.7.3</version>
 </dependency>
 ```
 
@@ -62,7 +62,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 <dependency>
     <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Configuration</artifactId>
-    <version>1.7.2</version>
+    <version>1.7.3</version>
 </dependency>
 ```
 
@@ -85,7 +85,7 @@ allprojects {
 
 ```gradle
 dependencies {
-  implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7.2'
+  implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7.3'
 }
 ```
 
@@ -96,7 +96,7 @@ dependencies {
 
 ```gradle
 dependencies {
-  implementation 'me.carleslc.Simple-YAML:Simple-Configuration:1.7.2'
+  implementation 'me.carleslc.Simple-YAML:Simple-Configuration:1.7.3'
 }
 ```
 
@@ -118,16 +118,17 @@ Example `.yml` files [here](https://github.com/Carleslc/Simple-YAML/tree/master/
 
 For more information and methods see the **Javadoc**:
 
-- [Simple-Yaml](https://carleslc.me/Simple-YAML/doc/Simple-Yaml)
-- [Simple-Configuration](https://carleslc.me/Simple-YAML/doc/Simple-Configuration)
+- [Simple-YAML](https://carleslc.me/Simple-YAML/doc)
+  - [Simple-Yaml](https://carleslc.me/Simple-YAML/doc/Simple-Yaml)
+  - [Simple-Configuration](https://carleslc.me/Simple-YAML/doc/Simple-Configuration)
 
 ## Dependencies
 
 This API uses _SnakeYAML_, which is already included in the [latest Simple-Yaml.jar](https://github.com/Carleslc/Simple-YAML/releases), so you don't have to worry about anything more than putting up the jar as a dependency on your project.
 
-* [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
-    + [Javadoc](http://javadox.com/org.yaml/snakeyaml/1.15/overview-summary.html)
-    + [Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
+* [SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml)
+    + [Javadoc](https://javadoc.io/doc/org.yaml/snakeyaml/latest/index.html)
+    + [Documentation](https://bitbucket.org/snakeyaml/snakeyaml/wiki/Documentation)
 
 ## Looking for other file type configurations?
 
