@@ -19,6 +19,8 @@ test:
     - separated
       # Comment on a list item
     - entry # :)
+  # Block #comment with # hashtag
+  comment: 'text with # hashtag' # Side #comment with # hashtag
 
 # Wonderful number
 math:
