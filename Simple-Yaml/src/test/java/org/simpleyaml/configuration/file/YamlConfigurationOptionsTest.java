@@ -114,6 +114,26 @@ class YamlConfigurationOptionsTest {
     }
 
     @Test
+    void indentList() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+
+        MatcherAssert.assertThat(
+                "Default indentList is not 2!",
+                options.indentList(),
+                new IsEqual<>(2)
+        );
+
+        options.indentList(0);
+
+        MatcherAssert.assertThat(
+                "List indent has not changed!",
+                options.indentList(),
+                new IsEqual<>(0)
+        );
+    }
+
+    @Test
     void charset() {
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);

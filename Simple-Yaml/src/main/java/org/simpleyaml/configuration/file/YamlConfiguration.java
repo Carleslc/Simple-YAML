@@ -97,11 +97,14 @@ public class YamlConfiguration extends FileConfiguration {
     }
 
     protected String dump() {
-        this.yamlOptions.setIndent(this.options().indent());
-        this.yamlOptions.setIndicatorIndent(this.options().indent());
         this.yamlOptions.setAllowUnicode(this.options().isUnicode());
+
         this.yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         this.yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        this.yamlOptions.setIndent(this.options().indent());
+        this.yamlOptions.setIndicatorIndent(this.options().indentList());
+        this.yamlOptions.setIndentWithIndicator(true);
 
         String dump = this.yaml.dump(this.getValues(false));
 

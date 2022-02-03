@@ -99,8 +99,6 @@ public class ConfigurationOptions {
 
     /**
      * Gets how much spaces should be used to indent each line.
-     * <p>
-     * The minimum value this may be is 2, and the maximum is 9.
      *
      * @return How much to indent by
      */
@@ -110,8 +108,6 @@ public class ConfigurationOptions {
 
     /**
      * Sets how much spaces should be used to indent each line.
-     * <p>
-     * The minimum value this may be is 2, and the maximum is 9.
      *
      * @param value New indent
      * @return This object, for chaining
@@ -126,13 +122,14 @@ public class ConfigurationOptions {
         if (this == o) return true;
         if (!(o instanceof ConfigurationOptions)) return false;
         ConfigurationOptions that = (ConfigurationOptions) o;
-        return pathSeparator == that.pathSeparator &&
+        return indent == that.indent &&
+                pathSeparator == that.pathSeparator &&
                 copyDefaults == that.copyDefaults &&
                 Objects.equals(configuration, that.configuration);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(configuration, pathSeparator, copyDefaults);
+        return Objects.hash(indent, pathSeparator, copyDefaults, configuration);
     }
 }

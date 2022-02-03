@@ -52,24 +52,7 @@ class YamlConfigurationTest {
         final InputStreamOf stream = new InputStreamOf(
             new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
-        final String content = "test:\n" +
-            "  number: 5\n" +
-            "  string: Hello world\n" +
-            "  boolean: true\n" +
-            "  list:\n" +
-            "    - Each\n" +
-            "    - word\n" +
-            "    - will\n" +
-            "    - be\n" +
-            "    - in\n" +
-            "    - a\n" +
-            "    - separated\n" +
-            "    - entry\n" +
-            "math:\n" +
-            "  pi: 3.141592653589793\n" +
-            "timestamp:\n" +
-            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
-            "  formattedDate: 04/07/2020 15:18:04\n";
+        final String content = YamlFileTest.testContent();
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file!",
@@ -82,7 +65,7 @@ class YamlConfigurationTest {
         final InputStreamOf stream = new InputStreamOf(
             new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
-        final String newcontent = "test:\n" +
+        final String newContent = "test:\n" +
             "  number: 10\n" +
             "  string: Hello world!\n" +
             "  boolean: false\n" +
@@ -123,7 +106,7 @@ class YamlConfigurationTest {
                 "a", "separated", "entry"
             )
         );
-        configuration.loadFromString(newcontent);
+        configuration.loadFromString(newContent);
         MatcherAssert.assertThat(
             "Couldn't load the input stream!",
             configuration.getInt("test.number"),
@@ -214,30 +197,13 @@ class YamlConfigurationTest {
 
     @Test
     void parseHeader() {
-        final String content = "# test123\n" +
-            "test:\n" +
-            "  number: 5\n" +
-            "  string: Hello world\n" +
-            "  boolean: true\n" +
-            "  list:\n" +
-            "   - Each\n" +
-            "   - word\n" +
-            "   - will\n" +
-            "   - be\n" +
-            "   - in\n" +
-            "   - a\n" +
-            "   - separated\n" +
-            "   - entry\n" +
-            "math:\n" +
-            "  pi: 3.141592653589793\n" +
-            "timestamp:\n" +
-            "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
-            "  formattedDate: 04/07/2020 15:18:04\n";
+        final String header = YamlFileTest.testCommentsHeader();
+        final String content = YamlFileTest.testWithHeader();
 
         MatcherAssert.assertThat(
             "Couldn't parse the header of the content!",
             YamlConfiguration.parseHeader(content),
-            new IsEqual<>("# test123")
+            new IsEqual<>(header)
         );
     }
 
