@@ -24,8 +24,8 @@ public final class YamlExample {
         // Load the YAML file if is already created or create new one otherwise
         try {
             if (!yamlFile.exists()) {
-                System.out.println("New file has been created: " + yamlFile.getFilePath() + "\n");
                 yamlFile.createNewFile(true);
+                System.out.println("New file has been created: " + yamlFile.getFilePath() + "\n");
             } else {
                 System.out.println(yamlFile.getFilePath() + " already exists, loading configurations...\n");
             }
@@ -49,7 +49,7 @@ public final class YamlExample {
 
         // More additions, e.g. adding entire lists
 
-        final List<String> list = Arrays.asList("Each word will be in a separated entry".split("[\\s]+"));
+        final List<String> list = Arrays.asList("Each word will be in a separated entry".split("\\s+"));
         yamlFile.set("test.list", list);
 
         // You can move between sections with a ConfigurationSection
@@ -111,7 +111,6 @@ public final class YamlExample {
         // Finally, save changes!
         try {
             yamlFile.save();
-            // If your file has comments inside you have to save it with yamlFile.saveWithComments()
         } catch (final IOException e) {
             e.printStackTrace();
         }
