@@ -389,9 +389,27 @@ class YamlFileTest {
         );
 
         MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getString("test.comment"),
+                new IsEqual<>("text with # hashtag")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("test.comment"),
+                new IsEqual<>("Block #comment with # hashtag")
+        );
+
+        MatcherAssert.assertThat(
             "Couldn't parse the side comments correctly!",
             yamlFile.getComment("test.list.entry", CommentType.SIDE),
             new IsEqual<>(":)")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the side comments correctly!",
+                yamlFile.getComment("test.comment", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # hashtag")
         );
     }
 
@@ -399,13 +417,16 @@ class YamlFileTest {
     void setComment() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         yamlFile.loadWithComments();
+
         yamlFile.setComment("test.string", "Edited hello comment!");
         yamlFile.setComment("test.string", "Edited hello side comment!", CommentType.SIDE);
+
         MatcherAssert.assertThat(
             "Couldn't parse the comments correctly!",
             yamlFile.getComment("test.string"),
             new IsEqual<>("Edited hello comment!")
         );
+
         MatcherAssert.assertThat(
             "Couldn't parse the comments correctly!",
             yamlFile.getComment("test.string", CommentType.SIDE),
@@ -623,6 +644,8 @@ class YamlFileTest {
                 "    - separated\n" +
                 "      # Comment on a list item\n" +
                 "    - entry # :)\n" +
+                "  # Block #comment with # hashtag\n" +
+                "  comment: 'text with # hashtag' # Side #comment with # hashtag\n" +
                 "\n" +
                 "# Wonderful number\n" +
                 "math:\n" +

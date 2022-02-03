@@ -16,12 +16,12 @@ final class YamlCommentMapperTest {
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
         final YamlCommentMapper mapper = new YamlCommentMapper(options);
-        final String test_comment = "test comment";
+        final String test_comment = "test comment # hashtag";
         mapper.setComment("test", test_comment);
-        final String test_side_comment = "test side comment";
+        final String test_side_comment = "test side comment # hashtag";
         mapper.setComment("test", test_side_comment, CommentType.SIDE);
         final String comment = mapper.getComment("test");
-        final String sidecomment = mapper.getComment("test", CommentType.SIDE);
+        final String sideComment = mapper.getComment("test", CommentType.SIDE);
 
         MatcherAssert.assertThat(
             "Comment couldn't set!",
@@ -30,7 +30,7 @@ final class YamlCommentMapperTest {
         );
         MatcherAssert.assertThat(
             "Side comment couldn't set!",
-            sidecomment,
+            sideComment,
             new IsEqual<>(test_side_comment)
         );
     }
@@ -59,12 +59,12 @@ final class YamlCommentMapperTest {
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
         final YamlCommentMapper mapper = new YamlCommentMapper(options);
-        final String test_comment = "test_comment";
-        final String test_side_comment = "test_side_comment";
-        final String nodename = "test";
-        mapper.setComment(nodename, test_comment);
-        mapper.setComment(nodename, test_side_comment, CommentType.SIDE);
-        final KeyTree.Node node = mapper.getNode(nodename);
+        final String test_comment = "test comment # hashtag";
+        final String test_side_comment = "test side comment # hashtag";
+        final String nodeName = "test";
+        mapper.setComment(nodeName, test_comment);
+        mapper.setComment(nodeName, test_side_comment, CommentType.SIDE);
+        final KeyTree.Node node = mapper.getNode(nodeName);
 
         MatcherAssert.assertThat(
             "There is no node!",
@@ -84,7 +84,7 @@ final class YamlCommentMapperTest {
         MatcherAssert.assertThat(
             "The node name is not test!",
             node.getName(),
-            new IsEqual<>(nodename)
+            new IsEqual<>(nodeName)
         );
     }
 

@@ -14,11 +14,11 @@ import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
 final class YamlCommentReaderTest {
 
-    private static final String COMMENT = "#test comment\n" +
+    static final String COMMENT = "#test comment\n" +
         "test: 'test'\n" +
-        "# test-section comment\n" +
-        "test-section:\n" +
-        "  test: 'test'";
+        "# test-section # comment # hashtag\n" +
+        "test-section: # comment # hashtag\n" +
+        "  test: 'test # hashtag' # comment # hashtag";
 
     @Test
     void isBlank() throws IOException {
@@ -46,7 +46,7 @@ final class YamlCommentReaderTest {
         final boolean comment = commentReader.isComment();
 
         MatcherAssert.assertThat(
-            "The tex is not a comment!",
+            "The text is not a comment!",
             comment,
             new IsTrue()
         );

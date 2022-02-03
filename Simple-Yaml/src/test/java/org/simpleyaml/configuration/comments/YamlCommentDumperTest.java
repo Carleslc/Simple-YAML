@@ -13,8 +13,8 @@ class YamlCommentDumperTest {
 
     @Test
     void dump() throws IOException {
-        final StringReader reader = new StringReader("test: 'test'\n" +
-            "test-2: 'test-2'");
+        final String content = "test: 'test'\n" + "test-2: 'test-2'\n" + "test-3: 'test-3 # hashtag'\n";
+        final StringReader reader = new StringReader(content);
         final YamlConfiguration configuration = new YamlConfiguration();
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
         final YamlCommentMapper mapper = new YamlCommentMapper(options);
@@ -22,6 +22,8 @@ class YamlCommentDumperTest {
         mapper.setComment("test", "test comment", CommentType.SIDE);
         mapper.setComment("test-2", "test comment");
         mapper.setComment("test-2", "test comment", CommentType.SIDE);
+        mapper.setComment("test-3", "test # comment");
+        mapper.setComment("test-3", "test # comment", CommentType.SIDE);
         final YamlCommentDumper dumper = new YamlCommentDumper(options, mapper, reader);
 
         MatcherAssert.assertThat(
@@ -30,7 +32,9 @@ class YamlCommentDumperTest {
             new IsEqual<>("# test comment\n" +
                 "test: 'test' # test comment\n" +
                 "# test comment\n" +
-                "test-2: 'test-2' # test comment\n")
+                "test-2: 'test-2' # test comment\n" +
+                "# test # comment\n" +
+                "test-3: 'test-3 # hashtag' # test # comment\n")
         );
     }
 
