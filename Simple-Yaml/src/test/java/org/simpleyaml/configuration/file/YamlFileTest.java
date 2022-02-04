@@ -619,6 +619,7 @@ class YamlFileTest {
                 "    - a\n" +
                 "    - separated\n" +
                 "    - entry\n" +
+                "  comment: 'text with # hashtag'\n" +
                 "math:\n" +
                 "  pi: 3.141592653589793\n" +
                 "timestamp:\n" +
