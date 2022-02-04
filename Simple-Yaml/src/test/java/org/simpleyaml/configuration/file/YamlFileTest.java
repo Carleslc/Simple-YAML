@@ -17,6 +17,7 @@ import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsSame;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
+import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.examples.Person;
 
@@ -291,8 +292,8 @@ class YamlFileTest {
         final String content = testComments();
 
         MatcherAssert.assertThat(
-            "Couldn't get the content of the file (toString)!",
-            yamlFile.toString(),
+            "Couldn't get the content of the file (saveToString)!",
+            yamlFile.saveToString(),
             new IsEqual<>(content));
     }
 
@@ -301,30 +302,11 @@ class YamlFileTest {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments2.yml"));
         yamlFile.loadWithComments();
 
-        final String content = "# Section\n" +
-            "section:\n" +
-            "  # Sub section\n" +
-            "  sub-section-1:\n" +
-            "    # List of numbers\n" +
-            "    list:\n" +
-            "      - 1\n" +
-            "      - 2\n" +
-            "      - 3\n" +
-            "  sub-section-2: # Side comment\n" +
-            "    list:\n" +
-            "      - 1\n" +
-            "      - 2 # Side comment on an arbitrary element\n" +
-            "      - 3\n" +
-            "  sub-section-3:\n" +
-            "    # List of numbers\n" +
-            "    list:        # Side comment with extra space\n" +
-            "      - 1\n" +
-            "      - 2\n" +
-            "      - 3\n";
+        final String content = yamlFile.fileToString();
 
         MatcherAssert.assertThat(
-            "Couldn't get the content of the file (toString)!",
-            yamlFile.toString(),
+            "Couldn't get the content of the file (saveToString)!",
+            yamlFile.saveToString(),
             new IsEqual<>(content));
     }
 
@@ -333,48 +315,25 @@ class YamlFileTest {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments3.yml"));
         yamlFile.loadWithComments();
 
-        final String content = "backup-config:\n" +
-            '\n' +
-            "  #######################################################################################################################\n" +
-            "  # SERVER-FILES BACKUP\n" +
-            "  #######################################################################################################################\n" +
-            '\n' +
-            "  # Backups your server.jar and all setting files before startup to /backups/server/...zip\n" +
-            "  server-files-backup:\n" +
-            "    enable: false\n" +
-            '\n' +
-            "    # Set max-days to 0 if you want to keep your server backups forever.\n" +
-            "    max-days: 7\n" +
-            '\n' +
-            '\n' +
-            "  #######################################################################################################################\n" +
-            "  # WORLDS BACKUP\n" +
-            "  #######################################################################################################################\n" +
-            '\n' +
-            "  # Backups all folders starting with \"world\" to /backups/worlds/...zip\n" +
-            "  worlds-backup:\n" +
-            "    enable: false\n" +
-            '\n' +
-            "    # Set max-days to 0 if you want to keep your world backups forever.\n" +
-            "    max-days: 7\n" +
-            '\n' +
-            '\n' +
-            "  #######################################################################################################################\n" +
-            "  # PLUGINS BACKUP\n" +
-            "  #######################################################################################################################\n" +
-            '\n' +
-            "  # Backups your plugins folder before startup to /backups/plugins/...zip\n" +
-            "  plugins-backup:\n" +
-            "    enable: true\n" +
-            '\n' +
-            "    # Set max-days to 0 if you want to keep your plugin backups forever.\n" +
-            "    max-days: 7\n" +
-            '\n';
+        final String content = yamlFile.fileToString();
 
         MatcherAssert.assertThat(
-            "Couldn't get the content of the file (toString)!",
-            yamlFile.toString(),
+            "Couldn't get the content of the file (saveToString)!",
+            yamlFile.saveToString(),
             new IsEqual<>(content));
+    }
+
+    @Test
+    void saveToStringWithComments4() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments4.yml"));
+        yamlFile.loadWithComments();
+
+        final String content = testCommentsSpecial();
+
+        MatcherAssert.assertThat(
+                "Couldn't get the content of the file (saveToString)!",
+                yamlFile.saveToString(),
+                new IsEqual<>(content));
     }
 
     @Test
@@ -389,7 +348,7 @@ class YamlFileTest {
         );
 
         MatcherAssert.assertThat(
-                "Couldn't parse the comments correctly!",
+                "Couldn't parse the values correctly!",
                 yamlFile.getString("test.comment"),
                 new IsEqual<>("text with # hashtag")
         );
@@ -411,6 +370,19 @@ class YamlFileTest {
                 yamlFile.getComment("test.comment", CommentType.SIDE),
                 new IsEqual<>("Side #comment with # hashtag")
         );
+    }
+
+    @Test
+    void getComment2() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments4.yml"));
+        yamlFile.loadWithComments();
+
+        yamlFile.getConfigurationSection("test").getKeys(false)
+                .forEach((key) ->
+                        MatcherAssert.assertThat(
+                                "Side comment mismatch (test." + key + ")",
+                                yamlFile.getComment("test." + key, CommentType.SIDE),
+                                new IsEqual<>("Side #comment with \"#\" character")));
     }
 
     @Test
@@ -661,6 +633,23 @@ class YamlFileTest {
                 "  formattedDate: 04/07/2020 15:18:04\n" +
                 "\n" +
                 "# End\n";
+    }
+
+    private static String testCommentsSpecial() {
+        return "#####################\n" +
+                "## INITIAL COMMENT ##\n" +
+                "#####################\n" +
+                "\n" +
+                "# Test comments\n" +
+                "test:\n" +
+                "  # Block #comment with \"#\" character\n" +
+                "  single: 'text with # character' # Side #comment with \"#\" character\n" +
+                "  double: 'text with # character' # Side #comment with \"#\" character\n" +
+                "  escape: text with \"#\" character \\\" # Side #comment with \"#\" character\n" +
+                "  escape2: text with '#' character \\\" # Side #comment with \"#\" character\n" +
+                "  special: 'This is a string ''''with a # character \"inside of it' # Side #comment with \"#\" character\n" +
+                "  multiline: 'This is a string\" \" which got ''''wrapped and also contains a # in its\n" +
+                "    ''''content.' # Side #comment with \"#\" character\n";
     }
 
 }
