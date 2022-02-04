@@ -69,7 +69,7 @@ public class ConfigurationOptions {
      * {@link ConfigurationSection#contains(String)} will always
      * return the same value as {@link
      * ConfigurationSection#isSet(String)}. The default value is
-     * false.
+     * true.
      *
      * @return Whether or not defaults are directly copied
      */
@@ -87,7 +87,7 @@ public class ConfigurationOptions {
      * {@link ConfigurationSection#contains(String)} will always
      * return the same value as {@link
      * ConfigurationSection#isSet(String)}. The default value is
-     * false.
+     * true.
      *
      * @param value Whether or not defaults are directly copied
      * @return This object, for chaining
