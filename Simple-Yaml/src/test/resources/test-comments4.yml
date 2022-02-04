@@ -1,0 +1,14 @@
+#####################
+## INITIAL COMMENT ##
+#####################
+
+# Test comments
+test:
+  # Block #comment with "#" character
+  single: 'text with # character' # Side #comment with "#" character
+  double: "text with # character" # Side #comment with "#" character
+  escape: "text with \"#\" character \\\"" # Side #comment with "#" character
+  escape2: 'text with ''#'' character \"' # Side #comment with "#" character
+  special: "This is a string ''with a # character \"inside of it" # Side #comment with "#" character
+  multiline: "This is a string\" \" which got ''wrapped and also contains a #
+   in its ''content." # Side #comment with "#" character
