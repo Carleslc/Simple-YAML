@@ -1,8 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import org.cactoos.io.InputStreamOf;
 import org.cactoos.io.ResourceOf;
 import org.hamcrest.MatcherAssert;
@@ -12,14 +9,16 @@ import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.HasValues;
 import org.llorllale.cactoos.matchers.IsBlank;
 import org.simpleyaml.configuration.MemoryConfiguration;
-import org.simpleyaml.exceptions.InvalidConfigurationException;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 class YamlConfigurationTest {
 
     @Test
-    void loadConfiguration() {
-        final InputStreamOf stream = new InputStreamOf(
-            new ResourceOf("test.yml"));
+    void loadConfiguration() throws IOException {
+        final InputStreamOf stream = new InputStreamOf(new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
 
         MatcherAssert.assertThat(
@@ -49,8 +48,7 @@ class YamlConfigurationTest {
 
     @Test
     void saveToString() throws IOException {
-        final InputStreamOf stream = new InputStreamOf(
-            new ResourceOf("test.yml"));
+        final InputStreamOf stream = new InputStreamOf(new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
         final String content = YamlFileTest.testContent();
 
@@ -61,9 +59,8 @@ class YamlConfigurationTest {
     }
 
     @Test
-    void loadFromString() throws InvalidConfigurationException {
-        final InputStreamOf stream = new InputStreamOf(
-            new ResourceOf("test.yml"));
+    void loadFromString() throws IOException {
+        final InputStreamOf stream = new InputStreamOf(new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
         final String newContent = "test:\n" +
             "  number: 10\n" +
@@ -133,22 +130,64 @@ class YamlConfigurationTest {
     }
 
     @Test
-    void buildHeader() {
-        final InputStreamOf stream = new InputStreamOf(
-            new ResourceOf("test.yml"));
-        final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
+    void buildHeader() throws IOException {
+        InputStreamOf stream = new InputStreamOf(new ResourceOf("test.yml"));
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
+
+        MatcherAssert.assertThat(
+            "Wrong header!",
+            configuration.buildHeader(),
+            new IsBlank()
+        );
+
+        configuration.load(new InputStreamOf(new ResourceOf("test-comments.yml")));
 
         MatcherAssert.assertThat(
             "Couldn't build the header!",
             configuration.buildHeader(),
-            new IsBlank()
+            new IsEqual<>(YamlFileTest.testHeader())
+        );
+
+        MatcherAssert.assertThat(
+            "Couldn't build the header!",
+            configuration.buildHeader().trim(),
+            new IsEqual<>(configuration.options().header())
+        );
+
+        final String customPrefix = "#";
+        configuration.options().headerFormatter().commentPrefix(customPrefix);
+        configuration.options().header("test header");
+
+        MatcherAssert.assertThat(
+                "Custom prefix is not correctly applied!",
+                configuration.buildHeader(),
+                new IsEqual<>(customPrefix + "test header" + "\n\n")
+        );
+
+        YamlConfiguration defaults = new YamlConfiguration();
+        final String defaultHeader = "default header";
+        defaults.options().header(defaultHeader);
+        configuration.options().copyDefaults(true);
+        configuration.setDefaults(defaults);
+
+        MatcherAssert.assertThat(
+                "Header is not default!",
+                configuration.buildHeader(),
+                new IsEqual<>("# " + defaultHeader + "\n\n")
+        );
+
+        configuration.options().copyHeader(false);
+
+        MatcherAssert.assertThat(
+                "Header has been copied!",
+                configuration.buildHeader(),
+                new IsEqual<>("")
         );
     }
 
     @Test
-    void options() {
-        final InputStreamOf stream = new InputStreamOf(
-            new ResourceOf("test.yml"));
+    void options() throws IOException {
+        final InputStreamOf stream = new InputStreamOf(new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
 
         MatcherAssert.assertThat(
@@ -167,9 +206,8 @@ class YamlConfigurationTest {
     }
 
     @Test
-    void convertMapsToSections() {
-        final InputStreamOf stream = new InputStreamOf(
-            new ResourceOf("test.yml"));
+    void convertMapsToSections() throws IOException {
+        final InputStreamOf stream = new InputStreamOf(new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
         final Map<String, Object> map = new HashMap<>();
         map.put("test", "hello");
@@ -192,18 +230,6 @@ class YamlConfigurationTest {
             "Couldn't load section from the map!",
             section.getInt("test-3"),
             new IsEqual<>(123)
-        );
-    }
-
-    @Test
-    void parseHeader() {
-        final String header = YamlFileTest.testCommentsHeader();
-        final String content = YamlFileTest.testWithHeader();
-
-        MatcherAssert.assertThat(
-            "Couldn't parse the header of the content!",
-            YamlConfiguration.parseHeader(content),
-            new IsEqual<>(header)
         );
     }
 

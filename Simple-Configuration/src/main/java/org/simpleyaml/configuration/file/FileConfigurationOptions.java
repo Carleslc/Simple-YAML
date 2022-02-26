@@ -3,6 +3,7 @@ package org.simpleyaml.configuration.file;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.configuration.MemoryConfigurationOptions;
+import org.simpleyaml.configuration.comments.CommentFormatter;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -12,7 +13,7 @@ import java.util.Objects;
  * Various settings for controlling the input and output of a {@link FileConfiguration}
  *
  * @author Bukkit
- * @author Carlos Lazaro Costa (added charset option)
+ * @author Carlos Lazaro Costa
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfigurationOptions.java">Bukkit Source</a>
  */
 public class FileConfigurationOptions extends MemoryConfigurationOptions {
@@ -20,8 +21,8 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
     private Charset charset = StandardCharsets.UTF_8;
 
     private String header = null;
-
     private boolean copyHeader = true;
+    private CommentFormatter headerFormatter;
 
     protected FileConfigurationOptions(final MemoryConfiguration configuration) {
         super(configuration);
@@ -60,11 +61,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
     /**
      * Gets the header that will be applied to the top of the saved output.
      * <p>
-     * This header will be commented out and applied directly at the top of
-     * the generated output of the {@link FileConfiguration}. It is not
-     * required to include a newline at the end of the header as it will
-     * automatically be applied, but you may include one if you wish for extra
-     * spacing.
+     * This header will be commented out.
      * <p>
      * Null is a valid value which will indicate that no header is to be
      * applied. The default value is null.
@@ -84,14 +81,13 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * automatically be applied, but you may include one if you wish for extra
      * spacing.
      * <p>
-     * Null is a valid value which will indicate that no header is to be
-     * applied.
+     * Null is a valid header which will indicate that no header is to be applied.
      *
-     * @param value New header
+     * @param header New header
      * @return This object, for chaining
      */
-    public FileConfigurationOptions header(final String value) {
-        this.header = value;
+    public FileConfigurationOptions header(final String header) {
+        this.header = header;
         return this;
     }
 
@@ -141,6 +137,26 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return this;
     }
 
+    /**
+     * Gets the header format used for parsing and dumping the header.
+     *
+     * @return The header formatter
+     */
+    public CommentFormatter headerFormatter() {
+        return this.headerFormatter;
+    }
+
+    /**
+     * Sets the header format used for parsing and dumping the header.
+     *
+     * @param headerFormatter The header formatter
+     * @return This object, for chaining
+     */
+    public FileConfigurationOptions headerFormatter(final CommentFormatter headerFormatter) {
+        this.headerFormatter = headerFormatter;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,11 +165,12 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         FileConfigurationOptions that = (FileConfigurationOptions) o;
         return copyHeader == that.copyHeader &&
                 Objects.equals(charset, that.charset) &&
-                Objects.equals(header, that.header);
+                Objects.equals(header, that.header) &&
+                Objects.equals(headerFormatter, that.headerFormatter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), charset, header, copyHeader);
+        return Objects.hash(super.hashCode(), charset, header, copyHeader, headerFormatter);
     }
 }

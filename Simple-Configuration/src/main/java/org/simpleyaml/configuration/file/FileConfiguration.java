@@ -2,6 +2,7 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
+import org.simpleyaml.configuration.comments.CommentFormatter;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
@@ -11,6 +12,7 @@ import java.io.*;
  * This is a base class for all File based implementations of {@link Configuration}
  *
  * @author Bukkit
+ * @author Carleslc (modified buildHeader)
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java">Bukkit Source</a>
  */
 public abstract class FileConfiguration extends MemoryConfiguration {
@@ -222,11 +224,39 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     /**
      * Compiles the header for this {@link FileConfiguration} and returns the
      * result.
+     * <p>
+     * This will use the header from {@link #options()} {@link FileConfigurationOptions#header()},
+     * respecting the rules of {@link FileConfigurationOptions#copyHeader()}
+     * and {@link FileConfigurationOptions#headerFormatter()} if set.
      *
      * @return Compiled header
      */
-    protected String buildHeader() {
-        return "";
+    public String buildHeader() {
+        final FileConfigurationOptions options = this.options();
+
+        if (!options.copyHeader()) {
+            return "";
+        }
+
+        final Configuration def = this.getDefaults();
+
+        if (def instanceof FileConfiguration) {
+            final FileConfiguration defaults = (FileConfiguration) def;
+            final String defaultsHeader = defaults.buildHeader();
+
+            if (defaultsHeader != null && !defaultsHeader.isEmpty()) {
+                return defaultsHeader;
+            }
+        }
+
+        final String header = options.header();
+        final CommentFormatter headerFormatter = options.headerFormatter();
+
+        if (headerFormatter != null) {
+            return headerFormatter.dump(header);
+        }
+
+        return header != null ? header + '\n' : "";
     }
 
 }

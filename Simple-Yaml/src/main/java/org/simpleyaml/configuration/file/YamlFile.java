@@ -9,8 +9,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file
@@ -127,7 +125,11 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public String saveToString() throws IOException {
         if (this.useComments) {
-            return new YamlCommentDumper(this.options(), this.parseComments(), new StringReader(super.dump())).dump();
+            final YamlCommentDumper commentDumper = new YamlCommentDumper(
+                    this.parseComments(),
+                    new StringReader(super.dump())
+            );
+            return this.buildHeader() + commentDumper.dump();
         }
         return super.saveToString();
     }
@@ -142,11 +144,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         if (this.yamlCommentMapper != null) {
             return this.yamlCommentMapper;
         }
-        try {
-            return parseComments(fileToString());
-        } catch (InvalidConfigurationException e) {
-            throw new IOException(e);
-        }
+        return parseComments(fileToString());
     }
 
     /**
@@ -183,10 +181,12 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     public void setComment(final String path, final String comment, final CommentType type) {
         if (this.yamlCommentMapper == null) {
             this.useComments = true;
-            this.yamlCommentMapper = new YamlCommentMapper(this.options());
+            this.yamlCommentMapper = new YamlCommentMapper(options());
         }
         this.yamlCommentMapper.setComment(path, comment, type);
     }
+
+    // TODO add YamlCommentFormat DEFAULT (no blank lines), PRETTY (blank line above comment if indent is 0)
 
     /**
      * Retrieve the comment of the section or value selected by path.
@@ -199,6 +199,70 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     @Override
     public String getComment(final String path, final CommentType type) {
         return this.yamlCommentMapper != null ? this.yamlCommentMapper.getComment(path, type) : null;
+    }
+
+    /**
+     * Gets the header of this configuration file.
+     * <p></p>
+     * The string format will respect the rules of the {@link #options()} {@link YamlConfigurationOptions#headerFormatter()}.
+     * By default the {@link YamlHeaderFormatter} is used and the result string will not have a blank line at the end.
+     * <p></p>
+     * Null is a valid value which will indicate that no header is applied.
+     * The default value is null.
+     *
+     * @return header
+     */
+    public String getHeader() {
+        final YamlConfigurationOptions options = this.options();
+        final YamlHeaderFormatter headerFormatter = options.headerFormatter();
+        return headerFormatter.parse(headerFormatter.dump(options.header()));
+    }
+
+    /**
+     * Sets the header that will be applied to the top of the saved output.
+     * This is a shortcut to {@link #options()} {@link YamlConfigurationOptions#header(String)}.
+     * <p></p>
+     * This header will be commented out and applied directly at the top of
+     * the generated output of this configuration file.
+     * <p></p>
+     * The rules of {@link #options()} {@link YamlConfigurationOptions#headerFormatter()} will be respected.
+     * By default the {@link YamlHeaderFormatter} is used and the header will have a blank line written at the end of the header in the file.
+     * It is not required to include a newline at the end of the header as it will
+     * automatically be applied, but you may include one if you wish for extra spacing.
+     * <p></p>
+     * Null is a valid value which will indicate that no header is to be applied.
+     *
+     * @param header New header
+     */
+    public void setHeader(String header) {
+        this.options().header(header);
+    }
+
+    /**
+     * Gets the footer of this configuration file.
+     * <p></p>
+     * The string format will respect the rules of the {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
+     * <p></p>
+     * Null is a valid value which will indicate that no footer is applied.
+     * The default value is null.
+     * @return the footer comment at the end of the file
+     */
+    public String getFooter() {
+        return this.getComment(null);
+    }
+
+    /**
+     * Sets the footer of this configuration file.
+     * <p></p>
+     * This footer will be commented out and applied at the bottom of the generated output of this configuration file.
+     * The end of the file will have a new line character '\n'.
+     * The rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()} will be respected.
+     * <p></p>
+     * Null is a valid value which will indicate that no footer is applied.
+     * @param footer the footer comment to write at the end of the file
+     */
+    public void setFooter(String footer) {
+        this.setComment(null, footer);
     }
 
     /**
@@ -396,11 +460,10 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     private void setConfigFile(final File file) throws IllegalArgumentException {
-        this.configFile = file;
-        if (this.configFile.isDirectory()) {
-            this.configFile = null;
-            throw new IllegalArgumentException(this.configFile.getName() + " is a directory!");
+        if (file.isDirectory()) {
+            throw new IllegalArgumentException(file.getName() + " is a directory!");
         }
+        this.configFile = file;
     }
 
     /**
@@ -486,7 +549,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @return Resulting configuration
      * @throws IllegalArgumentException Thrown if file is null
      */
-    public static YamlFile loadConfiguration(final File file, boolean withComments) {
+    public static YamlFile loadConfiguration(final File file, boolean withComments) throws IOException {
         Validate.notNull(file, "File cannot be null");
         return load(config -> {
             config.setConfigurationFile(file);
@@ -509,7 +572,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IllegalArgumentException Thrown if file is null
      * @see #loadConfiguration(File, boolean)
      */
-    public static YamlFile loadConfiguration(final File file) {
+    public static YamlFile loadConfiguration(final File file) throws IOException {
         return loadConfiguration(file, false);
     }
 
@@ -528,7 +591,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @return Resulting configuration
      * @throws IllegalArgumentException Thrown if stream is null
      */
-    public static YamlFile loadConfiguration(final InputStream stream, boolean withComments) {
+    public static YamlFile loadConfiguration(final InputStream stream, boolean withComments) throws IOException {
         Validate.notNull(stream, "Stream cannot be null");
         return load(config -> config.load(stream), withComments);
     }
@@ -548,7 +611,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IllegalArgumentException Thrown if stream is null
      * @see #loadConfiguration(InputStream, boolean)
      */
-    public static YamlFile loadConfiguration(final InputStream stream) {
+    public static YamlFile loadConfiguration(final InputStream stream) throws IOException {
         return loadConfiguration(stream, false);
     }
 
@@ -564,7 +627,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @return resulting configuration
      * @throws IllegalArgumentException Thrown if stream is null
      */
-    public static YamlFile loadConfiguration(final Reader reader, boolean withComments) {
+    public static YamlFile loadConfiguration(final Reader reader, boolean withComments) throws IOException {
         Validate.notNull(reader, "Reader cannot be null");
         return load(config -> config.load(reader), withComments);
     }
@@ -581,19 +644,15 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IllegalArgumentException Thrown if stream is null
      * @see #loadConfiguration(Reader, boolean)
      */
-    public static YamlFile loadConfiguration(final Reader reader) {
+    public static YamlFile loadConfiguration(final Reader reader) throws IOException {
         return loadConfiguration(reader, false);
     }
 
-    private static YamlFile load(final YamlFileLoader loader, boolean withComments) {
+    private static YamlFile load(final YamlFileLoader loader, boolean withComments) throws IOException {
         final YamlFile config = new YamlFile();
 
-        try {
-            config.useComments = withComments;
-            loader.load(config);
-        } catch (final IOException | InvalidConfigurationException ex) {
-            Logger.getLogger(YamlFile.class.getName()).log(Level.SEVERE, "Cannot load configuration", ex);
-        }
+        config.useComments = withComments;
+        loader.load(config);
 
         return config;
     }

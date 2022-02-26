@@ -1,11 +1,15 @@
 package org.simpleyaml.configuration.file;
 
-import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
+import org.llorllale.cactoos.matchers.Throws;
+import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.YamlCommentFormatterConfiguration;
+
+import java.nio.charset.StandardCharsets;
 
 class YamlConfigurationOptionsTest {
 
@@ -130,6 +134,68 @@ class YamlConfigurationOptionsTest {
                 "List indent has not changed!",
                 options.indentList(),
                 new IsEqual<>(0)
+        );
+    }
+
+    @Test
+    void commentFormatter() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = new YamlConfigurationOptions(configuration);
+
+        final YamlCommentFormatterConfiguration blockFormatterConfiguration = options.commentFormatter().formatterConfiguration(CommentType.BLOCK);
+
+        MatcherAssert.assertThat(
+                "Default comment prefix is not '# '!",
+                blockFormatterConfiguration.prefixFirst(),
+                new IsEqual<>("# ")
+        );
+
+        blockFormatterConfiguration.prefix("#");
+
+        MatcherAssert.assertThat(
+                "Comment prefix has not changed!",
+                blockFormatterConfiguration.prefixFirst(),
+                new IsEqual<>("#")
+        );
+
+        blockFormatterConfiguration.prefix("\n# ");
+
+        MatcherAssert.assertThat(
+                "Comment prefix has not changed!",
+                blockFormatterConfiguration.prefixFirst(),
+                new IsEqual<>("\n# ")
+        );
+
+        final YamlCommentFormatterConfiguration sideFormatterConfiguration = options.commentFormatter().formatterConfiguration(CommentType.SIDE);
+
+        MatcherAssert.assertThat(
+                "Default side comment prefix is not ' # '!",
+                sideFormatterConfiguration.prefixFirst(),
+                new IsEqual<>(" # ")
+        );
+
+        MatcherAssert.assertThat(
+                "Side comment must start with space",
+                () -> sideFormatterConfiguration.prefix("#"),
+                new Throws<>(IllegalArgumentException.class)
+        );
+
+        MatcherAssert.assertThat(
+                "Side comment prefix is invalid!",
+                sideFormatterConfiguration.prefixFirst(),
+                new IsNot<>(new IsEqual<>("#"))
+        );
+
+        MatcherAssert.assertThat(
+                "Side below comments should not require to start with a space",
+                () -> sideFormatterConfiguration.prefix("\n# "),
+                new IsNot<>(new Throws<>(IllegalArgumentException.class))
+        );
+
+        MatcherAssert.assertThat(
+                "Side comment prefix has not changed!",
+                sideFormatterConfiguration.prefixFirst(),
+                new IsEqual<>("\n# ")
         );
     }
 

@@ -1,20 +1,17 @@
 package org.simpleyaml.configuration.comments;
 
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-
 import java.io.IOException;
 import java.io.Reader;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class YamlCommentDumper extends YamlCommentReader {
 
-    private final YamlCommentMapper yamlCommentMapper;
+    protected final YamlCommentMapper yamlCommentMapper;
 
-    private StringBuilder builder;
+    protected StringBuilder builder;
 
-    public YamlCommentDumper(final YamlConfigurationOptions options, final YamlCommentMapper yamlCommentMapper, final Reader reader) {
-        super(options, reader);
+    public YamlCommentDumper(final YamlCommentMapper yamlCommentMapper, final Reader reader) {
+        super(yamlCommentMapper.options(), reader);
         this.yamlCommentMapper = yamlCommentMapper;
     }
 
@@ -25,29 +22,36 @@ public class YamlCommentDumper extends YamlCommentReader {
      * @throws IOException if any problem while reading arise
      */
     public String dump() throws IOException {
+        String result;
+
         if (this.yamlCommentMapper == null) {
-            return this.reader.lines().collect(Collectors.joining("\n"));
-        }
+            result = this.reader.lines().collect(Collectors.joining("\n"));
+        } else {
+            this.builder = new StringBuilder();
 
-        this.builder = new StringBuilder();
-
-        while (this.nextLine()) {
-            if (!this.isComment()) { // Avoid duplicating header
-                final String path = this.track().getPath();
-                final KeyTree.Node node = this.getNode(path);
-                this.append(node, KeyTree.Node::getComment);
-                this.builder.append(this.currentLine);
-                this.append(node, KeyTree.Node::getSideComment);
-                this.builder.append('\n');
+            while (this.nextLine()) {
+                if (!this.isComment()) { // Skip comments from the reader (keep only comments from the comment mapper)
+                    final KeyTree.Node readerNode = this.track();
+                    KeyTree.Node commentNode = null;
+                    if (readerNode != null) {
+                        commentNode = this.getNode(readerNode.getPath());
+                    }
+                    this.appendBlockComment(commentNode);
+                    this.builder.append(this.currentLine);
+                    this.appendSideComment(commentNode);
+                    this.builder.append('\n');
+                }
             }
+
+            // Append end of file (footer) comment (null path), if found
+            this.appendBlockComment(this.getNode(null));
+
+            result = this.builder.toString();
         }
 
-        // Append end of file comment (null path), if found
-        this.append(this.getNode(null), KeyTree.Node::getComment);
+        this.close();
 
-        this.reader.close();
-
-        return this.builder.toString();
+        return result;
     }
 
     @Override
@@ -55,12 +59,51 @@ public class YamlCommentDumper extends YamlCommentReader {
         return this.yamlCommentMapper.getNode(path);
     }
 
-    private void append(final KeyTree.Node node, final Function<KeyTree.Node, String> getter) {
-        if (node != null) {
-            final String s = getter.apply(node);
-            if (s != null) {
-                this.builder.append(s);
+    protected void appendBlockComment(final KeyTree.Node node) {
+        final String comment = this.getRawComment(node, CommentType.BLOCK);
+        if (comment != null) {
+            this.builder.append(comment);
+            if (!comment.endsWith("\n")) {
+                this.builder.append('\n');
             }
+        }
+    }
+
+    protected void appendSideComment(final KeyTree.Node node) throws IOException {
+        final String comment = this.getRawComment(node, CommentType.SIDE);
+        if (comment != null) {
+            this.readValue();
+            this.builder.append(comment);
+        }
+    }
+
+    @Override
+    protected void readValue() throws IOException {
+        if (this.hasChar()) {
+            this.readIndent();
+
+            if (this.isInQuote()) {
+                // Could be a multi line value
+                this.appendMultiline();
+            }
+        }
+    }
+
+    protected void appendMultiline() throws IOException {
+        boolean hasChar = this.hasChar() && this.nextChar();
+
+        if (hasChar) {
+            this.stage = ReaderStage.VALUE;
+        }
+
+        while (hasChar) {
+            hasChar = this.nextChar();
+        }
+
+        if (this.isMultiline() && this.nextLine()) {
+            this.builder.append('\n');
+            this.builder.append(this.currentLine);
+            this.appendMultiline();
         }
     }
 

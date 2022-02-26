@@ -23,36 +23,47 @@ final class YamlCommentParserTest {
 
         MatcherAssert.assertThat(
                 "Comments are wrong!",
-                parser.getComment("test"),
+                parser.getComment("te'st"),
                 new IsEqual<>("test comment")
         );
         MatcherAssert.assertThat(
                 "Comments are wrong!",
                 parser.getComment("test-section"),
-                new IsEqual<>("test-section # comment # hashtag")
+                new IsEqual<>("test-section # comment # character\n  - multiline comment # character")
         );
         MatcherAssert.assertThat(
                 "Comments are wrong!",
                 parser.getComment("test-section", CommentType.SIDE),
-                new IsEqual<>("comment # hashtag")
+                new IsEqual<>("comment # character")
         );
         MatcherAssert.assertThat(
                 "Comments are wrong!",
                 parser.getComment("test-section.test", CommentType.SIDE),
-                new IsEqual<>("comment # hashtag")
-        );
-        MatcherAssert.assertThat(
-                "Parsed value is wrong!",
-                parser.getComment("test-section # hashtag.test", CommentType.SIDE),
-                new IsEqual<>("test # hashtag")
+                new IsEqual<>("comment # character")
         );
 
-        final YamlCommentDumper dumper = new YamlCommentDumper(options, parser, new StringReader(YamlCommentReaderTest.COMMENT));
+        options.commentFormatter().stripPrefix(false);
 
         MatcherAssert.assertThat(
                 "Comments are wrong!",
-                dumper.dump(),
-                new IsEqual<>(YamlCommentReaderTest.COMMENT)
+                parser.getComment("test-section"),
+                new IsEqual<>("# test-section # comment # character\n#   - multiline comment # character")
+        );
+
+        options.commentFormatter().trim(false);
+
+        MatcherAssert.assertThat(
+                "Comments are wrong!",
+                parser.getComment("test-section"),
+                new IsEqual<>("\n# test-section # comment # character\n#   - multiline comment # character ")
+        );
+
+        options.commentFormatter().stripPrefix(true);
+
+        MatcherAssert.assertThat(
+                "Comments are wrong!",
+                parser.getComment("test-section"),
+                new IsEqual<>("\ntest-section # comment # character\n  - multiline comment # character ")
         );
     }
 

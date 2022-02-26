@@ -2,7 +2,7 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
-import org.simpleyaml.configuration.comments.YamlCommentMapper;
+import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 import org.yaml.snakeyaml.DumperOptions;
@@ -15,14 +15,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An implementation of {@link Configuration} which saves all files in Yaml.
  * Note that this implementation is not synchronized.
  *
  * @author Bukkit
+ * @author Carleslc
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConfiguration.java">Bukkit Source</a>
  */
 public class YamlConfiguration extends FileConfiguration {
@@ -48,8 +47,9 @@ public class YamlConfiguration extends FileConfiguration {
      * @param file Input file
      * @return Resulting configuration
      * @throws IllegalArgumentException Thrown if file is null
+     * @throws IOException if cannot load configuration
      */
-    public static YamlConfiguration loadConfiguration(final File file) {
+    public static YamlConfiguration loadConfiguration(final File file) throws IOException {
         Validate.notNull(file, "File cannot be null");
         return YamlConfiguration.load(config -> config.load(file));
     }
@@ -66,11 +66,12 @@ public class YamlConfiguration extends FileConfiguration {
      *
      * @param stream Input stream
      * @return Resulting configuration
-     * @throws IllegalArgumentException Thrown if stream is null
+     * @throws IllegalArgumentException if stream is null
+     * @throws IOException if cannot load configuration
      * @see #load(InputStream)
      * @see #loadConfiguration(Reader)
      */
-    public static YamlConfiguration loadConfiguration(final InputStream stream) {
+    public static YamlConfiguration loadConfiguration(final InputStream stream) throws IOException {
         Validate.notNull(stream, "Stream cannot be null");
         return YamlConfiguration.load(config -> config.load(stream));
     }
@@ -85,8 +86,9 @@ public class YamlConfiguration extends FileConfiguration {
      * @param reader input
      * @return resulting configuration
      * @throws IllegalArgumentException Thrown if stream is null
+     * @throws IOException if cannot load configuration
      */
-    public static YamlConfiguration loadConfiguration(final Reader reader) {
+    public static YamlConfiguration loadConfiguration(final Reader reader) throws IOException {
         Validate.notNull(reader, "Reader cannot be null");
         return YamlConfiguration.load(config -> config.load(reader));
     }
@@ -130,60 +132,22 @@ public class YamlConfiguration extends FileConfiguration {
             throw new InvalidConfigurationException("Top level is not a Map.");
         }
 
-        final String header = YamlConfiguration.parseHeader(contents);
-        if (!header.isEmpty()) {
-            this.options().header(header);
-        }
+        this.loadHeader(contents);
 
         if (input != null) {
             this.convertMapsToSections(input, this);
         }
     }
 
-    /**
-     * Compiles the header for this {@link FileConfiguration} and returns the
-     * result.
-     * <p>
-     * This will use the header from {@link #options()} {@link
-     * FileConfigurationOptions#header()}, respecting the rules of {@link
-     * FileConfigurationOptions#copyHeader()} if set.
-     *
-     * @return Compiled header
-     */
-    @Override
-    protected String buildHeader() {
-        final String header = this.options().header();
-        final boolean copyHeader = this.options().copyHeader();
+    protected void loadHeader(final String contents) {
+        final YamlConfigurationOptions options = this.options();
+        final YamlHeaderFormatter headerFormatter = options.headerFormatter();
+        boolean customStripPrefix = headerFormatter.stripPrefix();
 
-        if (!copyHeader || header == null) {
-            return "";
-        }
+        headerFormatter.stripPrefix(false);
+        options.header(headerFormatter.parse(contents)); // save header with prefix to dump it as is
 
-        final Configuration def = this.getDefaults();
-
-        if (def instanceof FileConfiguration) {
-            final FileConfiguration filedefaults = (FileConfiguration) def;
-            final String defaultsHeader = filedefaults.buildHeader();
-
-            if (defaultsHeader != null && defaultsHeader.length() > 0) {
-                return defaultsHeader;
-            }
-        }
-
-        final StringBuilder builder = new StringBuilder();
-        final String[] lines = header.split("\r?\n", -1);
-        boolean startedHeader = false;
-
-        for (int i = lines.length - 1; i >= 0; i--) {
-            builder.insert(0, "\n");
-
-            if (startedHeader || lines[i].length() != 0) {
-                builder.insert(0, lines[i]);
-                startedHeader = true;
-            }
-        }
-
-        return builder.toString();
+        headerFormatter.stripPrefix(customStripPrefix); // restore the custom strip prefix for the following calls to parse
     }
 
     @Override
@@ -207,52 +171,17 @@ public class YamlConfiguration extends FileConfiguration {
         }
     }
 
-    protected static String parseHeader(final String input) {
-        final String[] lines = input.split("\r?\n", -1);
-        final StringBuilder result = new StringBuilder();
-        boolean readingHeader = true;
-        boolean foundHeader = false;
-
-        String commentPrefixTrimmed = YamlCommentMapper.COMMENT_PREFIX.trim();
-
-        for (int lineindex = 0; lineindex < lines.length && readingHeader; lineindex++) {
-            final String line = lines[lineindex];
-
-            if (line.startsWith(commentPrefixTrimmed)) {
-                if (lineindex > 0) {
-                    result.append('\n');
-                }
-
-                if (line.length() > commentPrefixTrimmed.length()) {
-                    result.append(line.trim());
-                }
-
-                foundHeader = true;
-            } else if (foundHeader && line.isEmpty()) {
-                result.append('\n');
-            } else if (foundHeader) {
-                readingHeader = false;
-            }
-        }
-
-        return result.toString();
-    }
-
-    private static YamlConfiguration load(final YamlConfigurationLoader loader) {
+    private static YamlConfiguration load(final YamlConfigurationLoader loader) throws IOException {
         final YamlConfiguration config = new YamlConfiguration();
 
-        try {
-            loader.load(config);
-        } catch (final IOException | InvalidConfigurationException ex) {
-            Logger.getLogger(YamlConfiguration.class.getName()).log(Level.SEVERE, "Cannot load configuration", ex);
-        }
+        loader.load(config);
 
         return config;
     }
 
     private interface YamlConfigurationLoader {
 
-        void load(YamlConfiguration config) throws IOException, InvalidConfigurationException;
+        void load(YamlConfiguration config) throws IOException;
 
     }
 

@@ -4,8 +4,6 @@ import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class YamlCommentMapper implements Commentable {
 
-    public static final String COMMENT_PREFIX = "# ";
-
     protected KeyTree keyTree;
 
     public YamlCommentMapper(final YamlConfigurationOptions options) {
@@ -18,39 +16,21 @@ public class YamlCommentMapper implements Commentable {
         if (node == null) {
             node = this.keyTree.add(path);
         }
-        if (comment == null || comment.isEmpty()) {
-            this.setComment(node, null, type);
-        } else if (comment.matches("\n+")) {
-            this.setComment(node, comment, type);
-        } else {
-            comment = COMMENT_PREFIX + comment;
-            comment = comment.replaceAll("[ \\t]*\n", "\n" + COMMENT_PREFIX);
-            if (type == CommentType.BLOCK) {
-                node.setComment(this.indent(comment, node.getIndentation()));
-            } else {
-                node.setSideComment(" " + comment);
-            }
-        }
+        this.setFormattedComment(node, comment, type);
     }
 
-    @Override
-    public String getComment(final String path, final CommentType type) {
-        final KeyTree.Node node = this.getNode(path);
+    protected final void setFormattedComment(final KeyTree.Node node, final String comment, final CommentType type) {
         if (node == null) {
-            return null;
+            return;
         }
-        String comment = type == CommentType.BLOCK ? node.getComment() : node.getSideComment();
-        if (comment != null) {
-            comment = comment.replaceAll("[ \\t]*#+[ \\t]*", "").trim();
-        }
-        return comment;
+        final String formattedComment = this.options().commentFormatter().dump(comment, type, node);
+        this.setRawComment(node, formattedComment, type);
     }
 
-    protected KeyTree.Node getNode(final String path) {
-        return this.keyTree.get(path);
-    }
-
-    private void setComment(final KeyTree.Node node, final String comment, final CommentType type) {
+    protected final void setRawComment(final KeyTree.Node node, final String comment, final CommentType type) {
+        if (node == null) {
+            return;
+        }
         if (type == CommentType.BLOCK) {
             node.setComment(comment);
         } else {
@@ -58,22 +38,32 @@ public class YamlCommentMapper implements Commentable {
         }
     }
 
-    private String indent(final String s, final int n) {
-        final String padding = this.padding(n);
-        final String[] lines = s.split("\n");
-        final StringBuilder builder = new StringBuilder(s.length() + n * lines.length);
-        for (final String line : lines) {
-            builder.append(padding).append(line).append('\n');
-        }
-        return builder.toString();
+    @Override
+    public String getComment(final String path, final CommentType type) {
+        return getComment(this.getNode(path), type);
     }
 
-    private String padding(final int n) {
-        final StringBuilder builder = new StringBuilder(n);
-        for (int i = 0; i < n; i++) {
-            builder.append(' ');
+    protected final String getComment(final KeyTree.Node node, final CommentType type) {
+        final String raw = getRawComment(node, type);
+        if (raw == null) {
+            return null;
         }
-        return builder.toString();
+        return this.options().commentFormatter().parse(raw, type, node);
+    }
+
+    protected final String getRawComment(final KeyTree.Node node, final CommentType type) {
+        if (node == null) {
+            return null;
+        }
+        return type == CommentType.BLOCK ? node.getComment() : node.getSideComment();
+    }
+
+    protected KeyTree.Node getNode(final String path) {
+        return this.keyTree.get(path);
+    }
+
+    protected YamlConfigurationOptions options() {
+        return (YamlConfigurationOptions) this.keyTree.options();
     }
 
 }
