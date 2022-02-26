@@ -2,6 +2,8 @@ package org.simpleyaml.exceptions;
 
 import org.simpleyaml.configuration.Configuration;
 
+import java.io.IOException;
+
 /**
  * Exception thrown when attempting to load an invalid {@link Configuration}
  *
@@ -9,7 +11,7 @@ import org.simpleyaml.configuration.Configuration;
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/InvalidConfigurationException.java">Bukkit Source</a>
  */
 @SuppressWarnings("serial")
-public class InvalidConfigurationException extends Exception {
+public class InvalidConfigurationException extends IOException {
 
     /**
      * Creates a new instance of InvalidConfigurationException without a
