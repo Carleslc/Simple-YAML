@@ -23,7 +23,7 @@ public class KeyTree {
         KeyTree.Node parent = this.root;
         String key = path;
         if (path != null) {
-            final int i = path.lastIndexOf('.');
+            final int i = path.lastIndexOf(this.options.pathSeparator());
             if (i >= 0) {
                 final String parentPath = path.substring(0, i);
                 key = path.substring(i + 1);
@@ -62,6 +62,10 @@ public class KeyTree {
 
     public Set<Map.Entry<String, KeyTree.Node>> entries() {
         return this.nodes.entrySet();
+    }
+
+    public ConfigurationOptions options() {
+        return this.options;
     }
 
     @Override

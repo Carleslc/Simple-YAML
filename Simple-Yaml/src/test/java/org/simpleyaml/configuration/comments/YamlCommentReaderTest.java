@@ -15,10 +15,11 @@ import org.simpleyaml.obj.TestYamlConfigurationOptions;
 final class YamlCommentReaderTest {
 
     static final String COMMENT = "#test comment\n" +
-        "test: 'test'\n" +
-        "# test-section # comment # hashtag\n" +
-        "test-section: # comment # hashtag\n" +
-        "  test: 'test # hashtag' # comment # hashtag";
+        "'te''st': 'test'\n\n" +
+        "# test-section # comment # character\n" +
+        "#   - multiline comment # character \n" +
+        "test-section: # comment # character\n" +
+        "  test: 'test # character' # comment # character\n";
 
     @Test
     void isBlank() throws IOException {
@@ -27,12 +28,20 @@ final class YamlCommentReaderTest {
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
         final YamlCommentReader commentReader = new YamlCommentReader(options, reader);
         commentReader.nextLine();
-        final boolean blank = commentReader.isBlank();
 
         MatcherAssert.assertThat(
             "The text is blank!",
-            blank,
+            commentReader.isBlank(),
             new IsNot<>(new IsTrue())
+        );
+
+        commentReader.nextLine();
+        commentReader.nextLine();
+
+        MatcherAssert.assertThat(
+            "The text is not blank!",
+            commentReader.isBlank(),
+            new IsTrue()
         );
     }
 
@@ -74,17 +83,17 @@ final class YamlCommentReaderTest {
         final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
         final YamlCommentReader commentReader = new YamlCommentReader(options, reader);
         commentReader.nextLine();
-        final KeyTree.Node track = commentReader.track();
+        final KeyTree.Node track = commentReader.track(0, "a");
 
         MatcherAssert.assertThat(
-            "The node has a root!",
+            "Wrong indentation!",
             track.getIndentation(),
             new IsEqual<>(0)
         );
         MatcherAssert.assertThat(
             "The node's name is not correct!",
             track.getName(),
-            new IsNull<>()
+            new IsEqual<>("a")
         );
         MatcherAssert.assertThat(
             "There is a comment!",

@@ -14,35 +14,16 @@ import org.cactoos.io.TempFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
+import org.hamcrest.core.IsNull;
 import org.hamcrest.core.IsSame;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
-import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
 import org.simpleyaml.examples.Person;
+import org.simpleyaml.utils.StringUtils;
 
 class YamlFileTest {
-
-    private static URI getResourceURI(final String file) throws URISyntaxException {
-        return Objects.requireNonNull(YamlFileTest.getResourceURL(file).toURI());
-    }
-
-    private static URL getResourceURL(final String file) {
-        return YamlFileTest.class.getClassLoader().getResource(file);
-    }
-
-    private static File tempFile() throws Exception {
-        return new TempFile().value().toFile();
-    }
-
-    private static String fileToStringUnix(YamlFile yamlFile) throws IOException {
-        String content = yamlFile.fileToString();
-        if (content != null) {
-            // Strip Windows carriage to ensure testable contents are the same as in Unix
-            content = content.replace("\r", "");
-        }
-        return content;
-    }
 
     @Test
     void load() throws Exception {
@@ -302,7 +283,7 @@ class YamlFileTest {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments2.yml"));
         yamlFile.loadWithComments();
 
-        final String content = yamlFile.fileToString();
+        final String content = fileToStringUnix(yamlFile);
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (saveToString)!",
@@ -315,7 +296,7 @@ class YamlFileTest {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments3.yml"));
         yamlFile.loadWithComments();
 
-        final String content = yamlFile.fileToString();
+        final String content = fileToStringUnix(yamlFile);
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file (saveToString)!",
@@ -348,15 +329,9 @@ class YamlFileTest {
         );
 
         MatcherAssert.assertThat(
-                "Couldn't parse the values correctly!",
-                yamlFile.getString("test.comment"),
-                new IsEqual<>("text with # hashtag")
-        );
-
-        MatcherAssert.assertThat(
-                "Couldn't parse the comments correctly!",
-                yamlFile.getComment("test.comment"),
-                new IsEqual<>("Block #comment with # hashtag")
+                "Couldn't parse comments correctly!",
+                yamlFile.getComment("test.list.entry"),
+                new IsEqual<>("Comment on a list item")
         );
 
         MatcherAssert.assertThat(
@@ -366,23 +341,47 @@ class YamlFileTest {
         );
 
         MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("test.wrap"),
+                new IsEqual<>("This is a\nmultiline comment")
+        );
+
+        MatcherAssert.assertThat(
                 "Couldn't parse the side comments correctly!",
-                yamlFile.getComment("test.comment", CommentType.SIDE),
-                new IsEqual<>("Side #comment with # hashtag")
+                yamlFile.getComment("test.wrap", CommentType.SIDE),
+                new IsNull<>()
         );
     }
 
     @Test
-    void getComment2() throws Exception {
+    void getCommentEdgeCases() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments4.yml"));
         yamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("test. wrap "),
+                new IsEqual<>("Block #comment with # character")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("test. wrap ", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # character")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the values correctly!",
+                yamlFile.getString("test. wrap "),
+                new IsEqual<>(" # not a comment ")
+        );
 
         yamlFile.getConfigurationSection("test").getKeys(false)
                 .forEach((key) ->
                         MatcherAssert.assertThat(
                                 "Side comment mismatch (test." + key + ")",
                                 yamlFile.getComment("test." + key, CommentType.SIDE),
-                                new IsEqual<>("Side #comment with \"#\" character")));
+                                new IsEqual<>("Side #comment with # character")));
     }
 
     @Test
@@ -403,6 +402,172 @@ class YamlFileTest {
             "Couldn't parse the comments correctly!",
             yamlFile.getComment("test.string", CommentType.SIDE),
             new IsEqual<>("Edited hello side comment!")
+        );
+    }
+
+    @Test
+    void setGetComment() throws Exception {
+        final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
+        yamlFile.loadWithComments();
+
+        final String content = fileToStringUnix(yamlFile);
+
+        yamlFile.options().commentFormatter().stripPrefix(false).trim(false);
+
+        yamlFile.setComment("test", yamlFile.getComment("test"));
+        yamlFile.setComment("math", yamlFile.getComment("math"));
+        yamlFile.setComment("test.comment", yamlFile.getComment("test.comment"));
+        yamlFile.setComment("test.comment", yamlFile.getComment("test.comment", CommentType.SIDE), CommentType.SIDE);
+        yamlFile.setComment("test.list.entry", yamlFile.getComment("test.list.entry"));
+        yamlFile.setComment("test.list.entry", yamlFile.getComment("test.list.entry", CommentType.SIDE), CommentType.SIDE);
+
+        MatcherAssert.assertThat(
+                "Couldn't set the comments correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(content)
+        );
+    }
+
+    @Test
+    void header() throws Exception {
+        YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
+        yamlFile.load();
+
+        MatcherAssert.assertThat(
+                "Couldn't build the header correctly!",
+                yamlFile.buildHeader(),
+                new IsEqual<>(testHeader())
+        );
+
+        // header without stripping # prefix and without the last blank line
+        final String headerWithPrefix = testHeader().trim();
+
+        MatcherAssert.assertThat(
+                "Couldn't get the options header correctly!",
+                yamlFile.options().header(),
+                new IsEqual<>(headerWithPrefix)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the header correctly!",
+                yamlFile.getHeader(),
+                new IsEqual<>(headerWithPrefix)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the first key comment correctly (loaded without comments)!",
+                yamlFile.getComment("test"),
+                new IsNull<>()
+        );
+
+        yamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+                "Couldn't build the header correctly!",
+                yamlFile.buildHeader(),
+                new IsEqual<>(testHeader())
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the options header correctly!",
+                yamlFile.options().header(),
+                new IsEqual<>(headerWithPrefix)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the header correctly!",
+                yamlFile.getHeader(),
+                new IsEqual<>(headerWithPrefix)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the first key comment correctly!",
+                yamlFile.getComment("test"),
+                new IsEqual<>("Test comments")
+        );
+
+        final String headerSeparator = StringUtils.padding(20, '#');
+        yamlFile.options().headerFormatter()
+                .prefixFirst(headerSeparator).commentPrefix("##\t").commentSuffix("\t##").suffixLast(headerSeparator);
+
+        final String newHeader = "New header\nSecond line";
+        yamlFile.setHeader(newHeader);
+
+        MatcherAssert.assertThat(
+                "Couldn't get the options new header correctly!",
+                yamlFile.options().header(),
+                new IsEqual<>(newHeader)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the new header correctly!",
+                yamlFile.getHeader(),
+                new IsEqual<>(headerSeparator + "\n##\tNew header\t##\n##\tSecond line\t##\n" + headerSeparator)
+        );
+
+        yamlFile.options().headerFormatter(new YamlHeaderFormatter().stripPrefix(true));
+
+        MatcherAssert.assertThat(
+                "Couldn't get the options new header correctly!",
+                yamlFile.options().header(),
+                new IsEqual<>(newHeader)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the new header correctly!",
+                yamlFile.getHeader(),
+                new IsEqual<>(newHeader)
+        );
+
+        yamlFile.loadWithComments();
+
+        // header stripping # prefix and without the last blank line
+        final String headerStrip = "#####################\n" +
+                "#  HEADER COMMENT  ##\n" +
+                "#####################";
+
+        MatcherAssert.assertThat(
+                "Couldn't build the header correctly!",
+                yamlFile.buildHeader(),
+                new IsEqual<>(testHeader())
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the stripped header correctly!",
+                yamlFile.getHeader(),
+                new IsEqual<>(headerStrip)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the options header correctly!",
+                yamlFile.options().header(),
+                new IsEqual<>(headerWithPrefix)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the first key comment correctly!",
+                yamlFile.getComment("test"),
+                new IsEqual<>("Test comments")
+        );
+    }
+
+    @Test
+    void footer() throws Exception {
+        YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
+        yamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+                "Couldn't get the footer correctly!",
+                yamlFile.getFooter(),
+                new IsEqual<>("End")
+        );
+
+        yamlFile.options().commentFormatter().stripPrefix(false).trim(false);
+
+        MatcherAssert.assertThat(
+                "Couldn't get the footer correctly!",
+                yamlFile.getFooter(),
+                new IsEqual<>("\n# End")
         );
     }
 
@@ -539,7 +704,7 @@ class YamlFileTest {
         yamlFile.set("test", Arrays.asList(1, 2, 3));
         yamlFile.set("people", Arrays.asList(p1, p2));
 
-        final String expected = new YamlFile(YamlFileTest.getResourceURI("test-map-list.yml")).fileToString();
+        final String expected = fileToStringUnix(new YamlFile(YamlFileTest.getResourceURI("test-map-list.yml")));
 
         MatcherAssert.assertThat(
                 "List formatting is not the expected!",
@@ -568,16 +733,14 @@ class YamlFileTest {
                 "  formattedDate: 04/07/2020 15:18:04\n";
     }
 
-    public static String testCommentsHeader() {
-        return "#####################\n" +
-                "## INITIAL COMMENT ##\n" +
-                "#####################\n" +
-                "\n" +
-                "# Test comments";
+    public static String testHeader() {
+        return "######################\n" +
+                "##  HEADER COMMENT  ##\n" +
+                "######################\n\n";
     }
 
     public static String testWithHeader() {
-        return testCommentsHeader() + '\n' +
+        return testHeader() +
                 "test:\n" +
                 "  number: 5\n" +
                 "  string: Hello world\n" +
@@ -591,7 +754,7 @@ class YamlFileTest {
                 "    - a\n" +
                 "    - separated\n" +
                 "    - entry\n" +
-                "  comment: 'text with # hashtag'\n" +
+                "  wrap: '# this is not a comment'\n" +
                 "math:\n" +
                 "  pi: 3.141592653589793\n" +
                 "timestamp:\n" +
@@ -600,7 +763,8 @@ class YamlFileTest {
     }
 
     private static String testComments() {
-        return testCommentsHeader() + '\n' +
+        return testHeader() +
+                "# Test comments\n" +
                 "test:\n" +
                 "  number: 5\n" +
                 "  # Hello!\n" +
@@ -617,8 +781,9 @@ class YamlFileTest {
                 "    - separated\n" +
                 "      # Comment on a list item\n" +
                 "    - entry # :)\n" +
-                "  # Block #comment with # hashtag\n" +
-                "  comment: 'text with # hashtag' # Side #comment with # hashtag\n" +
+                "  # This is a\n" +
+                "  # multiline comment\n" +
+                "  wrap: '# this is not a comment'\n" +
                 "\n" +
                 "# Wonderful number\n" +
                 "math:\n" +
@@ -636,20 +801,62 @@ class YamlFileTest {
     }
 
     private static String testCommentsSpecial() {
-        return "#####################\n" +
-                "## INITIAL COMMENT ##\n" +
-                "#####################\n" +
-                "\n" +
+        return testHeader() +
                 "# Test comments\n" +
                 "test:\n" +
-                "  # Block #comment with \"#\" character\n" +
-                "  single: 'text with # character' # Side #comment with \"#\" character\n" +
-                "  double: 'text with # character' # Side #comment with \"#\" character\n" +
-                "  escape: text with \"#\" character \\\" # Side #comment with \"#\" character\n" +
-                "  escape2: text with '#' character \\\" # Side #comment with \"#\" character\n" +
-                "  special: 'This is a string ''''with a # character \"inside of it' # Side #comment with \"#\" character\n" +
-                "  multiline: 'This is a string\" \" which got ''''wrapped and also contains a # in its\n" +
-                "    ''''content.' # Side #comment with \"#\" character\n";
+                "  # Block #comment with # character\n" +
+                "  ' wrap ': ' # not a comment ' # Side #comment with # character\n" +
+                "  single: 'text with # character' # Side #comment with # character\n" +
+                "  double: 'text with # character'  # Side #comment with # character\n" +
+                "  es'cape: text with \"#\" character \\\" # Side #comment with # character\n" +
+                "  es'cape2': text with '#' character \\\" # Side #comment with # character\n" +
+                "  :es:cape3\": 'This is a string ''''with a # character \"inside of it' # Side #comment with # character\n" +
+                "  -? escape4: -'# not a \\#comment # Side #comment with # character\n" +
+                "  multiline: 'This is a string\\\" \\\" which got ''wrapped and also contains a     #\n" +
+                "    in its ''content.' # Side #comment with # character\n" +
+                "  multiline2: | # Side #comment with # character\n" +
+                "    'line one' # not a comment\n" +
+                "    line two # not a comment\n" +
+                "  # This is a'#\n" +
+                "  # multiline comment #~\n" +
+                "  special2: text\"#\"' # Side #comment with # character\n" +
+                "     # unexpected indentation comment but valid\n" +
+                "  special3: text'#''# not comment # Side #comment with # character\n" +
+                "  special4: text''#''# not comment # Side #comment with # character\n" +
+                "  entries: # Side #comment with # character\n" +
+                "    # Comment on a list item with # character\n" +
+                "    - entry'#'' #:)\n" +
+                "    # dangling comment\n" +
+                "  # Block #comment with # character\n" +
+                "\n" +
+                "  # Multiple line comment with blank line\n" +
+                "  comment: 'text with # character' # Side #comment with # character\n" +
+                "\n" +
+                "  # Multiple line comment\n" +
+                "  #  with blank line\n" +
+                "  blank: '' # Side #comment with # character\n" +
+                "  # Multiple line comment with blank line\n";
+    }
+
+    private static URI getResourceURI(final String file) throws URISyntaxException {
+        return Objects.requireNonNull(YamlFileTest.getResourceURL(file).toURI());
+    }
+
+    private static URL getResourceURL(final String file) {
+        return YamlFileTest.class.getClassLoader().getResource(file);
+    }
+
+    private static File tempFile() throws Exception {
+        return new TempFile().value().toFile();
+    }
+
+    private static String fileToStringUnix(YamlFile yamlFile) throws IOException {
+        String content = yamlFile.fileToString();
+        if (content != null) {
+            // Strip Windows carriage to ensure testable contents are the same as in Unix
+            content = content.replace("\r", "");
+        }
+        return content;
     }
 
 }

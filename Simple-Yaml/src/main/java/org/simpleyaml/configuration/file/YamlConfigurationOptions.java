@@ -1,5 +1,8 @@
 package org.simpleyaml.configuration.file;
 
+import org.simpleyaml.configuration.comments.CommentFormatter;
+import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
+import org.simpleyaml.configuration.comments.YamlCommentFormatter;
 import org.simpleyaml.utils.Validate;
 
 import java.util.Objects;
@@ -8,15 +11,19 @@ import java.util.Objects;
  * Various settings for controlling the input and output of a {@link YamlConfiguration}
  *
  * @author Bukkit
- * @author Carlos Lazaro Costa (added indentList option)
+ * @author Carleslc
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConfigurationOptions.java">Bukkit Source</a>
  */
 public class YamlConfigurationOptions extends FileConfigurationOptions {
 
     private int indentList = 2;
 
+    private YamlCommentFormatter commentFormatter;
+
     protected YamlConfigurationOptions(final YamlConfiguration configuration) {
         super(configuration);
+
+        this.headerFormatter(new YamlHeaderFormatter());
     }
 
     @Override
@@ -37,8 +44,8 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     }
 
     @Override
-    public YamlConfigurationOptions header(final String value) {
-        super.header(value);
+    public YamlConfigurationOptions header(final String header) {
+        super.header(header);
         return this;
     }
 
@@ -46,6 +53,18 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     public YamlConfigurationOptions copyHeader(final boolean value) {
         super.copyHeader(value);
         return this;
+    }
+
+    @Override
+    public YamlConfigurationOptions headerFormatter(final CommentFormatter headerFormatter) {
+        Validate.isTrue(headerFormatter instanceof YamlHeaderFormatter, "The header formatter must inherit YamlHeaderFormatter");
+        super.headerFormatter(headerFormatter);
+        return this;
+    }
+
+    @Override
+    public YamlHeaderFormatter headerFormatter() {
+        return (YamlHeaderFormatter) super.headerFormatter();
     }
 
     /**
@@ -90,17 +109,44 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return this;
     }
 
+    /**
+     * Gets the comment formatter used to format comments.
+     * <p></p>
+     * The default comment formatter prefix is "# ", i.e. a # followed by a space.
+     *
+     * @return the comment formatter
+     */
+    public YamlCommentFormatter commentFormatter() {
+        if (this.commentFormatter == null) {
+            this.commentFormatter = new YamlCommentFormatter();
+        }
+        return this.commentFormatter;
+    }
+
+    /**
+     * Sets the comment formatter to be used to format comments.
+     * <p></p>
+     * If unset, the default comment formatter prefix is "# ", i.e. a # followed by a space.
+     *
+     * @param commentFormatter the comment formatter to use
+     * @return This object, for chaining
+     */
+    public YamlConfigurationOptions commentFormatter(final YamlCommentFormatter commentFormatter) {
+        this.commentFormatter = commentFormatter;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof YamlConfigurationOptions)) return false;
         if (!super.equals(o)) return false;
         YamlConfigurationOptions that = (YamlConfigurationOptions) o;
-        return indentList == that.indentList;
+        return indentList == that.indentList && Objects.equals(commentFormatter, that.commentFormatter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), indentList);
+        return Objects.hash(super.hashCode(), indentList, commentFormatter);
     }
 }

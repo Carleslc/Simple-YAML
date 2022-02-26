@@ -1,14 +1,38 @@
-#####################
-## INITIAL COMMENT ##
-#####################
+######################
+##  HEADER COMMENT  ##
+######################
 
 # Test comments
 test:
-  # Block #comment with "#" character
-  single: 'text with # character' # Side #comment with "#" character
-  double: "text with # character" # Side #comment with "#" character
-  escape: "text with \"#\" character \\\"" # Side #comment with "#" character
-  escape2: 'text with ''#'' character \"' # Side #comment with "#" character
-  special: "This is a string ''with a # character \"inside of it" # Side #comment with "#" character
-  multiline: "This is a string\" \" which got ''wrapped and also contains a #
-   in its ''content." # Side #comment with "#" character
+  # Block #comment with # character
+  ' wrap ': " # not a comment "# Side #comment with # character
+  'single': 'text with # character' # Side #comment with # character
+  "double": "text with # character"  # Side #comment with # character
+  es'cape: "text with \"#\" character \\\"" # Side #comment with # character
+  es'cape2': 'text with ''#'' character \"' # Side #comment with # character
+  :es:cape3": "This is a string ''with a # character \"inside of it" # Side #comment with # character
+  -? escape4: -'# not a \#comment # Side #comment with # character
+  multiline: 'This is a string\" \" which got ''wrapped and also contains a     #
+  in its ''content.' # Side #comment with # character
+  multiline2: | # Side #comment with # character
+    'line one' # not a comment
+    line two # not a comment
+  # This is a'#
+  # multiline comment #~
+  special2: text"#"' # Side #comment with # character
+     # unexpected indentation comment but valid
+  special3: text'#''# not comment # Side #comment with # character
+  special4: text''#''# not comment # Side #comment with # character
+  entries: # Side #comment with # character
+    # Comment on a list item with # character
+    - entry'#'' #:)
+    # dangling comment
+  # Block #comment with # character
+
+  # Multiple line comment with blank line
+  comment: 'text with # character'# Side #comment with # character
+
+  # Multiple line comment
+  #  with blank line
+  blank: ''# Side #comment with # character
+  # Multiple line comment with blank line
