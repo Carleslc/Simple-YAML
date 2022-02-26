@@ -104,14 +104,12 @@ public class MemorySection implements ConfigurationSection {
         final char separator = root.options().pathSeparator();
 
         final StringBuilder builder = new StringBuilder();
-        if (section != null) {
-            for (ConfigurationSection parent = section; parent != null && parent != relativeTo; parent = parent.getParent()) {
-                if (builder.length() > 0) {
-                    builder.insert(0, separator);
-                }
-
-                builder.insert(0, parent.getName());
+        for (ConfigurationSection parent = section; parent != null && parent != relativeTo; parent = parent.getParent()) {
+            if (builder.length() > 0) {
+                builder.insert(0, separator);
             }
+
+            builder.insert(0, parent.getName());
         }
 
         if (key != null && key.length() > 0) {
@@ -252,8 +250,6 @@ public class MemorySection implements ConfigurationSection {
 
     @Override
     public void set(final String path, final Object value) {
-        Validate.notEmpty(path, "Cannot set to an empty path");
-
         final Configuration root = this.getRoot();
         if (root == null) {
             throw new IllegalStateException("Cannot use section without a root");
