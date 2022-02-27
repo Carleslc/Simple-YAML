@@ -95,4 +95,13 @@ public class YamlCommentFormatterConfiguration extends CommentFormatterConfigura
     public int hashCode() {
         return Objects.hash(super.hashCode(), stripPrefix, trim);
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "stripPrefix=" + stripPrefix +
+                ", trim=" + trim +
+                ", " + super.toString() +
+                '}';
+    }
 }

@@ -10,7 +10,7 @@ import org.simpleyaml.configuration.file.YamlFile;
 
 /**
  * YAML is a human-readable data serialization language.<br>
- * This class shows you how to use this API to use these files to save your data.
+ * This example shows you how to use this API to use these files to save your data.
  *
  * @author Carlos Lazaro Costa
  */
@@ -40,17 +40,19 @@ public final class YamlExample {
         // You can manage hierarchies by separating the sections with a dot at path
         // Let's put some values to the file
 
+        // Defaults are added when they are not present in the file, otherwise the existing values will not be overwritten
         yamlFile.addDefault("test.number", 5);
         yamlFile.addDefault("test.string", "Hello world");
         yamlFile.addDefault("test.boolean", true);
 
+        // Setting values overwrites the value if there was any
         yamlFile.set("math.pi", Math.PI);
         yamlFile.set("math.e", Math.E);
 
         // More additions, e.g. adding entire lists
 
-        final List<String> list = Arrays.asList("Each word will be in a separated entry".split("\\s+"));
-        yamlFile.set("test.list", list);
+        final List<String> words = Arrays.asList("Each word will be in a separated entry".split(" "));
+        yamlFile.set("test.list", words);
 
         // You can move between sections with a ConfigurationSection
 
@@ -98,14 +100,17 @@ public final class YamlExample {
         // You can use many methods to obtain some types without casting (String, int, double...)
 
         final double pi = yamlFile.getDouble("math.pi");
-        System.out.println(pi);
+        System.out.println("PI: " + pi);
+
+        final List<String> list = yamlFile.getStringList("test.list");
+        System.out.println("List: " + list);
 
         // And you can also use methods with default values if the path is unknown
 
         final String value = yamlFile.getString("randomSection.noValue"); // returns null
         System.out.println(value);
 
-        final String defValue = yamlFile.getString("randomSection.noValue", "Default");
+        final String defValue = yamlFile.getString("randomSection.noValue", "Default"); // returns Default
         System.out.println(defValue);
 
         // Finally, save changes!
