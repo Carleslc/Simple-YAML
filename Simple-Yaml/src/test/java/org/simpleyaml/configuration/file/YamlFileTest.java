@@ -18,8 +18,7 @@ import org.hamcrest.core.IsNull;
 import org.hamcrest.core.IsSame;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
-import org.simpleyaml.configuration.comments.CommentType;
-import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
+import org.simpleyaml.configuration.comments.*;
 import org.simpleyaml.examples.Person;
 import org.simpleyaml.utils.StringUtils;
 
@@ -406,13 +405,130 @@ class YamlFileTest {
     }
 
     @Test
+    void setCommentFormat() throws IOException {
+        final YamlFile yamlFile = new YamlFile();
+
+        MatcherAssert.assertThat(
+                "Couldn't get the default comment formatter correctly!",
+                yamlFile.options().commentFormatter(),
+                new IsSame<>(YamlCommentFormat.DEFAULT.commentFormatter())
+        );
+
+        yamlFile.path("first").set(1).comment("1");
+        yamlFile.path("second").set(2).comment("2").commentSide("side");
+
+        String contents = "# 1\nfirst: 1\n# 2\nsecond: 2 # side\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't format the contents correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contents)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the comment correctly!",
+                yamlFile.getComment("first"),
+                new IsEqual<>("1")
+        );
+
+        final YamlCommentFormatter customFormatter = new YamlCommentFormatter(new YamlCommentFormatterConfiguration("## "));
+        yamlFile.setCommentFormat(customFormatter);
+
+        MatcherAssert.assertThat(
+                "Couldn't get the comment formatter correctly!",
+                yamlFile.options().commentFormatter(),
+                new IsSame<>(customFormatter)
+        );
+
+        yamlFile.path("first").set(1).comment("1");
+        yamlFile.path("second").set(2).comment("2").commentSide("side");
+
+        contents = "## 1\nfirst: 1\n## 2\nsecond: 2 # side\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't format the contents correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contents)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the comment correctly!",
+                yamlFile.getComment("first"),
+                new IsEqual<>("1")
+        );
+
+        yamlFile.setCommentFormat(YamlCommentFormat.RAW);
+
+        yamlFile.path("first").set(1).comment("#1");
+        yamlFile.path("second").set(2).comment("\n#2").commentSide("#side");
+
+        contents = "#1\nfirst: 1\n\n#2\nsecond: 2 #side\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't format the contents correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contents)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the comment correctly!",
+                yamlFile.getComment("second"),
+                new IsEqual<>("\n#2")
+        );
+
+        yamlFile.setCommentFormat(YamlCommentFormat.PRETTY);
+
+        yamlFile.path("first").set(1).comment("1");
+        yamlFile.path("second").set(2).comment("2").commentSide("side");
+
+        contents = "# 1\nfirst: 1\n\n# 2\nsecond: 2 # side\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't format the contents correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contents)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the comment correctly!",
+                yamlFile.getComment("second"),
+                new IsEqual<>("2")
+        );
+
+        yamlFile.setCommentFormat(YamlCommentFormat.BLANK_LINE);
+
+        yamlFile.path("first").set(1).comment("1");
+        yamlFile.path("second").set(2).comment("2").commentSide("side");
+
+        contents = "\n# 1\nfirst: 1\n\n# 2\nsecond: 2\n# side\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't format the contents correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contents)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the comment correctly!",
+                yamlFile.getComment("second"),
+                new IsEqual<>("\n2")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the comment correctly!",
+                yamlFile.getComment("second", CommentType.SIDE),
+                new IsEqual<>("\nside")
+        );
+    }
+
+    @Test
     void setGetComment() throws Exception {
         final YamlFile yamlFile = new YamlFile(YamlFileTest.getResourceURI("test-comments.yml"));
         yamlFile.loadWithComments();
 
         final String content = fileToStringUnix(yamlFile);
 
-        yamlFile.options().commentFormatter().stripPrefix(false).trim(false);
+        yamlFile.setCommentFormat(YamlCommentFormat.RAW);
 
         yamlFile.setComment("test", yamlFile.getComment("test"));
         yamlFile.setComment("math", yamlFile.getComment("math"));
@@ -562,12 +678,67 @@ class YamlFileTest {
                 new IsEqual<>("End")
         );
 
-        yamlFile.options().commentFormatter().stripPrefix(false).trim(false);
+        yamlFile.setCommentFormat(YamlCommentFormat.RAW);
 
         MatcherAssert.assertThat(
                 "Couldn't get the footer correctly!",
                 yamlFile.getFooter(),
                 new IsEqual<>("\n# End")
+        );
+    }
+
+    @Test
+    void path() throws IOException {
+        YamlFile yamlFile = new YamlFile();
+
+        yamlFile.path("default").addDefault("default");
+        yamlFile.path("test")
+                .comment("Test comment", YamlCommentFormat.BLANK_LINE).commentSide("Side comment")
+                .path("children")
+                .blankLine()
+                .path("child1")
+                .addDefault(1).comment("Child comment").blankLine()
+                .parent()
+                .addDefault("child2", 2)
+                .set("child3", 3);
+
+        final String contents =
+                "default: default\n" +
+                "\n" +
+                "# Test comment\n" +
+                "test: # Side comment\n" +
+                "  \n" +
+                "  children:\n" +
+                "    \n" +
+                "    # Child comment\n" +
+                "    child1: 1\n" +
+                "    child2: 2\n" +
+                "    child3: 3\n";
+
+        MatcherAssert.assertThat(
+                "Wrong current path!",
+                yamlFile.path("test.children").getCurrentPath(),
+                new IsEqual<>("test.children")
+        );
+
+        final YamlFileWrapper parent = yamlFile.path("test.children").parent();
+
+        MatcherAssert.assertThat(
+                "Wrong parent path!",
+                parent,
+                new IsNot<>(new IsNull<>())
+        );
+
+        MatcherAssert.assertThat(
+                "Wrong parent path!",
+                parent.getCurrentPath(),
+                new IsEqual<>("test")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't save the contents correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contents)
         );
     }
 
@@ -712,7 +883,7 @@ class YamlFileTest {
                 new IsEqual<>(expected));
     }
 
-    public static String testContent() {
+    static String testContent() {
         return "test:\n" +
                 "  number: 5\n" +
                 "  string: Hello world\n" +
@@ -733,13 +904,13 @@ class YamlFileTest {
                 "  formattedDate: 04/07/2020 15:18:04\n";
     }
 
-    public static String testHeader() {
+    static String testHeader() {
         return "######################\n" +
                 "##  HEADER COMMENT  ##\n" +
                 "######################\n\n";
     }
 
-    public static String testWithHeader() {
+    static String testWithHeader() {
         return testHeader() +
                 "test:\n" +
                 "  number: 5\n" +
@@ -755,6 +926,7 @@ class YamlFileTest {
                 "    - separated\n" +
                 "    - entry\n" +
                 "  wrap: '# this is not a comment'\n" +
+                "  blank: ''\n" +
                 "math:\n" +
                 "  pi: 3.141592653589793\n" +
                 "timestamp:\n" +
@@ -762,7 +934,7 @@ class YamlFileTest {
                 "  formattedDate: 04/07/2020 15:18:04\n";
     }
 
-    private static String testComments() {
+    static String testComments() {
         return testHeader() +
                 "# Test comments\n" +
                 "test:\n" +
@@ -779,28 +951,30 @@ class YamlFileTest {
                 "    - in\n" +
                 "    - a\n" +
                 "    - separated\n" +
-                "      # Comment on a list item\n" +
+                "    # Comment on a list item\n" +
                 "    - entry # :)\n" +
                 "  # This is a\n" +
                 "  # multiline comment\n" +
                 "  wrap: '# this is not a comment'\n" +
                 "\n" +
-                "# Wonderful number\n" +
+                "  blank: ''\n" +
+                "\n" +
+                "# Wonderful numbers\n" +
                 "math:\n" +
                 "  pi: 3.141592653589793\n" +
-                "  # Comment without direct key\n" +
+                "  # Side comment below\n" +
                 "\n" +
                 "# Some timestamps\n" +
                 "timestamp:\n" +
                 "  # ISO\n" +
                 "  canonicalDate: 2020-07-04T13:18:04.458Z\n" +
                 "  # Date/Time with format\n" +
-                "  formattedDate: 04/07/2020 15:18:04\n" +
+                "  formattedDate: 04/07/2020 15:18:04 # dd/MM/yyyy HH:mm:ss\n" +
                 "\n" +
                 "# End\n";
     }
 
-    private static String testCommentsSpecial() {
+    static String testCommentsSpecial() {
         return testHeader() +
                 "# Test comments\n" +
                 "test:\n" +
@@ -838,19 +1012,19 @@ class YamlFileTest {
                 "  # Multiple line comment with blank line\n";
     }
 
-    private static URI getResourceURI(final String file) throws URISyntaxException {
+    static URI getResourceURI(final String file) throws URISyntaxException {
         return Objects.requireNonNull(YamlFileTest.getResourceURL(file).toURI());
     }
 
-    private static URL getResourceURL(final String file) {
+    static URL getResourceURL(final String file) {
         return YamlFileTest.class.getClassLoader().getResource(file);
     }
 
-    private static File tempFile() throws Exception {
+    static File tempFile() throws Exception {
         return new TempFile().value().toFile();
     }
 
-    private static String fileToStringUnix(YamlFile yamlFile) throws IOException {
+    static String fileToStringUnix(YamlFile yamlFile) throws IOException {
         String content = yamlFile.fileToString();
         if (content != null) {
             // Strip Windows carriage to ensure testable contents are the same as in Unix

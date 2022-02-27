@@ -169,13 +169,15 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     /**
-     * Adds a comment to the section or value selected by path.
+     * Set a comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
+     * <p></p>
+     * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
-     * @param path    path of desired section or value
-     * @param comment the comment to add, # symbol is not needed
-     * @param type    either above (block) or side
+     * @param path    path of desired section or key
+     * @param comment the comment to add, # prefix is not needed
+     * @param type    either above (BLOCK) or SIDE
      */
     @Override
     public void setComment(final String path, final String comment, final CommentType type) {
@@ -186,19 +188,217 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         this.yamlCommentMapper.setComment(path, comment, type);
     }
 
-    // TODO add YamlCommentFormat DEFAULT (no blank lines), PRETTY (blank line above comment if indent is 0)
+    /**
+     * Set a block comment above the section or value selected by path.
+     * Comment will be indented automatically.
+     * Multi-line comments can be provided using \n character.
+     * <p></p>
+     * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
+     *
+     * @param path    path of desired section or key
+     * @param comment the block comment to add, # character is not needed
+     */
+    public void setComment(final String path, final String comment) {
+        this.setComment(path, comment, CommentType.BLOCK);
+    }
+
+    /**
+     * Set a comment to the section or value selected by path.
+     * Comment will be indented automatically.
+     * Multi-line comments can be provided using \n character.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
+     *
+     * @param path    path of desired section or key
+     * @param comment the comment to add, # prefix is not needed
+     * @param type    either above (BLOCK) or SIDE
+     * @param yamlCommentFormatter the comment formatter to use
+     */
+    public void setComment(final String path, final String comment, final CommentType type, final YamlCommentFormatter yamlCommentFormatter) {
+        final YamlCommentFormatter defaultFormatter = this.options().commentFormatter();
+        this.setCommentFormat(yamlCommentFormatter);
+        this.setComment(path, comment, type);
+        this.setCommentFormat(defaultFormatter);
+    }
+
+    /**
+     * Set a comment to the section or value selected by path.
+     * Comment will be indented automatically.
+     * Multi-line comments can be provided using \n character.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
+     *
+     * @param path    path of desired section or key
+     * @param comment the comment to add, # prefix is not needed
+     * @param type    either above (BLOCK) or SIDE
+     * @param yamlCommentFormat the comment format to use
+     */
+    public void setComment(final String path, final String comment, final CommentType type, final YamlCommentFormat yamlCommentFormat) {
+        Validate.notNull(yamlCommentFormat, "yamlCommentFormat cannot be null!");
+        this.setComment(path, comment, type, yamlCommentFormat.commentFormatter());
+    }
+
+    /**
+     * Set a block comment to the section or value selected by path.
+     * Comment will be indented automatically.
+     * Multi-line comments can be provided using \n character.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
+     *
+     * @param path    path of desired section or key
+     * @param comment the block comment to add, # prefix is not needed
+     * @param yamlCommentFormatter the comment formatter to use
+     */
+    public void setComment(final String path, final String comment, final YamlCommentFormatter yamlCommentFormatter) {
+        this.setComment(path, comment, CommentType.BLOCK, yamlCommentFormatter);
+    }
+
+    /**
+     * Set a block comment to the section or value selected by path.
+     * Comment will be indented automatically.
+     * Multi-line comments can be provided using \n character.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
+     *
+     * @param path    path of desired section or key
+     * @param comment the block comment to add, # prefix is not needed
+     * @param yamlCommentFormat the comment format to use
+     */
+    public void setComment(final String path, final String comment, final YamlCommentFormat yamlCommentFormat) {
+        this.setComment(path, comment, CommentType.BLOCK, yamlCommentFormat);
+    }
+
+    /**
+     * Set a blank line at the beginning of the block comment.
+     * If currently there is no block comment for the provided path then it sets "\n" as the block comment.
+     * @param path path of desired section or key
+     */
+    public void setBlankLine(final String path) {
+        final YamlCommentFormatter defaultFormatter = this.options().commentFormatter();
+        this.setCommentFormat(YamlCommentFormat.RAW);
+        final String comment = this.getComment(path, CommentType.BLOCK);
+        if (comment == null) {
+            this.setComment(path, "\n", CommentType.BLOCK);
+        } else if (!comment.startsWith("\n")) {
+            this.setComment(path, '\n' + comment, CommentType.BLOCK);
+        }
+        this.setCommentFormat(defaultFormatter);
+    }
 
     /**
      * Retrieve the comment of the section or value selected by path.
+     * <p></p>
+     * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
-     * @param path path of desired section or value
-     * @param type either above (block) or side
+     * @param path path of desired section or key
+     * @param type either above (BLOCK) or SIDE
      * @return the comment of the section or value selected by path,
      * or null if that path does not have any comment of this type
      */
     @Override
     public String getComment(final String path, final CommentType type) {
         return this.yamlCommentMapper != null ? this.yamlCommentMapper.getComment(path, type) : null;
+    }
+
+    /**
+     * Retrieve the block comment of the section or value selected by path.
+     * <p></p>
+     * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
+     *
+     * @param path path of desired section or key
+     * @return the block comment of the section or value selected by path,
+     * or null if that path does not have any comment of type block
+     */
+    public String getComment(final String path) {
+        return this.getComment(path, CommentType.BLOCK);
+    }
+
+    /**
+     * Retrieve the comment of the section or value selected by path.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
+     *
+     * @param path path of desired section or key
+     * @param type either above (BLOCK) or SIDE
+     * @param yamlCommentFormatter the comment formatter to use
+     * @return the comment of the section or value selected by path,
+     * or null if that path does not have any comment of this type
+     */
+    public String getComment(final String path, final CommentType type, final YamlCommentFormatter yamlCommentFormatter) {
+        final YamlCommentFormatter defaultFormatter = this.options().commentFormatter();
+        this.setCommentFormat(yamlCommentFormatter);
+        final String comment = this.getComment(path, type);
+        this.setCommentFormat(defaultFormatter);
+        return comment;
+    }
+
+    /**
+     * Retrieve the comment of the section or value selected by path.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
+     *
+     * @param path path of desired section or key
+     * @param type either above (BLOCK) or SIDE
+     * @param yamlCommentFormat the comment format to use
+     * @return the comment of the section or value selected by path,
+     * or null if that path does not have any comment of this type
+     */
+    public String getComment(final String path, final CommentType type, final YamlCommentFormat yamlCommentFormat) {
+        Validate.notNull(yamlCommentFormat, "yamlCommentFormat cannot be null!");
+        return this.getComment(path, type, yamlCommentFormat.commentFormatter());
+    }
+
+    /**
+     * Retrieve the block comment of the section or value selected by path.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
+     *
+     * @param path path of desired section or key
+     * @param yamlCommentFormatter the comment formatter to use
+     * @return the block comment of the section or value selected by path,
+     * or null if that path does not have any comment of type block
+     */
+    public String getComment(final String path, final YamlCommentFormatter yamlCommentFormatter) {
+        return this.getComment(path, CommentType.BLOCK, yamlCommentFormatter);
+    }
+
+    /**
+     * Retrieve the block comment of the section or value selected by path.
+     * <p></p>
+     * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
+     *
+     * @param path path of desired section or key
+     * @param yamlCommentFormat the comment format to use
+     * @return the block comment of the section or value selected by path,
+     * or null if that path does not have any comment of type block
+     */
+    public String getComment(final String path, final YamlCommentFormat yamlCommentFormat) {
+        return this.getComment(path, CommentType.BLOCK, yamlCommentFormat);
+    }
+
+    /**
+     * Change the comment formatter to one of the defaults provided by {@link YamlCommentFormat}.
+     * <p></p>
+     * This will change the behaviour for parsing comments with {@link #getComment(String, CommentType)}
+     * and for dumping comments with {@link #setComment(String, String, CommentType)}.
+     * If default behaviour does not suits you then change the format before calling one of these methods.
+     * @param yamlCommentFormat desired format to set/dump and get/parse comments
+     */
+    public void setCommentFormat(YamlCommentFormat yamlCommentFormat) {
+        Validate.notNull(yamlCommentFormat, "yamlCommentFormat cannot be null!");
+        this.setCommentFormat(yamlCommentFormat.commentFormatter());
+    }
+
+    /**
+     * Change the comment formatter for parsing and dumping comments.
+     * This is a shortcut to {@link #options()} {@link YamlConfigurationOptions#commentFormatter(YamlCommentFormatter)}.
+     * <p></p>
+     * This will change the behaviour for parsing comments with {@link #getComment(String, CommentType)}
+     * and for dumping comments with {@link #setComment(String, String, CommentType)}.
+     * @param yamlCommentFormatter desired formatter to set/dump and get/parse comments
+     */
+    public void setCommentFormat(YamlCommentFormatter yamlCommentFormatter) {
+        this.options().commentFormatter(yamlCommentFormatter);
     }
 
     /**
@@ -240,6 +440,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Gets the footer of this configuration file.
+     * This is a shortcut to {@link #getComment(String)} with null path.
      * <p></p>
      * The string format will respect the rules of the {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
      * <p></p>
@@ -253,6 +454,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Sets the footer of this configuration file.
+     * This is a shortcut to {@link #setComment(String, String)} with null path.
      * <p></p>
      * This footer will be commented out and applied at the bottom of the generated output of this configuration file.
      * The end of the file will have a new line character '\n'.
@@ -263,6 +465,32 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public void setFooter(String footer) {
         this.setComment(null, footer);
+    }
+
+    /**
+     * Get a wrapper builder to set a value to the given path and optionally set comments.
+     * <p></p>
+     * This is an alternative API for the following pattern:
+     * <pre>
+     * {@code
+     * yamlFile.set("test.hello", "Hello");
+     * yamlFile.setComment("test.hello", "Block comment");
+     * yamlFile.setComment("test.hello", "Side comment", CommentType.SIDE);
+     * }
+     * </pre>
+     * You can achieve the same with:
+     * <pre>
+     * {@code
+     * yamlFile.path("test.hello")
+     *         .set("Hello")
+     *         .comment("Block comment")
+     *         .commentSide("Side comment");
+     * }
+     * </pre>
+     * @param path path of the object or configuration to set
+     */
+    public YamlFileWrapper path(final String path) {
+        return new YamlFileWrapper(this, path);
     }
 
     /**
@@ -657,9 +885,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         return config;
     }
 
+    @FunctionalInterface
     private interface YamlFileLoader {
-
         void load(YamlFile config) throws IOException, InvalidConfigurationException;
-
     }
 }
