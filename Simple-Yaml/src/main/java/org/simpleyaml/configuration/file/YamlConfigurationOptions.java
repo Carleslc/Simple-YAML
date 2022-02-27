@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.comments.CommentFormatter;
+import org.simpleyaml.configuration.comments.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
 import org.simpleyaml.configuration.comments.YamlCommentFormatter;
 import org.simpleyaml.utils.Validate;
@@ -112,13 +113,13 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     /**
      * Gets the comment formatter used to format comments.
      * <p></p>
-     * The default comment formatter prefix is "# ", i.e. a # followed by a space.
+     * The default comment formatter is {@link YamlCommentFormat#DEFAULT}, which comment prefix is "# ", i.e. a # followed by a space.
      *
      * @return the comment formatter
      */
     public YamlCommentFormatter commentFormatter() {
         if (this.commentFormatter == null) {
-            this.commentFormatter = new YamlCommentFormatter();
+            this.commentFormatter = YamlCommentFormat.DEFAULT.commentFormatter();
         }
         return this.commentFormatter;
     }

@@ -1,15 +1,23 @@
 package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.utils.StringUtils;
+import org.simpleyaml.utils.Validate;
 
 import java.util.Objects;
 
+/**
+ * Comment formatter to parse and dump YAML comments (using the # prefix).
+ * <p>
+ * Default format is {@link YamlCommentFormat#DEFAULT}.
+ */
 public class YamlCommentFormatter implements CommentFormatter {
 
-    private final YamlCommentFormatterConfiguration blockFormatter;
-    private final YamlSideCommentFormatterConfiguration sideFormatter;
+    protected final YamlCommentFormatterConfiguration blockFormatter;
+    protected final YamlSideCommentFormatterConfiguration sideFormatter;
 
     public YamlCommentFormatter(YamlCommentFormatterConfiguration blockFormatter, YamlSideCommentFormatterConfiguration sideFormatter) {
+        Validate.notNull(blockFormatter, "blockFormatter configuration cannot be null!");
+        Validate.notNull(blockFormatter, "sideFormatter configuration cannot be null!");
         this.blockFormatter = blockFormatter;
         this.sideFormatter = sideFormatter;
     }
@@ -27,31 +35,37 @@ public class YamlCommentFormatter implements CommentFormatter {
     public String parse(String raw, CommentType type, KeyTree.Node node) {
         YamlCommentFormatterConfiguration formatterConfiguration = formatterConfiguration(type);
 
+        // Remove prefix indentation so the comment prefix can be stripped ignoring the indentation
         String prefixFirst = StringUtils.stripIndentation(formatterConfiguration.prefixFirst());
         String prefixMultiline = StringUtils.stripIndentation(formatterConfiguration.prefixMultiline());
 
         StringBuilder commentBuilder = new StringBuilder();
 
+        // Split comment in lines
         String[] lines = StringUtils.lines(raw);
 
         boolean strip = formatterConfiguration.stripPrefix();
 
         if (lines.length > 0) {
+            // Append first line without indentation and optional first prefix
             commentBuilder.append(parseCommentLine(lines[0], prefixFirst, strip));
         }
 
         for (int i = 1; i < lines.length; i++) {
+            // Append remaining lines without indentation and optional multiline prefix
             commentBuilder.append('\n').append(parseCommentLine(lines[i], prefixMultiline, strip));
         }
 
         final String comment = commentBuilder.toString();
 
+        // If set, trim leading and trailing space and blank lines
         return formatterConfiguration.trim() ? comment.trim() : comment;
     }
 
     protected String parseCommentLine(String line, String prefix, boolean strip) {
         String commentLine = StringUtils.stripIndentation(line);
         if (strip) {
+            // Remove comment prefix or first # character if line do not start with the provided comment prefix
             commentLine = StringUtils.stripPrefix(commentLine, prefix, YamlCommentFormatterConfiguration.COMMENT_INDICATOR);
         }
         return commentLine;
@@ -63,10 +77,11 @@ public class YamlCommentFormatter implements CommentFormatter {
 
         String prefix = null;
         String prefixMultiline = null;
-        int indentation = node.getIndentation();
 
         if (comment != null) {
+            // If all lines are blank or already prefixed with a comment prefix # then do not add additional formatting
             if (StringUtils.allLinesArePrefixedOrBlank(comment, YamlCommentFormatterConfiguration.COMMENT_INDICATOR)) {
+                // Ensure that side comments are prefixed with at least a space (otherwise it would not be a valid yaml comment in plain style)
                 if (type == CommentType.SIDE && !comment.startsWith(" ")) {
                     prefix = " ";
                     prefixMultiline = "";
@@ -77,10 +92,14 @@ public class YamlCommentFormatter implements CommentFormatter {
             }
         }
 
-        return CommentFormatter.format(indentation, prefix, prefixMultiline, comment, type, formatterConfiguration.suffixMultiline(), formatterConfiguration.suffixLast());
+        // Apply the format for every line (indentation, first line prefix, multiline prefix, multiline suffix and last line suffix)
+        return CommentFormatter.format(node.getIndentation(),
+                prefix, prefixMultiline,
+                comment, type,
+                formatterConfiguration.suffixMultiline(), formatterConfiguration.suffixLast());
     }
 
-    public YamlCommentFormatterConfiguration formatterConfiguration(CommentType type) {
+    public final YamlCommentFormatterConfiguration formatterConfiguration(CommentType type) {
         return type == CommentType.BLOCK ? this.blockFormatter : this.sideFormatter;
     }
 
@@ -125,5 +144,13 @@ public class YamlCommentFormatter implements CommentFormatter {
     @Override
     public int hashCode() {
         return Objects.hash(blockFormatter, sideFormatter);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "{\n" +
+                "blockFormatter=" + blockFormatter +
+                ",\nsideFormatter=" + sideFormatter +
+                "\n}";
     }
 }

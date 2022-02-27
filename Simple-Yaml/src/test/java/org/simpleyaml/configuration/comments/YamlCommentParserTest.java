@@ -65,6 +65,8 @@ final class YamlCommentParserTest {
                 parser.getComment("test-section"),
                 new IsEqual<>("\ntest-section # comment # character\n  - multiline comment # character ")
         );
+
+        YamlCommentFormat.reset();
     }
 
 }

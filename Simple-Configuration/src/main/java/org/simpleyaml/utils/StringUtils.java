@@ -69,4 +69,8 @@ public final class StringUtils {
         return Arrays.stream(lines(comment)).map(String::trim).allMatch(line -> line.isEmpty() || line.startsWith(prefix));
     }
 
+    public static String quoteNewLines(String s) {
+        return NEW_LINE.matcher(s).replaceAll("\\n");
+    }
+
 }

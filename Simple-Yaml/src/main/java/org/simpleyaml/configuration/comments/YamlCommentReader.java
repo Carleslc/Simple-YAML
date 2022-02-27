@@ -146,6 +146,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
                     if (!hasNext || this.currentChar != QuoteStyle.SINGLE.getChar()) {
                         // Closing single quote
                         this.inQuote(QuoteStyle.NONE);
+                        this.isEscaping = false;
                     }
                     return hasNext;
                 }
@@ -203,11 +204,12 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         while (this.nextChar() && this.stage != ReaderStage.QUOTE_OPEN) {
             if (this.isSpace(this.currentChar)) {
                 indent++;
-            } else if (this.isSpecialIndent(this.currentChar) && this.hasNext()
-                    && this.isSpace(this.currentLine.charAt(this.position + 1))) {
-                indent += 2;
-                this.nextChar();
             } else {
+                if (this.isSpecialIndent(this.currentChar) && this.hasNext()
+                        && this.isSpace(this.currentLine.charAt(this.position + 1))) {
+                    // Skip special indent (do not increment indent)
+                    this.nextChar();
+                }
                 break;
             }
         }
