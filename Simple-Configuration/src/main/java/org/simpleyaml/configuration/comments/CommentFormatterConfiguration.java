@@ -1,5 +1,7 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.utils.StringUtils;
+
 import java.util.Objects;
 
 public class CommentFormatterConfiguration {
@@ -73,5 +75,15 @@ public class CommentFormatterConfiguration {
     @Override
     public int hashCode() {
         return Objects.hash(prefixFirst, prefixMultiline, suffixMultiline, suffixLast);
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.quoteNewLines("{" +
+                "prefixFirst='" + prefixFirst + '\'' +
+                ", prefixMultiline='" + prefixMultiline + '\'' +
+                ", suffixMultiline='" + suffixMultiline + '\'' +
+                ", suffixLast='" + suffixLast + '\'' +
+                '}');
     }
 }

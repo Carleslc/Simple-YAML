@@ -4,12 +4,12 @@ test:
   - 3
 people:
   - ==: org.simpleyaml.examples.Person
-    dni: 12345678A
+    id: 12345678A
     name: John
     birthYear: 1990
     isAlive: true
   - ==: org.simpleyaml.examples.Person
-    dni: 12345678B
+    id: 12345678B
     name: Maria
     birthYear: 1990
     isAlive: true

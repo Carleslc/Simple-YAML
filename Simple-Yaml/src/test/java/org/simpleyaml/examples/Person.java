@@ -12,7 +12,7 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
  */
 public class Person implements ConfigurationSerializable {
 
-    private final String dni;
+    private final String id;
 
     private final String name;
 
@@ -20,15 +20,15 @@ public class Person implements ConfigurationSerializable {
 
     private boolean isAlive;
 
-    public Person(final String dni, final String name, final int birthYear, final boolean isAlive) {
-        this.dni = dni;
+    public Person(final String id, final String name, final int birthYear, final boolean isAlive) {
+        this.id = id;
         this.name = name;
         this.birthYear = birthYear;
         this.isAlive = isAlive;
     }
 
-    public Person(final String dni, final String name, final int birthYear) {
-        this(dni, name, birthYear, true);
+    public Person(final String id, final String name, final int birthYear) {
+        this(id, name, birthYear, true);
     }
 
     /*
@@ -40,7 +40,7 @@ public class Person implements ConfigurationSerializable {
      */
 
     public static Person deserialize(final Map<String, Object> mappedObject) { // note that is static
-        return new Person((String) mappedObject.get("dni"),
+        return new Person((String) mappedObject.get("id"),
             (String) mappedObject.get("name"),
             (int) mappedObject.get("birthYear"),
             (boolean) mappedObject.get("isAlive"));
@@ -48,16 +48,16 @@ public class Person implements ConfigurationSerializable {
 
     @Override
     public Map<String, Object> serialize() {
-        final Map<String, Object> mappedObject = new LinkedHashMap<String, Object>();
-        mappedObject.put("dni", this.dni);
+        final Map<String, Object> mappedObject = new LinkedHashMap<>();
+        mappedObject.put("id", this.id);
         mappedObject.put("name", this.name);
         mappedObject.put("birthYear", this.birthYear);
         mappedObject.put("isAlive", this.isAlive);
         return mappedObject;
     }
 
-    public String getDni() {
-        return this.dni;
+    public String getId() {
+        return this.id;
     }
 
     public String getName() {
@@ -78,7 +78,7 @@ public class Person implements ConfigurationSerializable {
 
     @Override
     public String toString() {
-        return "Person [dni= " + this.dni + ", name= " + this.name + ", birthYear= " + this.birthYear + ", isAlive= " + this.isAlive + "]";
+        return "Person [id= " + this.id + ", name= " + this.name + ", birthYear= " + this.birthYear + ", isAlive= " + this.isAlive + "]";
     }
 
 }

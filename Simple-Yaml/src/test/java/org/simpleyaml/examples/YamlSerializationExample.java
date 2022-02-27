@@ -4,7 +4,7 @@ import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 
 /**
- * This class shows you how to use this API to serialize and deserialize Objects.
+ * This example shows you how to use this API to serialize and deserialize Objects.
  *
  * @author Carlos Lazaro Costa
  */
@@ -40,7 +40,7 @@ public final class YamlSerializationExample {
                 // Write an object to the YAML file
                 final Person p = new Person("12345678A", "John", 1990);
 
-                yamlFile.set("test.people." + p.getDni(), p);
+                yamlFile.set("test.people." + p.getId(), p);
 
                 // Don't forget to save the file!
                 yamlFile.save();
