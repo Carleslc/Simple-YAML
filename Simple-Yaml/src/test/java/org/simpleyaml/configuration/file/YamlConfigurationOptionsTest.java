@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
 import org.llorllale.cactoos.matchers.Throws;
 import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.YamlCommentFormatterConfiguration;
 
 import java.nio.charset.StandardCharsets;
@@ -197,6 +198,8 @@ class YamlConfigurationOptionsTest {
                 sideFormatterConfiguration.prefixFirst(),
                 new IsEqual<>("\n# ")
         );
+
+        YamlCommentFormat.reset();
     }
 
     @Test

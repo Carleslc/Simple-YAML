@@ -1,11 +1,9 @@
 package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.ConfigurationOptions;
+import org.simpleyaml.utils.Validate;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class KeyTree {
 
@@ -16,6 +14,7 @@ public class KeyTree {
     private final ConfigurationOptions options;
 
     public KeyTree(final ConfigurationOptions options) {
+        Validate.notNull(options);
         this.options = options;
     }
 
@@ -124,6 +123,28 @@ public class KeyTree {
 
         public void setSideComment(final String sideComment) {
             this.sideComment = sideComment;
+        }
+
+        public KeyTree.Node getParent() {
+            return this.parent;
+        }
+
+        public boolean isRootNode() {
+            return this.parent == null;
+        }
+
+        public boolean isFirstNode() {
+            if (!this.isRootNode() && this.parent.isRootNode()) {
+                KeyTree.Node first = this.parent.children.getFirst();
+                if (first.getName() == null && this.parent.children.size() > 1) { // footer
+                    first = this.parent.children.get(1);
+                }
+                if (first == this) {
+                    final Iterator<String> keys = KeyTree.this.options.configuration().getKeys(false).iterator();
+                    return !keys.hasNext() || keys.next().equals(first.getName());
+                }
+            }
+            return false;
         }
 
         public int getIndentation() {
