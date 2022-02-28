@@ -350,6 +350,36 @@ class YamlFileTest {
                 yamlFile.getComment("test.wrap", CommentType.SIDE),
                 new IsNull<>()
         );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("math", YamlCommentFormat.RAW),
+                new IsEqual<>("\n# Wonderful numbers")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the side comments below correctly!",
+                yamlFile.getComment("math.pi", CommentType.SIDE),
+                new IsEqual<>("Side comment below")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the side comments below correctly!",
+                yamlFile.getComment("math.pi", CommentType.SIDE, YamlCommentFormat.RAW),
+                new IsEqual<>("\n# Side comment below")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("timestamp"),
+                new IsEqual<>("Some timestamps")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("timestamp", YamlCommentFormat.RAW),
+                new IsEqual<>("\n# Some timestamps")
+        );
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+import org.simpleyaml.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -11,6 +12,8 @@ public class YamlCommentParser extends YamlCommentReader {
     private StringBuilder blockComment;
     private boolean blockCommentStarted = false;
     private boolean headerParsed = false;
+
+    private KeyTree.Node currentNode;
 
     public YamlCommentParser(final YamlConfigurationOptions options, final Reader reader) {
         super(options, reader);
@@ -39,6 +42,7 @@ public class YamlCommentParser extends YamlCommentReader {
     }
 
     private void appendCommentLine() {
+        this.trackSideCommentBelow();
         if (this.blockComment == null) {
             this.blockComment = new StringBuilder(this.currentLine);
         } else {
@@ -53,10 +57,10 @@ public class YamlCommentParser extends YamlCommentReader {
 
     @Override
     protected KeyTree.Node track() throws IOException {
-        final KeyTree.Node node = super.track();
-        this.trackBlockComment(node);
-        this.trackSideComment(node);
-        return node;
+        this.currentNode = super.track();
+        this.trackBlockComment(this.currentNode);
+        this.trackSideComment(this.currentNode);
+        return this.currentNode;
     }
 
     private void trackBlockComment(final KeyTree.Node node) {
@@ -73,11 +77,20 @@ public class YamlCommentParser extends YamlCommentReader {
         this.blockCommentStarted = false;
     }
 
+    private String removeHeader(String blockComment) {
+        final String header = this.options().headerFormatter().dump(this.options().header());
+        if (!header.isEmpty()) {
+            blockComment = blockComment.replaceFirst(Pattern.quote(header), "");
+            if (blockComment.isEmpty()) {
+                blockComment = null; // blockComment was the header
+            }
+        }
+        return blockComment;
+    }
+
     private void trackSideComment(final KeyTree.Node node) throws IOException {
         if (node != null && this.currentLine != null) {
             this.readValue();
-
-            // TODO Side comments below (dangling), matching indent with the current indent
 
             if (this.isComment()) {
                 String sideComment = this.currentLine.substring(this.position);
@@ -89,15 +102,30 @@ public class YamlCommentParser extends YamlCommentReader {
         }
     }
 
-    private String removeHeader(String blockComment) {
-        final String header = this.options().headerFormatter().dump(this.options().header());
-        if (!header.isEmpty()) {
-            blockComment = blockComment.replaceFirst(Pattern.quote(header), "");
-            if (blockComment.isEmpty()) {
-                blockComment = null; // blockComment was the header
+    private void trackSideCommentBelow() {
+        if (this.currentNode != null && this.indent <= (this.currentNode.getIndentation() - this.options().indent())) {
+            // Indent level changed
+            if (this.blockComment != null && this.blockCommentStarted) {
+                // Add current block comment as a side comment below the last key
+                String sideComment = this.getRawComment(this.currentNode, CommentType.SIDE);
+                if (sideComment == null) {
+                    sideComment = "";
+                }
+                sideComment += '\n';
+                // Split trailing blank lines for next key
+                final String[] split = StringUtils.splitTrailingNewLines(this.blockComment.toString());
+                sideComment += split[0];
+                if (split[1].isEmpty()) {
+                    this.blockComment = null;
+                } else {
+                    this.blockComment = new StringBuilder(split[1]);
+                }
+                this.blockCommentStarted = false;
+                this.setRawComment(this.currentNode, sideComment, CommentType.SIDE);
             }
+            // Last key is not on the same indent level so next comment lines belong to the next key
+            this.currentNode = null;
         }
-        return blockComment;
     }
 
 }
