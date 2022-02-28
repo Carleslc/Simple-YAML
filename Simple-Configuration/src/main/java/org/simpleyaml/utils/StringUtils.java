@@ -7,11 +7,15 @@ public final class StringUtils {
 
     public static final String BLANK_LINE = "\n\n";
 
-    private static final Pattern NEW_LINE = Pattern.compile("\r?\n");
+    private static final Pattern NEW_LINE = Pattern.compile("\\R"); // like "\r?\n" but also with other unicode line separators
     private static final Pattern INDENTATION = Pattern.compile("^[^\\S\n]+", Pattern.MULTILINE); // all leading whitespace except new line
 
+    public static String[] lines(final String content, boolean stripTrailingNewLines) {
+        return NEW_LINE.split(content, stripTrailingNewLines ? 0 : -1);
+    }
+
     public static String[] lines(final String content) {
-        return NEW_LINE.split(content);
+        return lines(content, true);
     }
 
     public static String indentation(final int n) {
@@ -61,8 +65,22 @@ public final class StringUtils {
         return nl >= 0 ? s.substring(nl + 1) : "";
     }
 
+    public static String[] splitTrailingNewLines(String s) {
+        if (s == null) {
+            return null;
+        }
+        final String[] parts = new String[2];
+        int i = s.length() - 1;
+        while (i >= 0 && s.charAt(i) == '\n') {
+            i--;
+        }
+        parts[0] = i >= 0 ? s.substring(0, i + 1) : "";
+        parts[1] = s.substring(i + 1);
+        return parts;
+    }
+
     public static boolean allLinesArePrefixed(final String comment, final String prefix) {
-        return Arrays.stream(lines(comment)).allMatch(line -> line.trim().startsWith(prefix));
+        return Arrays.stream(lines(comment, false)).allMatch(line -> line.trim().startsWith(prefix));
     }
 
     public static boolean allLinesArePrefixedOrBlank(final String comment, final String prefix) {
@@ -70,7 +88,7 @@ public final class StringUtils {
     }
 
     public static String quoteNewLines(String s) {
-        return NEW_LINE.matcher(s).replaceAll("\\n");
+        return NEW_LINE.matcher(s).replaceAll("\\\\n");
     }
 
 }
