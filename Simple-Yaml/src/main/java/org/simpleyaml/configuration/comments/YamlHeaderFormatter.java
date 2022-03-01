@@ -51,10 +51,10 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * @return the header
      */
     public String parse(String contents, CommentType type, KeyTree.Node node) {
-        final StringBuilder headerBuilder = new StringBuilder();
         try {
             // using buffered reader to avoid processing and allocating the whole contents as with split lines
             final BufferedReader reader = new BufferedReader(new StringReader(contents));
+            final StringBuilder headerBuilder = new StringBuilder();
             boolean headerFound = false;
             String line, trim;
             while ((line = reader.readLine()) != null) {
@@ -77,14 +77,18 @@ public class YamlHeaderFormatter implements CommentFormatter {
                     }
                     headerBuilder.append(line);
                 } else {
-                    // key found before blank line, so the comment is considered to be the first key block comment
-                    return null; // no header
+                    // key found before blank line, so the comment is considered to be the first key block comment, not the header
+                    headerFound = false;
+                    break;
                 }
+            }
+            if (headerFound) {
+                return headerBuilder.toString();
             }
         } catch (IOException e) {
             throw new RuntimeException("Cannot parse header", e);
         }
-        return headerBuilder.toString();
+        return null;
     }
 
     /**
@@ -98,33 +102,34 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * @return the final string to be dumped
      */
     public String dump(String header, CommentType type, KeyTree.Node node) {
+        if (header == null) {
+            return null;
+        }
         String prefixFirst = null, prefixMultiline = null;
         String suffixLast = null, suffixMultiline = null;
-        if (header != null) {
-            // All header lines must be prefixed with #, with no blank lines
-            if (!StringUtils.allLinesArePrefixed(header, YamlCommentFormatterConfiguration.COMMENT_INDICATOR)) {
-                prefixMultiline = this.commentPrefix();
-                prefixFirst = this.configuration.prefixFirst(prefixMultiline);
-                suffixMultiline = this.configuration.suffixMultiline();
+        // All header lines must be prefixed with #, with no blank lines
+        if (!StringUtils.allLinesArePrefixed(header, YamlCommentFormatterConfiguration.COMMENT_INDICATOR)) {
+            prefixMultiline = this.commentPrefix();
+            prefixFirst = this.configuration.prefixFirst(prefixMultiline);
+            suffixMultiline = this.configuration.suffixMultiline();
 
-                // Ensure the first line has the prefix multiline
-                if (!prefixFirst.equals(prefixMultiline)) {
-                    final String prefixFirstSuffix = '\n' + prefixMultiline;
-                    if (!prefixFirst.endsWith(prefixFirstSuffix)) {
-                        prefixFirst += prefixFirstSuffix;
-                    }
+            // Ensure the first line has the prefix multiline
+            if (!prefixFirst.equals(prefixMultiline)) {
+                final String prefixFirstSuffix = '\n' + prefixMultiline;
+                if (!prefixFirst.endsWith(prefixFirstSuffix)) {
+                    prefixFirst += prefixFirstSuffix;
                 }
             }
-            // Header must end with the configuration suffix (a blank line by default)
-            if (!header.endsWith(configuration.suffixLast())) {
-                suffixLast = configuration.suffixLast();
-            }
-            // Ensure the last line has the suffix multiline
-            if (suffixLast != null && suffixMultiline != null && !suffixMultiline.isEmpty()) {
-                final String suffixLastPrefix = suffixMultiline + '\n';
-                if (!suffixLast.startsWith(suffixLastPrefix)) {
-                    suffixLast = suffixLastPrefix + suffixLast;
-                }
+        }
+        // Header must end with the configuration suffix (a blank line by default)
+        if (!header.endsWith(configuration.suffixLast())) {
+            suffixLast = configuration.suffixLast();
+        }
+        // Ensure the last line has the suffix multiline
+        if (suffixLast != null && suffixMultiline != null && !suffixMultiline.isEmpty()) {
+            final String suffixLastPrefix = suffixMultiline + '\n';
+            if (!suffixLast.startsWith(suffixLastPrefix)) {
+                suffixLast = suffixLastPrefix + suffixLast;
             }
         }
         return CommentFormatter.format(prefixFirst, prefixMultiline, header, suffixMultiline, suffixLast);
