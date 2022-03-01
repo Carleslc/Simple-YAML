@@ -23,7 +23,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
     protected boolean isEscaping = false;
     protected boolean isLiteral = false;
-    protected QuoteStyle quoteNotation = QuoteStyle.NONE;
+    protected ReadingQuoteStyle quoteNotation = ReadingQuoteStyle.NONE;
 
     protected ReaderStage stage = ReaderStage.START;
 
@@ -52,8 +52,8 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
     }
 
     protected boolean nextChar() {
-        this.position++;
-        if (this.position < this.currentLine.length()) {
+        if (this.hasNext()) {
+            this.position++;
             this.currentChar = this.currentLine.charAt(this.position);
             return this.checkSpecials();
         }
@@ -67,6 +67,10 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
     protected boolean hasNext() {
         return this.position + 1 < this.currentLine.length();
+    }
+
+    protected char peek(int offset) {
+        return this.currentLine.charAt(this.position + offset);
     }
 
     protected boolean isBlank() {
@@ -94,11 +98,11 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
     protected boolean canStartComment() {
         return this.position == 0 || this.stage == ReaderStage.QUOTE_CLOSE ||
-                (!this.isInQuote() && this.position > 0 && isSpace(this.currentLine.charAt(this.position - 1)));
+                (!this.isInQuote() && this.position > 0 && isSpace(this.peek(-1)));
     }
 
     protected boolean isInQuote() {
-        return this.quoteNotation != QuoteStyle.NONE;
+        return this.quoteNotation != ReadingQuoteStyle.NONE;
     }
 
     protected boolean isLiteralChar() {
@@ -107,12 +111,12 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
     protected void checkLiteral(final int indent) {
         if (this.isLiteral) {
-            if (this.quoteNotation != QuoteStyle.LITERAL) {
+            if (this.quoteNotation != ReadingQuoteStyle.LITERAL) {
                 // First line of the block scalar literal
-                this.quoteNotation = QuoteStyle.LITERAL;
+                this.quoteNotation = ReadingQuoteStyle.LITERAL;
             } else if (indent <= this.indent) {
                 // Indentation reset, block scalar literal finished
-                this.quoteNotation = QuoteStyle.NONE;
+                this.quoteNotation = ReadingQuoteStyle.NONE;
                 this.isLiteral = false;
                 this.indent = indent;
             }
@@ -122,43 +126,43 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
     }
 
     protected boolean checkSpecials() {
-        if (this.quoteNotation == QuoteStyle.NONE) {
+        if (this.quoteNotation == ReadingQuoteStyle.NONE) {
             // Default notation
-            if (this.stage == ReaderStage.NEW_LINE || this.stage == ReaderStage.AFTER_KEY) {
+            if (!this.isLiteral && (this.stage == ReaderStage.NEW_LINE || this.stage == ReaderStage.AFTER_KEY)) {
                 // Check opening quote
-                if (this.currentChar == QuoteStyle.SINGLE.getChar()) {
-                    this.inQuote(QuoteStyle.SINGLE);
+                if (this.currentChar == ReadingQuoteStyle.SINGLE.getChar()) {
+                    this.inQuote(ReadingQuoteStyle.SINGLE);
                     return this.nextChar();
-                } else if (this.currentChar == QuoteStyle.DOUBLE.getChar()) {
-                    this.inQuote(QuoteStyle.DOUBLE);
+                } else if (this.currentChar == ReadingQuoteStyle.DOUBLE.getChar()) {
+                    this.inQuote(ReadingQuoteStyle.DOUBLE);
                     return this.nextChar();
                 } else if (this.stage == ReaderStage.AFTER_KEY && this.isLiteralChar()) {
                     this.isLiteral = true; // Flag new lines to be a block scalar literal until indentation resets
                 }
             }
-        } else if (this.quoteNotation == QuoteStyle.SINGLE) {
+        } else if (this.quoteNotation == ReadingQuoteStyle.SINGLE) {
             // Single quote notation
             if (!this.isEscaping) {
-                if (this.currentChar == QuoteStyle.SINGLE.getChar()) {
+                if (this.currentChar == this.quoteNotation.getChar()) {
                     // Check if it is an escape or closing quote
                     this.isEscaping = true;
-                    boolean hasNext = this.nextChar();
-                    if (!hasNext || this.currentChar != QuoteStyle.SINGLE.getChar()) {
+                    boolean hasChar = this.nextChar();
+                    if (!hasChar || this.currentChar != this.quoteNotation.getChar()) {
                         // Closing single quote
-                        this.inQuote(QuoteStyle.NONE);
+                        this.inQuote(ReadingQuoteStyle.NONE);
                         this.isEscaping = false;
                     }
-                    return hasNext;
+                    return hasChar;
                 }
             } else {
                 this.isEscaping = false;
             }
-        } else if (this.quoteNotation == QuoteStyle.DOUBLE) {
+        } else if (this.quoteNotation == ReadingQuoteStyle.DOUBLE) {
             // Double quote notation
             if (!this.isEscaping) {
                 if (this.currentChar == this.quoteNotation.getChar()) {
                     // Closing double quote
-                    this.inQuote(QuoteStyle.NONE);
+                    this.inQuote(ReadingQuoteStyle.NONE);
                     return this.nextChar();
                 } else if (this.currentChar == '\\') {
                     this.isEscaping = true;
@@ -171,23 +175,26 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         return true;
     }
 
-    protected void inQuote(QuoteStyle quoteStyle) {
+    protected void inQuote(ReadingQuoteStyle quoteStyle) {
         this.quoteNotation = quoteStyle;
 
-        if (quoteStyle == QuoteStyle.NONE) {
-            this.stage = ReaderStage.QUOTE_CLOSE;
-        } else {
-            this.stage = ReaderStage.QUOTE_OPEN;
+        if (this.hasChar()) {
+            if (quoteStyle == ReadingQuoteStyle.NONE) {
+                this.stage = ReaderStage.QUOTE_CLOSE;
+            } else {
+                this.stage = ReaderStage.QUOTE_OPEN;
+            }
         }
     }
 
     protected boolean isSectionKey() {
         if (this.currentChar == ':' && (this.stage == ReaderStage.KEY || this.stage == ReaderStage.QUOTE_CLOSE)) {
             if (this.hasNext()) {
-                if (this.isSpace(this.currentLine.charAt(this.position + 1))) {
+                if (this.isSpace(this.peek(+1))) {
                     // space after colon, valid key
                     this.nextChar();
                     this.stage = ReaderStage.AFTER_KEY;
+                    this.readTag();
                     return true;
                 }
                 // no space after colon, thus the colon is not a key-value delimiter
@@ -199,21 +206,41 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         return false;
     }
 
-    protected int readIndent() {
+    protected void readTag() {
+        this.readIndent(false);
+
+        if (this.hasChar() && this.currentChar == '!' && this.hasNext() && this.peek(+1) == '!') {
+            this.nextChar();
+
+            //noinspection StatementWithEmptyBody
+            while (this.nextChar() && !this.isSpace(this.currentChar)) {
+                // skip
+            }
+
+            this.readIndent(false);
+        }
+    }
+
+    protected int readIndent(boolean special) {
         int indent = 0;
         while (this.nextChar() && this.stage != ReaderStage.QUOTE_OPEN) {
             if (this.isSpace(this.currentChar)) {
                 indent++;
             } else {
-                if (this.isSpecialIndent(this.currentChar) && this.hasNext()
-                        && this.isSpace(this.currentLine.charAt(this.position + 1))) {
+                if (special && this.isSpecialIndent(this.currentChar) && this.hasNext()
+                        && this.isSpace(this.peek(+1))) {
                     // Skip special indent (do not increment indent)
                     this.nextChar();
+                    this.readIndent(false); // read additional spaces (like after - on a list item)
                 }
                 break;
             }
         }
         return indent;
+    }
+
+    protected int readIndent() {
+        return readIndent(true);
     }
 
     protected String readKey() {
@@ -243,19 +270,14 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
     protected void readValue() throws IOException {
         boolean hasChar = this.hasChar();
-        boolean endOfValue = !hasChar || this.isComment();
 
-        if (!endOfValue) {
-            hasChar = this.nextChar();
-            if (hasChar && this.stage != ReaderStage.QUOTE_CLOSE) {
+        if (hasChar && !this.isComment()) {
+            if (this.stage != ReaderStage.QUOTE_CLOSE) {
                 this.stage = ReaderStage.VALUE;
             }
-            endOfValue = !hasChar || this.isComment();
-        }
-
-        while (!endOfValue) {
-            hasChar = this.nextChar();
-            endOfValue = !hasChar || this.isComment();
+            while (hasChar && !this.isComment()) {
+                hasChar = this.nextChar();
+            }
         }
 
         if (this.isMultiline() && this.nextLine()) {
@@ -265,7 +287,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         if (this.isComment()) {
             // Do not skip the comment indent
             this.position--;
-            while (this.position >= 0 && this.isSpace(this.currentLine.charAt(this.position))) {
+            while (this.position >= 0 && this.isSpace(this.peek(0))) {
                 this.position--;
             }
             this.position++;
@@ -279,7 +301,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
     }
 
     protected KeyTree.Node track() throws IOException {
-        if (this.quoteNotation == QuoteStyle.LITERAL) {
+        if (this.quoteNotation == ReadingQuoteStyle.LITERAL) {
             return null;
         }
         this.key = this.readKey();
@@ -326,7 +348,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         END_OF_FILE
     }
 
-    public enum QuoteStyle {
+    public enum ReadingQuoteStyle {
         NONE ('\0'),
         SINGLE ('\''),
         DOUBLE ('"'),
@@ -334,7 +356,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
         private final char quote;
 
-        QuoteStyle(char quote) {
+        ReadingQuoteStyle(char quote) {
             this.quote = quote;
         }
 
