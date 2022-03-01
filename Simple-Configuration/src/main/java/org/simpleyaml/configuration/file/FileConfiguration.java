@@ -253,10 +253,11 @@ public abstract class FileConfiguration extends MemoryConfiguration {
         final CommentFormatter headerFormatter = options.headerFormatter();
 
         if (headerFormatter != null) {
-            return headerFormatter.dump(header);
+            final String headerDump = headerFormatter.dump(header);
+            return headerDump != null ? headerDump : "";
         }
 
-        return header != null ? header + '\n' : "";
+        return header != null && !header.isEmpty() ? header + '\n' : "";
     }
 
 }
