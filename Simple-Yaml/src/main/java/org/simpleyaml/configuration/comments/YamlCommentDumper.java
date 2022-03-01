@@ -30,17 +30,8 @@ public class YamlCommentDumper extends YamlCommentReader {
             this.builder = new StringBuilder();
 
             while (this.nextLine()) {
-                if (!this.isComment()) { // Skip comments from the reader (keep only comments from the comment mapper)
-                    final KeyTree.Node readerNode = this.track();
-                    KeyTree.Node commentNode = null;
-                    if (readerNode != null) {
-                        commentNode = this.getNode(readerNode.getPath());
-                    }
-                    this.appendBlockComment(commentNode);
-                    this.builder.append(this.currentLine);
-                    this.appendSideComment(commentNode);
-                    this.builder.append('\n');
-                }
+                this.dumpLine();
+                this.builder.append('\n');
             }
 
             // Append end of file (footer) comment (null path), if found
@@ -52,6 +43,19 @@ public class YamlCommentDumper extends YamlCommentReader {
         this.close();
 
         return result;
+    }
+
+    private void dumpLine() throws IOException {
+        if (!this.isComment()) { // Skip comments from the reader (keep only comments from the comment mapper)
+            final KeyTree.Node readerNode = this.track();
+            KeyTree.Node commentNode = null;
+            if (readerNode != null) {
+                commentNode = this.getNode(readerNode.getPath());
+            }
+            this.appendBlockComment(commentNode);
+            this.builder.append(this.currentLine);
+            this.appendSideComment(commentNode);
+        }
     }
 
     @Override
@@ -71,8 +75,8 @@ public class YamlCommentDumper extends YamlCommentReader {
 
     protected void appendSideComment(final KeyTree.Node node) throws IOException {
         final String comment = this.getRawComment(node, CommentType.SIDE);
+        this.readValue();
         if (comment != null) {
-            this.readValue();
             this.builder.append(comment);
         }
     }
@@ -80,11 +84,16 @@ public class YamlCommentDumper extends YamlCommentReader {
     @Override
     protected void readValue() throws IOException {
         if (this.hasChar()) {
-            this.readIndent();
+            this.stage = ReaderStage.VALUE;
 
             if (this.isInQuote()) {
                 // Could be a multi line value
                 this.appendMultiline();
+            } else {
+                // Go to the end of the line
+                this.position = this.currentLine.length() - 1;
+                this.currentChar = this.peek(0);
+                this.nextChar();
             }
         }
     }
@@ -92,18 +101,20 @@ public class YamlCommentDumper extends YamlCommentReader {
     protected void appendMultiline() throws IOException {
         boolean hasChar = this.hasChar() && this.nextChar();
 
-        if (hasChar) {
-            this.stage = ReaderStage.VALUE;
-        }
-
         while (hasChar) {
             hasChar = this.nextChar();
         }
 
-        if (this.isMultiline() && this.nextLine()) {
+        if (this.isMultiline()) {
+            this.nextLine();
             this.builder.append('\n');
-            this.builder.append(this.currentLine);
-            this.appendMultiline();
+            if (this.isInQuote()) {
+                this.builder.append(this.currentLine);
+                this.appendMultiline();
+            } else {
+                // End literal block, it is not multiline anymore
+                this.dumpLine();
+            }
         }
     }
 

@@ -1,14 +1,14 @@
 package org.simpleyaml.configuration.comments;
 
-import java.io.IOException;
-import java.io.StringReader;
-
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.obj.TestYamlConfigurationOptions;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 final class YamlCommentParserTest {
 
@@ -16,7 +16,7 @@ final class YamlCommentParserTest {
     void parse() throws IOException {
         final StringReader reader = new StringReader(YamlCommentReaderTest.COMMENT);
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
+        final YamlConfigurationOptions options = configuration.options();
 
         final YamlCommentParser parser = new YamlCommentParser(options, reader);
         parser.parse();
@@ -67,6 +67,21 @@ final class YamlCommentParserTest {
         );
 
         YamlCommentFormat.reset();
+    }
+
+    @Test
+    void parseTag() throws IOException {
+        final StringReader reader = new StringReader("tag: !!comment ' # not a comment'\n");
+        final YamlConfiguration configuration = new YamlConfiguration();
+
+        final YamlCommentParser parser = new YamlCommentParser(configuration.options(), reader);
+        parser.parse();
+
+        MatcherAssert.assertThat(
+                "Comments are wrong!",
+                parser.getComment("tag", CommentType.SIDE),
+                new IsNull<>()
+        );
     }
 
 }

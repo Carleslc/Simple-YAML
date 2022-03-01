@@ -79,7 +79,7 @@ public class YamlCommentParser extends YamlCommentReader {
 
     private String removeHeader(String blockComment) {
         final String header = this.options().headerFormatter().dump(this.options().header());
-        if (!header.isEmpty()) {
+        if (header != null && !header.isEmpty()) {
             blockComment = blockComment.replaceFirst(Pattern.quote(header), "");
             if (blockComment.isEmpty()) {
                 blockComment = null; // blockComment was the header
