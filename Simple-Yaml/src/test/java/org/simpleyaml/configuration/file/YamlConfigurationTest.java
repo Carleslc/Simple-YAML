@@ -50,7 +50,8 @@ class YamlConfigurationTest {
     void saveToString() throws IOException {
         final InputStreamOf stream = new InputStreamOf(new ResourceOf("test.yml"));
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(stream);
-        final String content = YamlFileTest.testContent();
+        // FIXME next commit: final YamlConfiguration configuration = resourceLoadYamlConfiguration("test.yml");
+        final String content = TestResources.testContent();
 
         MatcherAssert.assertThat(
             "Couldn't get the content of the file!",
@@ -140,12 +141,12 @@ class YamlConfigurationTest {
             new IsBlank()
         );
 
-        configuration.load(new InputStreamOf(new ResourceOf("test-comments.yml")));
+        configuration.load(TestResources.getResourceInputStream("test-comments.yml"));
 
         MatcherAssert.assertThat(
             "Couldn't build the header!",
             configuration.buildHeader(),
-            new IsEqual<>(YamlFileTest.testHeader())
+            new IsEqual<>(TestResources.testHeader())
         );
 
         MatcherAssert.assertThat(

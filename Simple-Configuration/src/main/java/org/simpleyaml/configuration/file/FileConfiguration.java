@@ -2,6 +2,7 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
+import org.simpleyaml.configuration.LoadableConfiguration;
 import org.simpleyaml.configuration.comments.CommentFormatter;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
@@ -12,10 +13,10 @@ import java.io.*;
  * This is a base class for all File based implementations of {@link Configuration}
  *
  * @author Bukkit
- * @author Carleslc (modified buildHeader)
+ * @author Carleslc
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/FileConfiguration.java">Bukkit Source</a>
  */
-public abstract class FileConfiguration extends MemoryConfiguration {
+public abstract class FileConfiguration extends MemoryConfiguration implements LoadableConfiguration {
 
     /**
      * Creates an empty {@link FileConfiguration} with no default values.
@@ -25,8 +26,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     }
 
     /**
-     * Creates an empty {@link FileConfiguration} using the specified {@link
-     * Configuration} as a source for all default values.
+     * Creates an empty {@link FileConfiguration} using the specified
+     * {@link Configuration} as a source for all default values.
      *
      * @param defaults Default value provider
      */
@@ -72,14 +73,6 @@ public abstract class FileConfiguration extends MemoryConfiguration {
         Validate.notNull(file, "File cannot be null");
         this.save(new File(file));
     }
-
-    /**
-     * Saves this {@link FileConfiguration} to a string, and returns it.
-     *
-     * @throws IOException Thrown when the contents cannot be written for any reason.
-     * @return a String containing this configuration.
-     */
-    public abstract String saveToString() throws IOException;
 
     /**
      * Loads this {@link FileConfiguration} from the specified location.
@@ -186,23 +179,6 @@ public abstract class FileConfiguration extends MemoryConfiguration {
         }
     }
 
-    /**
-     * Loads this {@link FileConfiguration} from the specified string, as
-     * opposed to from file.
-     * <p>
-     * All the values contained within this configuration will be removed,
-     * leaving only settings and defaults, and the new values will be loaded
-     * from the given string.
-     * <p>
-     * If the string is invalid in any way, an exception will be thrown.
-     *
-     * @param contents Contents of a Configuration to load.
-     * @throws InvalidConfigurationException Thrown if the specified string is
-     *                                       invalid.
-     * @throws IllegalArgumentException      Thrown if contents is null.
-     */
-    public abstract void loadFromString(String contents) throws InvalidConfigurationException;
-
     @Override
     public FileConfigurationOptions options() {
         if (this.options == null) {
@@ -212,8 +188,9 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     }
 
     protected void write(final File file, final String data) throws IOException {
-        if (file.getParentFile() != null) {
-            file.getParentFile().mkdirs();
+        final File parents = file.getParentFile();
+        if (parents != null && !parents.exists() && !parents.mkdirs()) {
+            throw new IOException("Cannot create successfully all needed parent directories!");
         }
 
         try (final Writer writer = new OutputStreamWriter(new FileOutputStream(file), this.options().charset())) {

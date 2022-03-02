@@ -49,7 +49,7 @@ public class ConfigurationOptions {
      * ConfigurationSection}s
      * <p>
      * This value does not affect how the {@link Configuration} is stored,
-     * only in how you access the data. The default value is '.'.
+     * only in how you access the data. The default value is '.'
      *
      * @param value Path separator
      * @return This object, for chaining
