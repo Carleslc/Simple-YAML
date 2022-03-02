@@ -53,7 +53,7 @@ public class SnakeYamlRepresenter extends Representer {
 
         @Override
         public Node representData(final Object data) {
-            final QuoteValue quoteValue = (QuoteValue) data;
+            final QuoteValue<?> quoteValue = (QuoteValue<?>) data;
 
             final DumperOptions.ScalarStyle quoteScalarStyle = SnakeYamlQuoteValue.getQuoteScalarStyle(quoteValue.getQuoteStyle());
             final Object value = quoteValue.getValue();
@@ -65,13 +65,7 @@ public class SnakeYamlRepresenter extends Representer {
             DumperOptions.ScalarStyle defaultScalarStyle = getDefaultScalarStyle();
             setDefaultScalarStyle(quoteScalarStyle); // change default scalar style
 
-            Node node;
-            final Represent representer = findBaseRepresenter(value.getClass());
-            if (representer instanceof SnakeYamlQuoteStyleRepresenter.RepresentTypeQuoteStyle) {
-                node = ((SnakeYamlQuoteStyleRepresenter.RepresentTypeQuoteStyle) representer).representBaseData(value);
-            } else {
-                node = representer.representData(value);
-            }
+            final Node node = SnakeYamlRepresenter.this.representData(value);
 
             setDefaultScalarStyle(defaultScalarStyle); // restore default scalar style
 
@@ -79,20 +73,4 @@ public class SnakeYamlRepresenter extends Representer {
         }
 
     }
-
-    protected Represent findBaseRepresenter(Class<?> clazz) {
-        if (this.representers.containsKey(clazz)) {
-            return this.representers.get(clazz);
-        }
-        for (Class<?> baseClass : this.multiRepresenters.keySet()) {
-            if (baseClass != null && baseClass.isAssignableFrom(clazz)) {
-                return this.multiRepresenters.get(baseClass);
-            }
-        }
-        if (this.multiRepresenters.containsKey(null)) {
-            return this.multiRepresenters.get(null);
-        }
-        return this.representers.get(null);
-    }
-
 }

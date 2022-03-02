@@ -265,6 +265,13 @@ class YamlConfigurationOptionsTest {
                 new IsEqual<>(QuoteStyle.PLAIN)
         );
 
+        configuration.set("test", "test");
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: test\n"));
+
         // Default: DOUBLE
 
         options.quoteStyleDefaults().setDefaultQuoteStyle(QuoteStyle.DOUBLE);
@@ -277,15 +284,22 @@ class YamlConfigurationOptionsTest {
 
         MatcherAssert.assertThat(
                 "Default quote style has not changed!",
-                options.quoteStyleDefaults().getQuoteStyle(String.class),
+                options.quoteStyleDefaults().getQuoteStyle(Boolean.class),
                 new IsEqual<>(QuoteStyle.DOUBLE)
         );
 
         MatcherAssert.assertThat(
                 "Default quote style has not changed!",
-                options.quoteStyleDefaults().getQuoteStyle(Boolean.class),
+                options.quoteStyleDefaults().getQuoteStyle(String.class),
                 new IsEqual<>(QuoteStyle.DOUBLE)
         );
+
+        configuration.set("test", "test");
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("\"test\": \"test\"\n"));
 
         // String: PLAIN
 
@@ -302,7 +316,7 @@ class YamlConfigurationOptionsTest {
         MatcherAssert.assertThat(
                 "Wrong value!",
                 configuration.saveToString(),
-                new IsEqual<>("test: test\n"));
+                new IsEqual<>("\"test\": test\n"));
 
         MatcherAssert.assertThat(
                 "Default quote style has changed!",
@@ -315,11 +329,16 @@ class YamlConfigurationOptionsTest {
         MatcherAssert.assertThat(
                 "Wrong value!",
                 configuration.saveToString(),
-                new IsEqual<>("test: !!bool \"true\"\n"));
+                new IsEqual<>("\"test\": !!bool \"true\"\n"));
 
         // Boolean: SINGLE
 
         options.quoteStyleDefaults().setQuoteStyle(Boolean.class, QuoteStyle.SINGLE);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("\"test\": !!bool \"true\"\n")); // Was set previously with QuoteStyle.DOUBLE
 
         MatcherAssert.assertThat(
                 "Quote style has not changed!",
@@ -327,31 +346,33 @@ class YamlConfigurationOptionsTest {
                 new IsEqual<>(QuoteStyle.SINGLE)
         );
 
+        configuration.set("test", true); // Now we set it again, so now it uses the Boolean default
+
         MatcherAssert.assertThat(
                 "Wrong value!",
                 configuration.saveToString(),
-                new IsEqual<>("test: !!bool 'true'\n"));
+                new IsEqual<>("\"test\": !!bool 'true'\n"));
 
         configuration.set("test", "test");
 
         MatcherAssert.assertThat(
                 "Wrong value!",
                 configuration.saveToString(),
-                new IsEqual<>("test: test\n"));
+                new IsEqual<>("\"test\": test\n"));
 
         configuration.set("test", true, QuoteStyle.PLAIN);
 
         MatcherAssert.assertThat(
                 "Wrong value!",
                 configuration.saveToString(),
-                new IsEqual<>("test: true\n"));
+                new IsEqual<>("\"test\": true\n"));
 
         configuration.set("test", true);
 
         MatcherAssert.assertThat(
                 "Wrong value!",
                 configuration.saveToString(),
-                new IsEqual<>("test: !!bool 'true'\n"));
+                new IsEqual<>("\"test\": !!bool 'true'\n"));
 
         options.quoteStyleDefaults().setQuoteStyle(Boolean.class, null);
 
@@ -366,7 +387,7 @@ class YamlConfigurationOptionsTest {
         MatcherAssert.assertThat(
                 "Wrong value!",
                 configuration.saveToString(),
-                new IsEqual<>("test: !!bool \"true\"\n"));
+                new IsEqual<>("\"test\": !!bool \"true\"\n"));
 
         // Default: PLAIN
 
@@ -400,6 +421,13 @@ class YamlConfigurationOptionsTest {
         final List<Integer> integerList = Arrays.asList(1, 2, 3);
 
         configuration.set("test", integerList);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test:\n  - 1\n  - 2\n  - 3\n")); // List<Integer> is not instance of Integer
+
+        configuration.set("test", integerList, QuoteStyle.DOUBLE);
 
         MatcherAssert.assertThat(
                 "Wrong value!",

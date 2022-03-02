@@ -1,8 +1,8 @@
 package org.simpleyaml.configuration.implementation.api;
 
-public interface QuoteValue {
+public interface QuoteValue<T> {
 
-    Object getValue();
+    T getValue();
 
     QuoteStyle getQuoteStyle();
 

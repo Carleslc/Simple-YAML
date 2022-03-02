@@ -1,12 +1,12 @@
 package org.simpleyaml.examples;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * YAML is a human-readable data serialization language.<br>
@@ -129,6 +129,10 @@ public final class YamlExample {
 
         // If you need it, you can enforce a quote style
         yamlFile.set("quotes.custom", "This is double quote style", QuoteStyle.DOUBLE);
+
+        // You can change the quote style for all values with specific type
+        yamlFile.options().quoteStyleDefaults().setQuoteStyle(String.class, QuoteStyle.DOUBLE);
+        yamlFile.set("quotes.customDefault", "This is double quote style too");
 
         // Finally, save changes!
         try {

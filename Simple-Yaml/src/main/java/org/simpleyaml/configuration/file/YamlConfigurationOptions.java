@@ -11,7 +11,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Various settings for controlling the input and output of a {@link YamlConfiguration}
@@ -212,14 +211,15 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         /**
          * Set the default quote style for a specific type.
          * <p>
-         * This style is applied to values which class is the specified class.
+         * This style is applied to values which class is the specified class or is a child of that class.
          * <p></p>
          * Example:
-         * <p><code>
+         * <p><pre>
          * options.setQuoteStyle(String.class, QuoteStyle.DOUBLE);
-         * </code>
+         * yamlConfig.set("key", "This string will be set with double quote style");
+         * </pre>
          * <p></p>
-         * Set quoteStyle to null to set it again to the default quote style.
+         * Set quoteStyle to null to set new values again with the default quote style.
          * @param valueClass the specific class to override default quote style
          * @param quoteStyle the quote style to apply
          * @return This object, for chaining
@@ -235,21 +235,44 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
 
         /**
          * Get the quote style to apply to a specific type.
-         * <p>
-         * This style is applied to values which class is the specified class.
-         * @param valueClass the specific class to override default quote style
+         * <p></p>
+         * If it was not explicitly set using the {@link #setQuoteStyle(Class, QuoteStyle)} method
+         * then the {@link #getDefaultQuoteStyle()} is returned.
+         * @param valueClass the type class
          * @return the quote style to apply to the specified class
          */
         public QuoteStyle getQuoteStyle(final Class<?> valueClass) {
-            return this.typeQuoteStyles.getOrDefault(valueClass, this.getDefaultQuoteStyle());
+            final QuoteStyle quoteStyle = this.getExplicitQuoteStyleInstanceOf(valueClass);
+            return quoteStyle != null ? quoteStyle : this.getDefaultQuoteStyle();
         }
 
         /**
          * Get the overriden quote styles for every specific type set.
          * @return the quote styles to apply to every specified class
          */
-        public Set<Map.Entry<Class<?>, QuoteStyle>> getQuoteStyles() {
-            return this.typeQuoteStyles.entrySet();
+        public Map<Class<?>, QuoteStyle> getQuoteStyles() {
+            return this.typeQuoteStyles;
+        }
+
+        /**
+         * Get the specific quote style explicitly set to apply to a specific type,
+         * or to an inherited class of that type.
+         * <p></p>
+         * If neither the valueClass nor a superclass of that type was explicitly set
+         * using the {@link #setQuoteStyle(Class, QuoteStyle)} method then null is returned.
+         * @param valueClass the specific class to override default quote style
+         * @return the quote style to apply to the specified class
+         */
+        QuoteStyle getExplicitQuoteStyleInstanceOf(final Class<?> valueClass) {
+            QuoteStyle quoteStyle = this.typeQuoteStyles.get(valueClass);
+            if (quoteStyle == null && valueClass != null) {
+                for (Class<?> superClass : this.typeQuoteStyles.keySet()) {
+                    if (superClass.isAssignableFrom(valueClass)) {
+                        return this.typeQuoteStyles.get(superClass);
+                    }
+                }
+            }
+            return quoteStyle;
         }
 
         private static QuoteStyle defaultQuoteStyle() {

@@ -185,12 +185,38 @@ public class YamlConfiguration extends FileConfiguration {
         super.set(path, this.yamlImplementation.quoteValue(value, quoteStyle));
     }
 
+    /**
+     * Sets the specified path to the given value.
+     * <p>
+     * If value is null, the entry will be removed. Any existing entry will be
+     * replaced, regardless of what the new value is.
+     * <p>
+     * Some implementations may have limitations on what you may store. See
+     * their individual javadocs for details. No implementations should allow
+     * you to store {@link Configuration}s or {@link ConfigurationSection}s,
+     * please use {@link #createSection(String)} for that.
+     *
+     * @param path  Path of the object to set.
+     * @param value New value to set the path to.
+     */
+    @Override
+    public void set(final String path, final Object value) {
+        if (value != null) {
+            final QuoteStyle quoteStyle = this.options().quoteStyleDefaults().getExplicitQuoteStyleInstanceOf(value.getClass());
+            if (quoteStyle != null) {
+                this.set(path, value, quoteStyle);
+                return;
+            }
+        }
+        super.set(path, value);
+    }
+
     @Override
     public Object get(final String path, final Object def) {
         Object object = super.get(path, def);
 
         if (object instanceof QuoteValue) {
-            object = ((QuoteValue) object).getValue();
+            object = ((QuoteValue<?>) object).getValue();
         }
 
         return object;
