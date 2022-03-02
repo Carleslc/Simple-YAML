@@ -144,8 +144,8 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
     }
 
     @Override
-    public YamlFileWrapper addDefault(final String path, final Object value) {
-        super.addDefault(path, value);
+    public YamlFileWrapper addDefault(final String child, final Object value) {
+        super.addDefault(child, value);
         return this;
     }
 
@@ -156,8 +156,8 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
     }
 
     @Override
-    public YamlFileWrapper createSection(final String path) {
-        super.createSection(path);
+    public YamlFileWrapper createSection(final String child) {
+        super.createSection(child);
         return this;
     }
 

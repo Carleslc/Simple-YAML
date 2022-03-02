@@ -2,9 +2,8 @@ package org.simpleyaml.examples;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlFile;
 
@@ -24,7 +23,7 @@ public final class YamlExample {
         // Load the YAML file if is already created or create new one otherwise
         try {
             if (!yamlFile.exists()) {
-                yamlFile.createNewFile(true);
+                yamlFile.createNewFile();
                 System.out.println("New file has been created: " + yamlFile.getFilePath() + "\n");
             } else {
                 System.out.println(yamlFile.getFilePath() + " already exists, loading configurations...\n");
@@ -93,17 +92,25 @@ public final class YamlExample {
 
         System.out.println("Formatted Date: " + yamlFile.getString("timestamp.formattedDate"));
 
-        // We can iterate over sections with getKeys(deep) and getValues(deep) methods
+        // We can get a set of section keys with getKeys(deep)
+        Set<String> keys = section.getKeys(false); // false means not recursive
+        System.out.println(section.getCurrentPath() + " keys: " + keys);
 
-        section.getValues(false).entrySet().forEach(System.out::println); // false is not recursive
+        // We can get a map of section keys and values with getValues(deep)
+        Map<String, Object> values = section.getValues(false);
+
+        // We can iterate over these entries
+        values.entrySet().stream()
+                .filter(e -> !e.getKey().equals("list"))
+                .forEach(System.out::println);
 
         // You can use many methods to obtain some types without casting (String, int, double...)
 
         final double pi = yamlFile.getDouble("math.pi");
-        System.out.println("PI: " + pi);
+        System.out.println("math.pi: " + pi);
 
         final List<String> list = yamlFile.getStringList("test.list");
-        System.out.println("List: " + list);
+        System.out.println("test.list: " + list);
 
         // And you can also use methods with default values if the path is unknown
 

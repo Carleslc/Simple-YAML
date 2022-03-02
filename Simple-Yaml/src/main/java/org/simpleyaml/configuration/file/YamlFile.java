@@ -108,9 +108,10 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * which defaults to UTF8.
      *
      * @throws IOException if it hasn't been possible to save configuration file
+     * @throws IllegalArgumentException if the configuration file is not set
      */
     public void save() throws IOException {
-        Validate.notNull(this.configFile, "This configuration file is null!");
+        Validate.notNull(this.configFile, "The configuration file is not set!");
         this.save(this.configFile);
     }
 
@@ -598,14 +599,27 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         if (overwrite || !this.configFile.exists()) {
             try {
                 final File parents = this.configFile.getParentFile();
-                if (parents != null) {
-                    parents.mkdirs();
+                if (parents != null && !parents.exists() && !parents.mkdirs()) {
+                    throw new IOException("Cannot create successfully all needed parent directories!");
                 }
-                this.configFile.createNewFile();
+                if (!this.configFile.createNewFile() && (!overwrite || !this.configFile.exists())) {
+                    throw new IOException("Cannot create successfully the configuration file!");
+                }
             } catch (final SecurityException e) {
                 throw new IOException(e.getMessage(), e.getCause());
             }
         }
+    }
+
+    /**
+     * Creates a new empty file atomically for this configuration file if and only if it does not already exist.
+     * <p>
+     * Parent directories will be created if they do not exist.
+     *
+     * @throws IOException if I/O error occurs creating the configuration file
+     */
+    public void createNewFile() throws IOException {
+        this.createNewFile(false);
     }
 
     /**
@@ -886,6 +900,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     @FunctionalInterface
+    @SuppressWarnings("DuplicateThrows")
     private interface YamlFileLoader {
         void load(YamlFile config) throws IOException, InvalidConfigurationException;
     }

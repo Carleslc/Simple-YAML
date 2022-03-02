@@ -21,12 +21,11 @@ public class MemoryConfiguration extends MemorySection implements Configuration 
     /**
      * Creates an empty {@link MemoryConfiguration} with no default values.
      */
-    public MemoryConfiguration() {
-    }
+    public MemoryConfiguration() {}
 
     /**
-     * Creates an empty {@link MemoryConfiguration} using the specified {@link
-     * Configuration} as a source for all default values.
+     * Creates an empty {@link MemoryConfiguration} using the specified
+     * {@link Configuration} as a source for all default values.
      *
      * @param defaults Default value provider
      * @throws IllegalArgumentException Thrown if defaults is null
@@ -68,7 +67,6 @@ public class MemoryConfiguration extends MemorySection implements Configuration 
         if (this.options == null) {
             this.options = new MemoryConfigurationOptions(this);
         }
-
         return this.options;
     }
 

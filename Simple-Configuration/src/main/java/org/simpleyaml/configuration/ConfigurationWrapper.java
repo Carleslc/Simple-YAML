@@ -50,12 +50,12 @@ public class ConfigurationWrapper<T extends Configuration> {
      * If value is null, the entry will be removed. Any existing entry will be
      * replaced, regardless of what the new value is.
      *
-     * @param path the child path of this section path.
+     * @param child the child path of this section path.
      * @param value new value to set the child path to.
      * @return this object, for chaining.
      */
-    public ConfigurationWrapper<T> set(final String path, final Object value) {
-        return setToChild(configuration::set, path, value);
+    public ConfigurationWrapper<T> setChild(final String child, final Object value) {
+        return setToChild(configuration::set, child, value);
     }
 
     /**
@@ -93,12 +93,12 @@ public class ConfigurationWrapper<T extends Configuration> {
      * this will create a new section at the path, replacing anything that may
      * have existed there previously.
      *
-     * @param path the child path of this section path.
+     * @param child the child path of this section path.
      * @param value value to set the default to.
      * @return this object, for chaining.
      */
-    public ConfigurationWrapper<T> addDefault(final String path, final Object value) {
-        return setToChild(configuration::addDefault, path, value);
+    public ConfigurationWrapper<T> addDefault(final String child, final Object value) {
+        return setToChild(configuration::addDefault, child, value);
     }
 
     /**
@@ -117,15 +117,15 @@ public class ConfigurationWrapper<T extends Configuration> {
     /**
      * Creates an empty {@link ConfigurationSection} at the provided child path.
      * <p>
-     * Any value that was previously set at this path will be overwritten. If
+     * Any value that was previously set at this  will be overwritten. If
      * the previous value was itself a {@link ConfigurationSection}, it will
      * be orphaned.
      *
-     * @param path the child path of this section path.
+     * @param child the child path of this section path.
      * @return this object, for chaining.
      */
-    public ConfigurationWrapper<T> createSection(final String path) {
-        return applyToChild(configuration::createSection, path);
+    public ConfigurationWrapper<T> createSection(final String child) {
+        return applyToChild(configuration::createSection, child);
     }
 
     /**
@@ -151,11 +151,11 @@ public class ConfigurationWrapper<T extends Configuration> {
         return this.parent;
     }
 
-    protected final String childPath(final String path) {
+    protected final String childPath(final String child) {
         if (this.path == null) {
-            return path;
+            return child;
         }
-        return this.path + this.configuration.options().pathSeparator() + path;
+        return this.path + this.configuration.options().pathSeparator() + child;
     }
 
     protected ConfigurationWrapper<T> apply(final ApplyToPath method) {
@@ -173,8 +173,8 @@ public class ConfigurationWrapper<T extends Configuration> {
         return this;
     }
 
-    protected ConfigurationWrapper<T> setToChild(final SetToPath method, final String path, final Object value) {
-        method.set(this.childPath(path), value);
+    protected ConfigurationWrapper<T> setToChild(final SetToPath method, final String child, final Object value) {
+        method.set(this.childPath(child), value);
         return this;
     }
 
