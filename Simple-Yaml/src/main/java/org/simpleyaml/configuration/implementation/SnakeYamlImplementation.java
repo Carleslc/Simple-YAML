@@ -83,14 +83,6 @@ public class SnakeYamlImplementation implements YamlImplementation {
 
     @Override
     public void configure(final YamlConfigurationOptions options) {
-        if (!options.quoteStyleDefaults().getQuoteStyles().isEmpty()) {
-            this.setYaml(
-                    this.yamlConstructor,
-                    new SnakeYamlQuoteStyleRepresenter(options.quoteStyleDefaults().getQuoteStyles()),
-                    this.yamlOptions
-            );
-        }
-
         this.yamlOptions.setAllowUnicode(options.isUnicode());
 
         this.yamlOptions.setIndent(options.indent());
@@ -106,8 +98,8 @@ public class SnakeYamlImplementation implements YamlImplementation {
     }
 
     @Override
-    public QuoteValue quoteValue(final Object value, final QuoteStyle quoteStyle) {
-        return new SnakeYamlQuoteValue(value, quoteStyle);
+    public <T> QuoteValue<T> quoteValue(final T value, final QuoteStyle quoteStyle) {
+        return new SnakeYamlQuoteValue<>(value, quoteStyle);
     }
 
 }

@@ -35,6 +35,6 @@ public interface YamlImplementation {
      * @param quoteStyle the quote style to use
      * @return a representation of the value to serialize it using the specified quote style
      */
-    QuoteValue quoteValue(final Object value, final QuoteStyle quoteStyle);
+    <T> QuoteValue<T> quoteValue(final T value, final QuoteStyle quoteStyle);
 
 }
