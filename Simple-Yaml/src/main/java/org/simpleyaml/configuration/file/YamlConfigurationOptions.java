@@ -2,11 +2,16 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.comments.CommentFormatter;
 import org.simpleyaml.configuration.comments.YamlCommentFormat;
-import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
 import org.simpleyaml.configuration.comments.YamlCommentFormatter;
+import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 import org.simpleyaml.utils.Validate;
 
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Various settings for controlling the input and output of a {@link YamlConfiguration}
@@ -20,6 +25,8 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     private int indentList = 2;
 
     private YamlCommentFormatter commentFormatter;
+
+    private final QuoteStyleDefaults quoteStyleDefaults = new QuoteStyleDefaults();
 
     protected YamlConfigurationOptions(final YamlConfiguration configuration) {
         super(configuration);
@@ -41,6 +48,12 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     @Override
     public YamlConfigurationOptions pathSeparator(final char value) {
         super.pathSeparator(value);
+        return this;
+    }
+
+    @Override
+    public YamlConfigurationOptions charset(final Charset charset) {
+        super.charset(charset);
         return this;
     }
 
@@ -82,6 +95,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         Validate.isTrue(value <= 9, "Indent cannot be greater than 9 characters");
 
         super.indent(value);
+
         return this;
     }
 
@@ -107,6 +121,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         Validate.isTrue(value <= this.indent(), "List indent cannot be greater than the indent");
 
         this.indentList = value;
+
         return this;
     }
 
@@ -137,6 +152,19 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return this;
     }
 
+    /**
+     * Get the quote style default options.
+     * <p></p>
+     * You can change the default quote style globally or for specific value types.
+     * @see QuoteStyle#PLAIN
+     * @see QuoteStyle#SINGLE
+     * @see QuoteStyle#DOUBLE
+     * @return the quote style default options
+     */
+    public QuoteStyleDefaults quoteStyleDefaults() {
+        return this.quoteStyleDefaults;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,5 +177,83 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), indentList, commentFormatter);
+    }
+
+    public static final class QuoteStyleDefaults {
+
+        private final Map<Class<?>, QuoteStyle> typeQuoteStyles = new HashMap<>();
+
+        private QuoteStyle defaultQuoteStyle = QuoteStyleDefaults.defaultQuoteStyle();
+
+        private QuoteStyleDefaults() {}
+
+        /**
+         * Get the default quote style.
+         * This style is applied to all values.
+         * @return the default quote style
+         */
+        public QuoteStyle getDefaultQuoteStyle() {
+            return this.defaultQuoteStyle;
+        }
+
+        /**
+         * Set the default quote style.
+         * This style is applied to all values.
+         * @return This object, for chaining
+         */
+        public QuoteStyleDefaults setDefaultQuoteStyle(QuoteStyle defaultQuoteStyle) {
+            if (defaultQuoteStyle == null) {
+                defaultQuoteStyle = QuoteStyleDefaults.defaultQuoteStyle();
+            }
+            this.defaultQuoteStyle = defaultQuoteStyle;
+            return this;
+        }
+
+        /**
+         * Set the default quote style for a specific type.
+         * <p>
+         * This style is applied to values which class is the specified class.
+         * <p></p>
+         * Example:
+         * <p><code>
+         * options.setQuoteStyle(String.class, QuoteStyle.DOUBLE);
+         * </code>
+         * <p></p>
+         * Set quoteStyle to null to set it again to the default quote style.
+         * @param valueClass the specific class to override default quote style
+         * @param quoteStyle the quote style to apply
+         * @return This object, for chaining
+         */
+        public QuoteStyleDefaults setQuoteStyle(final Class<?> valueClass, final QuoteStyle quoteStyle) {
+            if (quoteStyle == null) {
+                this.typeQuoteStyles.remove(valueClass);
+            } else {
+                this.typeQuoteStyles.put(valueClass, quoteStyle);
+            }
+            return this;
+        }
+
+        /**
+         * Get the quote style to apply to a specific type.
+         * <p>
+         * This style is applied to values which class is the specified class.
+         * @param valueClass the specific class to override default quote style
+         * @return the quote style to apply to the specified class
+         */
+        public QuoteStyle getQuoteStyle(final Class<?> valueClass) {
+            return this.typeQuoteStyles.getOrDefault(valueClass, this.getDefaultQuoteStyle());
+        }
+
+        /**
+         * Get the overriden quote styles for every specific type set.
+         * @return the quote styles to apply to every specified class
+         */
+        public Set<Map.Entry<Class<?>, QuoteStyle>> getQuoteStyles() {
+            return this.typeQuoteStyles.entrySet();
+        }
+
+        private static QuoteStyle defaultQuoteStyle() {
+            return QuoteStyle.PLAIN;
+        }
     }
 }

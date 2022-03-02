@@ -6,6 +6,7 @@ import java.util.*;
 
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 
 /**
  * YAML is a human-readable data serialization language.<br>
@@ -119,6 +120,15 @@ public final class YamlExample {
 
         final String defValue = yamlFile.getString("randomSection.noValue", "Default"); // returns Default
         System.out.println(defValue);
+
+        // By default strings are written without quotes if they are not needed so the configuration file remains clean
+        yamlFile.set("quotes.plain", "This is plain style");
+
+        // If a string contains special characters like # then it will be wrapped within single quotes
+        yamlFile.set("quotes.wrap", "# this is wrapped automatically with single quote style"); // this is a value, not a comment
+
+        // If you need it, you can enforce a quote style
+        yamlFile.set("quotes.custom", "This is double quote style", QuoteStyle.DOUBLE);
 
         // Finally, save changes!
         try {

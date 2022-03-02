@@ -9,6 +9,7 @@ import org.hamcrest.core.IsSame;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
 import org.simpleyaml.configuration.comments.*;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 import org.simpleyaml.examples.Person;
 import org.simpleyaml.obj.TestResources;
 import org.simpleyaml.utils.StringUtils;
@@ -410,6 +411,136 @@ class YamlFileTest {
                                 "Side comment mismatch (test." + key + ")",
                                 yamlFile.getComment("test." + key, CommentType.SIDE),
                                 new IsEqual<>("Side #comment with # character")));
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("test.entries.entry'#''", CommentType.SIDE),
+                new IsEqual<>(":)\ndangling comment")
+        );
+
+        final YamlFile yamlFile2 = new YamlFile();
+
+        yamlFile2.path("wrap")
+                .set(" # not a comment", QuoteStyle.PLAIN)
+                .commentSide("Side #comment with # character");
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.getComment("wrap", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # character")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the values correctly!",
+                yamlFile2.getString("wrap"),
+                new IsEqual<>(" # not a comment")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.saveToString(),
+                new IsEqual<>("wrap: ' # not a comment' # Side #comment with # character\n"));
+
+        yamlFile2.remove("wrap");
+
+        yamlFile2.path("null")
+                .commentSide("# Side #comment with # character")
+                .set(null, QuoteStyle.SINGLE);
+
+        String tagContents = "'null': !!null '' # Side #comment with # character\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.getComment("null", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # character")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the values correctly!",
+                yamlFile2.getString("null"),
+                new IsNull<>()
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.saveToString(),
+                new IsEqual<>(tagContents));
+
+        yamlFile2.loadFromString(tagContents);
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.getComment("null", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # character")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the values correctly!",
+                yamlFile2.getString("null"),
+                new IsNull<>()
+        );
+
+        yamlFile2.remove("null");
+
+        yamlFile2.options().quoteStyleDefaults().setQuoteStyle(Integer.class, QuoteStyle.SINGLE);
+
+        yamlFile2.path("i").set(1).commentSide("Side #comment with # character");
+
+        tagContents = "i: !!int '1' # Side #comment with # character\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.getComment("i", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # character")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the values correctly!",
+                yamlFile2.getInt("i"),
+                new IsEqual<>(1)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.saveToString(),
+                new IsEqual<>(tagContents));
+
+        yamlFile2.loadFromString(tagContents);
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.getComment("i", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # character")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the values correctly!",
+                yamlFile2.getInt("i"),
+                new IsEqual<>(1)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile2.saveToString(),
+                new IsEqual<>(tagContents));
+    }
+
+    @Test
+    void loadWithTag() throws IOException {
+        final YamlFile configuration = new YamlFile();
+        configuration.loadFromString("tag: !!str ' # not a comment'\n");
+
+        MatcherAssert.assertThat(
+                "Comments are wrong!",
+                configuration.getComment("tag", CommentType.SIDE),
+                new IsNull<>()
+        );
+
+        MatcherAssert.assertThat(
+                "Value is wrong!",
+                configuration.get("tag"),
+                new IsEqual<>(" # not a comment")
+        );
     }
 
     @Test
@@ -729,7 +860,7 @@ class YamlFileTest {
                 .addDefault(1).comment("Child comment").blankLine()
                 .parent()
                 .addDefault("child2", 2)
-                .set("child3", 3);
+                .setChild("child3", 3);
 
         final String contents =
                 "default: default\n" +

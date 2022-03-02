@@ -4,6 +4,7 @@ import org.simpleyaml.configuration.ConfigurationWrapper;
 import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.comments.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.YamlCommentFormatter;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 
 public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
 
@@ -132,8 +133,47 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
     }
 
     @Override
-    public YamlFileWrapper set(final String path, final Object value) {
-        super.set(path, value);
+    public YamlFileWrapper setChild(final String child, final Object value) {
+        super.setChild(child, value);
+        return this;
+    }
+
+    /**
+     * Set the given value to this path.
+     * <p>
+     * The value will be represented with the specified quote style in the configuration file.
+     * <p></p>
+     * Any existing entry will be replaced, regardless of what the new value is.
+     * <p></p>
+     * Null value is valid and will not remove the key, this is different to {@link #set(Object)}.
+     * Instead, a null value will be written as a yaml empty null value.
+     *
+     * @param value new value to set the path to.
+     * @param quoteStyle the quote style to use.
+     * @return this object, for chaining.
+     */
+    public YamlFileWrapper set(final Object value, final QuoteStyle quoteStyle) {
+        this.configuration.set(this.path, value, quoteStyle);
+        return this;
+    }
+
+    /**
+     * Set the given value to the provided child path.
+     * <p>
+     * The value will be represented with the specified quote style in the configuration file.
+     * <p></p>
+     * Any existing entry will be replaced, regardless of what the new value is.
+     * <p></p>
+     * Null value is valid and will not remove the key, this is different to {@link #setChild(String, Object)}.
+     * Instead, a null value will be written as a yaml empty null value.
+     *
+     * @param child the child path of this section path.
+     * @param value new value to set the path to.
+     * @param quoteStyle the quote style to use.
+     * @return this object, for chaining.
+     */
+    public YamlFileWrapper setChild(final String child, final Object value, final QuoteStyle quoteStyle) {
+        this.configuration.set(this.childPath(child), value, quoteStyle);
         return this;
     }
 

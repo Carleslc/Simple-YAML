@@ -3,12 +3,12 @@ package org.simpleyaml.configuration.file;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
+import org.simpleyaml.configuration.implementation.SnakeYamlImplementation;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
+import org.simpleyaml.configuration.implementation.api.QuoteValue;
+import org.simpleyaml.configuration.implementation.api.YamlImplementation;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.io.Reader;
 import java.util.Map;
 
 /**
- * An implementation of {@link Configuration} which saves all files in Yaml.
+ * An implementation of {@link Configuration} which saves the configuration in Yaml.
  * Note that this implementation is not synchronized.
  *
  * @author Bukkit
@@ -26,27 +26,19 @@ import java.util.Map;
  */
 public class YamlConfiguration extends FileConfiguration {
 
-    protected static final String BLANK_CONFIG = "{}\n";
-
-    private final DumperOptions yamlOptions = new DumperOptions();
-
-    private final Representer yamlRepresenter = new YamlRepresenter();
-
-    private final Yaml yaml = new Yaml(new YamlConstructor(), this.yamlRepresenter, this.yamlOptions);
+    protected YamlImplementation yamlImplementation;
 
     /**
      * Creates a new {@link YamlConfiguration}, loading from the given file.
      * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
+     * If the specified input is not a valid config, a blank config will be returned.
      * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
      *
      * @param file Input file
      * @return Resulting configuration
-     * @throws IllegalArgumentException Thrown if file is null
+     * @throws IllegalArgumentException if file is null
      * @throws IOException if cannot load configuration
      */
     public static YamlConfiguration loadConfiguration(final File file) throws IOException {
@@ -57,9 +49,7 @@ public class YamlConfiguration extends FileConfiguration {
     /**
      * Creates a new {@link YamlConfiguration}, loading from the given stream.
      * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
+     * If the specified input is not a valid config, a blank config will be returned.
      * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
@@ -79,18 +69,51 @@ public class YamlConfiguration extends FileConfiguration {
     /**
      * Creates a new {@link YamlConfiguration}, loading from the given reader.
      * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
+     * If the specified input is not a valid config, a blank config will be returned.
      *
      * @param reader input
      * @return resulting configuration
-     * @throws IllegalArgumentException Thrown if stream is null
+     * @throws IllegalArgumentException if stream is null
      * @throws IOException if cannot load configuration
      */
     public static YamlConfiguration loadConfiguration(final Reader reader) throws IOException {
         Validate.notNull(reader, "Reader cannot be null");
         return YamlConfiguration.load(config -> config.load(reader));
+    }
+
+    /**
+     * Creates an empty {@link YamlConfiguration}.
+     */
+    public YamlConfiguration() {
+        this((Configuration) null);
+    }
+
+    /**
+     * Creates an empty {@link YamlConfiguration} using the specified
+     * {@link Configuration} as a source for all default values.
+     *
+     * @param defaults default values
+     */
+    public YamlConfiguration(final Configuration defaults) {
+        this(defaults, new SnakeYamlImplementation());
+    }
+
+    public YamlConfiguration(final YamlImplementation yamlImplementation) {
+        this(null, yamlImplementation);
+    }
+
+    public YamlConfiguration(final Configuration defaults, final YamlImplementation yamlImplementation) {
+        super(defaults);
+        this.setImplementation(yamlImplementation);
+    }
+
+    public YamlImplementation getImplementation() {
+        return this.yamlImplementation;
+    }
+
+    public void setImplementation(final YamlImplementation yamlImplementation) {
+        Validate.notNull(yamlImplementation, "YAML implementation cannot be null!");
+        this.yamlImplementation = yamlImplementation;
     }
 
     @Override
@@ -99,38 +122,27 @@ public class YamlConfiguration extends FileConfiguration {
     }
 
     protected String dump() {
-        this.yamlOptions.setAllowUnicode(this.options().isUnicode());
-
-        this.yamlOptions.setIndent(this.options().indent());
-        this.yamlOptions.setIndicatorIndent(this.options().indentList());
-        this.yamlOptions.setIndentWithIndicator(true);
-
-        this.yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        this.yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
-        this.yamlRepresenter.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
-
-        String dump = this.yaml.dump(this.getValues(false));
-
-        if (dump.equals(YamlConfiguration.BLANK_CONFIG)) {
-            dump = "";
-        }
-
-        return dump;
+        return this.yamlImplementation.dump(this.getValues(false), this.options());
     }
 
+    /**
+     * Loads this configuration from the specified string.
+     * <p>
+     * All the values contained within this configuration will be removed,
+     * leaving only settings and defaults, and the new values will be loaded
+     * from the given string.
+     * <p>
+     * If the string is invalid in any way, an exception will be thrown.
+     *
+     * @param contents Contents of a Configuration to load.
+     * @throws InvalidConfigurationException if the specified string is invalid.
+     * @throws IllegalArgumentException      if contents is null.
+     */
     @Override
     public void loadFromString(final String contents) throws InvalidConfigurationException {
         Validate.notNull(contents, "Contents cannot be null");
 
-        final Map<?, ?> input;
-        try {
-            input = this.yaml.load(contents);
-        } catch (final YAMLException e) {
-            throw new InvalidConfigurationException(e);
-        } catch (final ClassCastException e) {
-            throw new InvalidConfigurationException("Top level is not a Map.");
-        }
+        final Map<?, ?> input = this.yamlImplementation.load(contents);
 
         this.loadHeader(contents);
 
@@ -148,6 +160,40 @@ public class YamlConfiguration extends FileConfiguration {
         options.header(headerFormatter.parse(contents)); // save header with prefix to dump it as is
 
         headerFormatter.stripPrefix(customStripPrefix); // restore the custom strip prefix for the following calls to parse
+    }
+
+    /**
+     * Sets the specified path to the given value.
+     * <p>
+     * The value will be represented with the specified quote style in the configuration file.
+     * <p></p>
+     * Any existing entry will be replaced, regardless of what the new value is.
+     * <p></p>
+     * Null value is valid and will not remove the key, this is different to {@link #set(String, Object)}.
+     * Instead, a null value will be written as a yaml empty null value.
+     * <p></p>
+     * Some implementations may have limitations on what you may store. See
+     * their individual javadocs for details. No implementations should allow
+     * you to store {@link Configuration}s or {@link ConfigurationSection}s,
+     * please use {@link #createSection(String)} for that.
+     *
+     * @param path  Path of the object to set.
+     * @param value New value to set the path to.
+     * @param quoteStyle The quote style to use.
+     */
+    public void set(final String path, final Object value, final QuoteStyle quoteStyle) {
+        super.set(path, this.yamlImplementation.quoteValue(value, quoteStyle));
+    }
+
+    @Override
+    public Object get(final String path, final Object def) {
+        Object object = super.get(path, def);
+
+        if (object instanceof QuoteValue) {
+            object = ((QuoteValue) object).getValue();
+        }
+
+        return object;
     }
 
     @Override
@@ -179,6 +225,7 @@ public class YamlConfiguration extends FileConfiguration {
         return config;
     }
 
+    @FunctionalInterface
     private interface YamlConfigurationLoader {
 
         void load(YamlConfiguration config) throws IOException;
