@@ -1,20 +1,21 @@
-package org.simpleyaml.configuration.file;
+package org.simpleyaml.configuration.implementation;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * @author Bukkit
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConstructor.java">Bukkit Source</a>
  */
-public final class YamlConstructor extends SafeConstructor {
+public class SnakeYamlConstructor extends SafeConstructor {
 
-    public YamlConstructor() {
+    public SnakeYamlConstructor() {
         this.yamlConstructors.put(Tag.MAP, new ConstructCustomObject());
     }
 

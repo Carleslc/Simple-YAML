@@ -9,8 +9,12 @@ import org.llorllale.cactoos.matchers.Throws;
 import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.comments.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.YamlCommentFormatterConfiguration;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 class YamlConfigurationOptionsTest {
 
@@ -240,6 +244,167 @@ class YamlConfigurationOptionsTest {
             options.isUnicode(),
             new IsNot<>(new IsTrue())
         );
+    }
+
+    @Test
+    void quoteStyleDefaults() throws IOException {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final YamlConfigurationOptions options = configuration.options();
+
+        // Default: PLAIN
+
+        MatcherAssert.assertThat(
+                "Default quote style is not PLAIN!",
+                options.quoteStyleDefaults().getDefaultQuoteStyle(),
+                new IsEqual<>(QuoteStyle.PLAIN)
+        );
+
+        MatcherAssert.assertThat(
+                "Default quote style is not PLAIN!",
+                options.quoteStyleDefaults().getQuoteStyle(String.class),
+                new IsEqual<>(QuoteStyle.PLAIN)
+        );
+
+        // Default: DOUBLE
+
+        options.quoteStyleDefaults().setDefaultQuoteStyle(QuoteStyle.DOUBLE);
+
+        MatcherAssert.assertThat(
+                "Default quote style has not changed!",
+                options.quoteStyleDefaults().getDefaultQuoteStyle(),
+                new IsEqual<>(QuoteStyle.DOUBLE)
+        );
+
+        MatcherAssert.assertThat(
+                "Default quote style has not changed!",
+                options.quoteStyleDefaults().getQuoteStyle(String.class),
+                new IsEqual<>(QuoteStyle.DOUBLE)
+        );
+
+        MatcherAssert.assertThat(
+                "Default quote style has not changed!",
+                options.quoteStyleDefaults().getQuoteStyle(Boolean.class),
+                new IsEqual<>(QuoteStyle.DOUBLE)
+        );
+
+        // String: PLAIN
+
+        options.quoteStyleDefaults().setQuoteStyle(String.class, QuoteStyle.PLAIN);
+
+        MatcherAssert.assertThat(
+                "Quote style has not changed!",
+                options.quoteStyleDefaults().getQuoteStyle(String.class),
+                new IsEqual<>(QuoteStyle.PLAIN)
+        );
+
+        configuration.set("test", "test");
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: test\n"));
+
+        MatcherAssert.assertThat(
+                "Default quote style has changed!",
+                options.quoteStyleDefaults().getQuoteStyle(Boolean.class),
+                new IsEqual<>(QuoteStyle.DOUBLE)
+        );
+
+        configuration.set("test", true);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: !!bool \"true\"\n"));
+
+        // Boolean: SINGLE
+
+        options.quoteStyleDefaults().setQuoteStyle(Boolean.class, QuoteStyle.SINGLE);
+
+        MatcherAssert.assertThat(
+                "Quote style has not changed!",
+                options.quoteStyleDefaults().getQuoteStyle(Boolean.class),
+                new IsEqual<>(QuoteStyle.SINGLE)
+        );
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: !!bool 'true'\n"));
+
+        configuration.set("test", "test");
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: test\n"));
+
+        configuration.set("test", true, QuoteStyle.PLAIN);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: true\n"));
+
+        configuration.set("test", true);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: !!bool 'true'\n"));
+
+        options.quoteStyleDefaults().setQuoteStyle(Boolean.class, null);
+
+        MatcherAssert.assertThat(
+                "Quote style is not default!",
+                options.quoteStyleDefaults().getQuoteStyle(Boolean.class),
+                new IsEqual<>(options.quoteStyleDefaults().getDefaultQuoteStyle())
+        );
+
+        configuration.set("test", true);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: !!bool \"true\"\n"));
+
+        // Default: PLAIN
+
+        options.quoteStyleDefaults().setDefaultQuoteStyle(null);
+
+        configuration.set("test", true);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: true\n"));
+
+        // Integer: DOUBLE
+
+        options.quoteStyleDefaults().setQuoteStyle(Integer.class, QuoteStyle.DOUBLE);
+
+        configuration.set("test", 1);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: !!int \"1\"\n"));
+
+        configuration.set("test", 1, QuoteStyle.SINGLE);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test: !!int '1'\n"));
+
+        final List<Integer> integerList = Arrays.asList(1, 2, 3);
+
+        configuration.set("test", integerList);
+
+        MatcherAssert.assertThat(
+                "Wrong value!",
+                configuration.saveToString(),
+                new IsEqual<>("test:\n  - !!int \"1\"\n  - !!int \"2\"\n  - !!int \"3\"\n"));
     }
 
 }
