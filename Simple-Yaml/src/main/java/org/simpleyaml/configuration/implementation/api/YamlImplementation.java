@@ -8,20 +8,20 @@ import java.util.Map;
 public interface YamlImplementation {
 
     /**
-     * Dump values to Yaml.
-     * @param values values to dump
-     * @param options dumping options
-     * @return the values as a valid Yaml string
-     */
-    String dump(final Map<String, Object> values, final YamlConfigurationOptions options);
-
-    /**
      * Load Yaml to a map.
      * @param contents a Yaml string with contents to load
      * @return the contents loaded as a map
      * @throws InvalidConfigurationException if contents is not a valid Yaml string
      */
     Map<String, Object> load(final String contents) throws InvalidConfigurationException;
+
+    /**
+     * Dump values to Yaml.
+     * @param values values to dump
+     * @param options dumping options
+     * @return the values as a valid Yaml string
+     */
+    String dump(final Map<String, Object> values, final YamlConfigurationOptions options);
 
     /**
      * Apply the configuration options to this implementation.
@@ -35,6 +35,8 @@ public interface YamlImplementation {
      * @param quoteStyle the quote style to use
      * @return a representation of the value to serialize it using the specified quote style
      */
-    <T> QuoteValue<T> quoteValue(final T value, final QuoteStyle quoteStyle);
+    default <T> QuoteValue<T> quoteValue(final T value, final QuoteStyle quoteStyle) {
+        return new QuoteValue<>(value, quoteStyle);
+    }
 
 }
