@@ -105,8 +105,7 @@ public class YamlCommentDumper extends YamlCommentReader {
             hasChar = this.nextChar();
         }
 
-        if (this.isMultiline()) {
-            this.nextLine();
+        if (this.isMultiline() && this.nextLine()) {
             this.builder.append('\n');
             if (this.isInQuote()) {
                 this.builder.append(this.currentLine);
