@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration.comments;
+package org.simpleyaml.configuration.comments.format;
 
 public enum YamlCommentFormat {
 

@@ -2,8 +2,8 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
-import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
-import org.simpleyaml.configuration.implementation.SnakeYamlImplementation;
+import org.simpleyaml.configuration.comments.format.YamlHeaderFormatter;
+import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlImplementation;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.simpleyaml.configuration.implementation.api.YamlImplementation;

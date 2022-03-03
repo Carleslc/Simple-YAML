@@ -3,7 +3,7 @@ package org.simpleyaml.configuration.file;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.configuration.LoadableConfiguration;
-import org.simpleyaml.configuration.comments.CommentFormatter;
+import org.simpleyaml.configuration.comments.format.CommentFormatter;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 

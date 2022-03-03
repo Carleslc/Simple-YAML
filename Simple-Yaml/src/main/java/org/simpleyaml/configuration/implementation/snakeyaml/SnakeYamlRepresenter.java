@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration.implementation;
+package org.simpleyaml.configuration.implementation.snakeyaml;
 
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.implementation.api.QuoteValue;

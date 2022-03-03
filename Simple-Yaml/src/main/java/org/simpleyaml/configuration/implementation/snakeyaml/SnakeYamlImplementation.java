@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration.implementation;
+package org.simpleyaml.configuration.implementation.snakeyaml;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
@@ -6,8 +6,10 @@ import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.simpleyaml.configuration.implementation.api.YamlImplementation;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
+import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.util.Map;
 
@@ -18,6 +20,8 @@ public class SnakeYamlImplementation implements YamlImplementation {
     private SnakeYamlConstructor yamlConstructor;
     private SnakeYamlRepresenter yamlRepresenter;
     private DumperOptions yamlOptions;
+    private LoaderOptions loaderOptions;
+    private Resolver resolver;
     private Yaml yaml;
 
     public SnakeYamlImplementation() {
@@ -33,10 +37,20 @@ public class SnakeYamlImplementation implements YamlImplementation {
     }
 
     protected final void setYaml(final SnakeYamlConstructor yamlConstructor, final SnakeYamlRepresenter yamlRepresenter, final DumperOptions yamlOptions) {
+        this.setYaml(yamlConstructor, yamlRepresenter, yamlOptions, new LoaderOptions(), new Resolver());
+    }
+
+    protected final void setYaml(final SnakeYamlConstructor yamlConstructor,
+                                 final SnakeYamlRepresenter yamlRepresenter,
+                                 final DumperOptions yamlOptions,
+                                 final LoaderOptions loaderOptions,
+                                 final Resolver resolver) {
         this.yamlConstructor = yamlConstructor;
         this.yamlRepresenter = yamlRepresenter;
         this.yamlOptions = yamlOptions;
-        this.yaml = new Yaml(this.yamlConstructor, this.yamlRepresenter, this.yamlOptions);
+        this.loaderOptions = loaderOptions;
+        this.resolver = resolver;
+        this.yaml = new Yaml(this.yamlConstructor, this.yamlRepresenter, this.yamlOptions, this.loaderOptions, this.resolver);
     }
 
     public Yaml getYaml() {
@@ -53,6 +67,14 @@ public class SnakeYamlImplementation implements YamlImplementation {
 
     public DumperOptions getDumperOptions() {
         return this.yamlOptions;
+    }
+
+    public LoaderOptions getLoaderOptions() {
+        return this.loaderOptions;
+    }
+
+    public Resolver getResolver() {
+        return this.resolver;
     }
 
     @Override
@@ -90,7 +112,6 @@ public class SnakeYamlImplementation implements YamlImplementation {
         this.yamlOptions.setIndentWithIndicator(true);
 
         this.yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
         this.yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
         this.yamlRepresenter.setDefaultScalarStyle(

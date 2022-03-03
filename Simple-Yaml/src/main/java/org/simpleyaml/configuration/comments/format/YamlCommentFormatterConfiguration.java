@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration.comments;
+package org.simpleyaml.configuration.comments.format;
 
 import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
