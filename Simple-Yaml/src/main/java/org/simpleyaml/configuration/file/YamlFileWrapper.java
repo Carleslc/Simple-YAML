@@ -2,8 +2,8 @@ package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.configuration.ConfigurationWrapper;
 import org.simpleyaml.configuration.comments.CommentType;
-import org.simpleyaml.configuration.comments.YamlCommentFormat;
-import org.simpleyaml.configuration.comments.YamlCommentFormatter;
+import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
+import org.simpleyaml.configuration.comments.format.YamlCommentFormatter;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 
 public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {

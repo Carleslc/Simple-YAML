@@ -1,4 +1,7 @@
-package org.simpleyaml.configuration.comments;
+package org.simpleyaml.configuration.comments.format;
+
+import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.KeyTree;
 
 /**
  * {@link YamlCommentFormat#PRETTY} formatter

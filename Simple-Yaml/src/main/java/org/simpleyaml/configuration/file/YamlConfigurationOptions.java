@@ -1,9 +1,9 @@
 package org.simpleyaml.configuration.file;
 
-import org.simpleyaml.configuration.comments.CommentFormatter;
-import org.simpleyaml.configuration.comments.YamlCommentFormat;
-import org.simpleyaml.configuration.comments.YamlCommentFormatter;
-import org.simpleyaml.configuration.comments.YamlHeaderFormatter;
+import org.simpleyaml.configuration.comments.format.CommentFormatter;
+import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
+import org.simpleyaml.configuration.comments.format.YamlCommentFormatter;
+import org.simpleyaml.configuration.comments.format.YamlHeaderFormatter;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 import org.simpleyaml.utils.Validate;
 

@@ -1,5 +1,7 @@
-package org.simpleyaml.configuration.comments;
+package org.simpleyaml.configuration.comments.format;
 
+import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.KeyTree;
 import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
 
@@ -8,7 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Objects;
 
-import static org.simpleyaml.configuration.comments.YamlCommentFormatterConfiguration.DEFAULT_COMMENT_PREFIX;
+import static org.simpleyaml.configuration.comments.format.YamlCommentFormatterConfiguration.DEFAULT_COMMENT_PREFIX;
 import static org.simpleyaml.utils.StringUtils.BLANK_LINE;
 
 /**

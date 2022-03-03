@@ -1,7 +1,7 @@
 package org.simpleyaml.examples;
 
 import org.simpleyaml.configuration.comments.CommentType;
-import org.simpleyaml.configuration.comments.YamlCommentFormat;
+import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.IOException;

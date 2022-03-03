@@ -1,4 +1,4 @@
-package org.simpleyaml.configuration.implementation;
+package org.simpleyaml.configuration.implementation.snakeyaml;
 
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.constructor.SafeConstructor;

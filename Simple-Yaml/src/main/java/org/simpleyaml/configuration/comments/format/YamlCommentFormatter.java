@@ -1,5 +1,7 @@
-package org.simpleyaml.configuration.comments;
+package org.simpleyaml.configuration.comments.format;
 
+import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.KeyTree;
 import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
 
