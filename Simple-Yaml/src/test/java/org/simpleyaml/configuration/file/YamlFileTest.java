@@ -17,12 +17,13 @@ import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 import org.simpleyaml.examples.Person;
 import org.simpleyaml.obj.TestResources;
 import org.simpleyaml.utils.StringUtils;
+import org.simpleyaml.utils.TestResources;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.*;
 
 class YamlFileTest {
 
@@ -415,6 +416,12 @@ class YamlFileTest {
                                 "Side comment mismatch (test." + key + ")",
                                 yamlFile.getComment("test." + key, CommentType.SIDE),
                                 new IsEqual<>("Side #comment with # character")));
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments correctly!",
+                yamlFile.getComment("blank.empty", CommentType.SIDE),
+                new IsEqual<>("Side #comment with # character\nMultiple line side comment")
+        );
 
         MatcherAssert.assertThat(
                 "Couldn't parse the comments correctly!",
@@ -848,6 +855,17 @@ class YamlFileTest {
                 "Couldn't get the footer correctly!",
                 yamlFile.getFooter(),
                 new IsEqual<>("\n# End")
+        );
+
+        yamlFile.setConfigurationFile(TestResources.getResourceURI("test-comments4.yml"));
+        yamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+                "Couldn't get the footer correctly!",
+                yamlFile.getFooter(),
+                new IsEqual<>("\n" +
+                        "# Multiline\n" +
+                        "# footer with blank lines")
         );
     }
 

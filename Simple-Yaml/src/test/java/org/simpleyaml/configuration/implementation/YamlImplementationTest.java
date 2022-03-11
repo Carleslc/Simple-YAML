@@ -3,14 +3,14 @@ package org.simpleyaml.configuration.implementation;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsInstanceOf;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
+import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.configuration.implementation.api.YamlImplementation;
 import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlImplementation;
-import org.simpleyaml.obj.TestResources;
+import org.simpleyaml.utils.TestResources;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.emitter.Emitter;
@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class YamlImplementationTest {
@@ -76,11 +77,11 @@ public class YamlImplementationTest {
     }
 
     @Test
-    void customImplementation() throws Exception {
+    void customImplementationDefaultScalarStyle() throws Exception {
         final YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test-comments.yml"));
         yamlFile.loadWithComments();
 
-        final YamlImplementation customYamlImplementation = new SnakeYamlImplementation() {
+        final YamlImplementation customYamlImplementationSingle = new SnakeYamlImplementation() {
             @Override
             public void configure(final YamlConfigurationOptions options) {
                 super.configure(options);
@@ -88,29 +89,15 @@ public class YamlImplementationTest {
             }
         };
 
-        yamlFile.setImplementation(customYamlImplementation);
+        yamlFile.setImplementation(customYamlImplementationSingle);
 
         MatcherAssert.assertThat(
                 "Wrong custom implementation output!",
                 yamlFile.saveToString(),
                 new IsEqual<>(TestResources.testCommentsSingle())
         );
-    }
 
-    /*
-     FIXME
-     This only happens when overriding the default implementation to use DumperOptions.ScalarStyle.FOLDED or LITERAL
-     Some comments are placed as literal or removed
-     - YamlCommentDumper: If isLiteral at readKey then readKey for nextLine, then append block comment, readValue and then append side comment
-     - timestamp side comments are removed
-    */
-    @Test
-    @Disabled
-    void customImplementationLiteral() throws Exception {
-        final YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test-comments.yml"));
-        yamlFile.loadWithComments();
-
-        final YamlImplementation customYamlImplementation = new SnakeYamlImplementation() {
+        final YamlImplementation yamlImplementationLiteral = new SnakeYamlImplementation() {
             @Override
             public void configure(final YamlConfigurationOptions options) {
                 super.configure(options);
@@ -118,24 +105,63 @@ public class YamlImplementationTest {
             }
         };
 
-        yamlFile.setImplementation(customYamlImplementation);
+        yamlFile.setImplementation(yamlImplementationLiteral);
+
+        final String literalOutput = yamlFile.saveToString();
 
         MatcherAssert.assertThat(
                 "Wrong custom implementation output!",
+                literalOutput,
+                new IsEqual<>(TestResources.testCommentsLiteral())
+        );
+
+        yamlFile.loadFromString(literalOutput);
+
+        MatcherAssert.assertThat(
+                "Wrong custom implementation parse!",
                 yamlFile.saveToString(),
-                new IsEqual<>(TestResources.testComments())
+                new IsEqual<>(literalOutput)
+        );
+
+        final YamlImplementation yamlImplementationFolded = new SnakeYamlImplementation() {
+            @Override
+            public void configure(final YamlConfigurationOptions options) {
+                super.configure(options);
+                getRepresenter().setDefaultScalarStyle(DumperOptions.ScalarStyle.FOLDED);
+            }
+        };
+
+        yamlFile.setImplementation(yamlImplementationFolded);
+
+        final String foldedOutput = yamlFile.saveToString();
+
+        MatcherAssert.assertThat(
+                "Wrong custom implementation output!",
+                foldedOutput,
+                new IsEqual<>(TestResources.testCommentsFolded())
+        );
+
+        yamlFile.loadFromString(foldedOutput);
+
+        MatcherAssert.assertThat(
+                "Wrong custom implementation parse!",
+                yamlFile.saveToString(),
+                new IsEqual<>(foldedOutput)
         );
     }
 
     /**
-     snakeyaml can now process comments since version 1.29
-     <p></p>this test shows how to use that with Simple-YAML
-     <p>the output though is not exactly the same as current Simple-YAML comment parser/dumper
-     <p>check {@link #testCommentsSnakeYaml} method below for some example differences
-     <p></p>setting and getting
+     <code>snakeyaml</code> can now process comments since version 1.29
+     <p></p>This test shows how to use that with Simple-YAML.
+     <p></p>The output though is not exactly the same as current Simple-YAML comment parser/dumper,
+     check {@link #testCommentsSnakeYaml} method below for some example differences.
+     <p></p>Setting and getting comments using {@link YamlFile#setComment(String, String, CommentType)}
+     or {@link YamlFile#getComment(String, CommentType)} will not modify the snakeyaml {@link org.yaml.snakeyaml.Yaml} comments,
+     so you will have to use the implementation snakeyaml methods like {@link org.yaml.snakeyaml.nodes.Node#setBlockComments(List)}
+     and {@link org.yaml.snakeyaml.nodes.Node#getBlockComments()}.
     */
     /*
-     TODO maybe we can provide this implementation as an alternative (or as default)
+     TODO maybe we can provide this implementation as an alternative (or as default) in the public API
      we would need to:
      - use KeyTree or similar interface decoupled from snakeyaml in YamlImplementation load/dump instead Map<String, Object>
      - add useComments(bool) to YamlConfigurationOptions & remove useComments from YamlFile (set/get from options)

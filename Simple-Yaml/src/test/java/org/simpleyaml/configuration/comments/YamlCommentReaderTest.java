@@ -9,8 +9,6 @@ import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
 final class YamlCommentReaderTest {
 
@@ -25,8 +23,7 @@ final class YamlCommentReaderTest {
     void isBlank() throws IOException {
         final StringReader reader = new StringReader(YamlCommentReaderTest.COMMENT);
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentReader commentReader = new YamlCommentReader(options, reader);
+        final YamlCommentReader commentReader = new YamlCommentReader(configuration.options(), reader);
         commentReader.nextLine();
 
         MatcherAssert.assertThat(
@@ -49,8 +46,7 @@ final class YamlCommentReaderTest {
     void isComment() throws IOException {
         final StringReader reader = new StringReader(YamlCommentReaderTest.COMMENT);
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentReader commentReader = new YamlCommentReader(options, reader);
+        final YamlCommentReader commentReader = new YamlCommentReader(configuration.options(), reader);
         commentReader.nextLine();
         final boolean comment = commentReader.isComment();
 
@@ -65,8 +61,7 @@ final class YamlCommentReaderTest {
     void nextLine() throws IOException {
         final StringReader reader = new StringReader(YamlCommentReaderTest.COMMENT);
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentReader commentReader = new YamlCommentReader(options, reader);
+        final YamlCommentReader commentReader = new YamlCommentReader(configuration.options(), reader);
         final boolean nextLine = commentReader.nextLine();
 
         MatcherAssert.assertThat(
@@ -80,8 +75,7 @@ final class YamlCommentReaderTest {
     void track() throws IOException {
         final StringReader reader = new StringReader(YamlCommentReaderTest.COMMENT);
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentReader commentReader = new YamlCommentReader(options, reader);
+        final YamlCommentReader commentReader = new YamlCommentReader(configuration.options(), reader);
         commentReader.nextLine();
         final KeyTree.Node track = commentReader.track(0, "a");
 

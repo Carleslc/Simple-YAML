@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -82,6 +83,73 @@ final class YamlCommentParserTest {
                 "Comments are wrong!",
                 parser.getComment("tag", CommentType.SIDE),
                 new IsNull<>()
+        );
+    }
+
+    @Test
+    void testExplicitStyle() throws IOException {
+        YamlFile yamlFile = new YamlFile();
+
+        yamlFile.loadFromStringWithComments("# block comment\n" +
+                "? - key 1 # comment 1\n" +
+                "  - key 2 # comment 2\n" +
+                ": - list value # comment 3");
+
+        String output = "# block comment\n" +
+                "# comment 1\n" +
+                "# comment 2\n" +
+                "'[key 1, key 2]':\n" +
+                "  - list value # comment 3\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments!",
+                yamlFile.getComment("[key 1, key 2]", CommentType.BLOCK),
+                new IsEqual<>("block comment\ncomment 1\ncomment 2")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments!",
+                yamlFile.getComment("[key 1, key 2][0]", CommentType.SIDE),
+                new IsEqual<>("comment 3")
+        );
+
+        yamlFile = new YamlFile();
+        yamlFile.loadFromStringWithComments("# block comment\n? blank\n?\n:");
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments!",
+                yamlFile.getCommentMapper().getComment("blank"),
+                new IsEqual<>("block comment")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments!",
+                yamlFile.getCommentMapper().getComment(""),
+                new IsNull<>()
+        );
+
+        yamlFile = new YamlFile();
+        yamlFile.loadFromStringWithComments("# block comment\n" +
+                "? | # comment 1\n" +
+                "    key\n" +
+                ": - list value # comment 2");
+
+        output = "# block comment\n" +
+                "# comment 1\n" +
+                "? |\n" +
+                "  key\n" +
+                ":   - list value # comment 2\n";
+
+        MatcherAssert.assertThat(
+                "Couldn't parse the comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
         );
     }
 

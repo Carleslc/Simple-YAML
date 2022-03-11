@@ -1,4 +1,4 @@
-package org.simpleyaml.obj;
+package org.simpleyaml.utils;
 
 import org.cactoos.io.InputStreamOf;
 import org.cactoos.io.ResourceOf;
@@ -131,6 +131,72 @@ public final class TestResources {
                 "# End\n";
     }
 
+    public static String testCommentsSpecial() {
+        return testHeader() +
+                "# Test comments\n" +
+                "test:\n" +
+                "  # Block #comment with # character\n" +
+                "  ' wrap ': ' # not a comment ' # Side #comment with # character\n" +
+                "  single: 'text with # character' # Side #comment with # character\n" +
+                "  double: 'text with # character'  # Side #comment with # character\n" +
+                "  es'cape: text with \"#\" character \\\" # Side #comment with # character\n" +
+                "  es'cape2': text with '#' character \\\" # Side #comment with # character\n" +
+                "  :es:cape3\": 'This is a string ''''with a # character \"inside of it' # Side #comment with # character\n" +
+                "  -? escape4: -'# not a \\#comment # Side #comment with # character\n" +
+                "  multiline: 'This is a string\\\" \\\" which got ''wrapped and also contains a     #\n" +
+                "    in its ''content.' # Side #comment with # character\n" +
+                "  # This is a # multiline'\n" +
+                "  # comment\n" +
+                "  multiline2: | # Side #comment with # character\n" +
+                "    'line one' # not a comment\n" +
+                "    line two # not a comment\n" +
+                "  special2: text\"#\"' # Side #comment with # character\n" +
+                "     # unexpected indentation comment but valid\n" +
+                "  special3: text'#''# not comment # Side #comment with # character\n" +
+                "  special4: text''#''# not comment # Side #comment with # character\n" +
+                "  deep0: # Side #comment with # character\n" +
+                "    deep1:\n" +
+                "      # Deep block comment\n" +
+                "      deep2: deep # Deep side comment\n" +
+                "      # Deep side comment below\n" +
+                "  entries: # Side #comment with # character\n" +
+                "    # Comment on a list item with # character\n" +
+                "    - entry'#'' #:)\n" +
+                "    # dangling comment\n" +
+                "\n" +
+                "blank:\n" +
+                "  # Block #comment with # character\n" +
+                "\n" +
+                "  # Multiple line comment with blank line\n" +
+                "  comment: 'text with # character' # Side #comment with # character\n" +
+                "\n" +
+                "  # Multiple line comment\n" +
+                "  #  with blank line\n" +
+                "  empty: '' # Side #comment with # character\n" +
+                "           # Multiple line side comment\n" +
+                "\n" +
+                "explicit:\n" +
+                "  # This is explicit style\n" +
+                "  # Key comment 1\n" +
+                "  'this is a # multiline'' key': value # Value comment\n" +
+                "  # Key comment 2\n" +
+                "  key: |- # Value comment\n" +
+                "    this is a multiline\n" +
+                "    value with blank line\n" +
+                "  # Key comment 3\n" +
+                "  # Key comment 4\n" +
+                "  ? |\n" +
+                "    this is a # multiline'\n" +
+                "    key literal\n" +
+                "  : | # Value comment\n" +
+                "    this is a # multiline'\n" +
+                "    value literal\n" +
+                "  # Value comment below\n" +
+                "\n" +
+                "# Multiline\n" +
+                "# footer with blank lines\n";
+    }
+
     public static String testCommentsSingle() {
         return testHeader() +
                 "# Test comments\n" +
@@ -171,41 +237,61 @@ public final class TestResources {
                 "# End\n";
     }
 
-    public static String testCommentsSpecial() {
+    public static String testCommentsLiteral() {
         return testHeader() +
                 "# Test comments\n" +
-                "test:\n" +
-                "  # Block #comment with # character\n" +
-                "  ' wrap ': ' # not a comment ' # Side #comment with # character\n" +
-                "  single: 'text with # character' # Side #comment with # character\n" +
-                "  double: 'text with # character'  # Side #comment with # character\n" +
-                "  es'cape: text with \"#\" character \\\" # Side #comment with # character\n" +
-                "  es'cape2': text with '#' character \\\" # Side #comment with # character\n" +
-                "  :es:cape3\": 'This is a string ''''with a # character \"inside of it' # Side #comment with # character\n" +
-                "  -? escape4: -'# not a \\#comment # Side #comment with # character\n" +
-                "  multiline: 'This is a string\\\" \\\" which got ''wrapped and also contains a     #\n" +
-                "    in its ''content.' # Side #comment with # character\n" +
-                "  multiline2: | # Side #comment with # character\n" +
-                "    'line one' # not a comment\n" +
-                "    line two # not a comment\n" +
-                "  # This is a'#\n" +
-                "  # multiline comment #~\n" +
-                "  special2: text\"#\"' # Side #comment with # character\n" +
-                "     # unexpected indentation comment but valid\n" +
-                "  special3: text'#''# not comment # Side #comment with # character\n" +
-                "  special4: text''#''# not comment # Side #comment with # character\n" +
-                "  entries: # Side #comment with # character\n" +
-                "    # Comment on a list item with # character\n" +
-                "    - entry'#'' #:)\n" +
-                "    # dangling comment\n" +
-                "  # Block #comment with # character\n" +
+                "\"test\":\n" +
+                "  \"number\": !!int |-\n" +
+                "    5\n" +
+                "  # Hello!\n" +
+                "  \"string\": |-\n" +
+                "    Hello world\n" +
+                "  \"boolean\": !!bool |-\n" +
+                "    true\n" +
+                "  # List of words\n" +
+                "  \"list\":\n" +
+                "    - |-\n" +
+                "      Each\n" +
+                "    - |-\n" +
+                "      word\n" +
+                "    - |-\n" +
+                "      will\n" +
+                "    - |-\n" +
+                "      be\n" +
+                "    - |-\n" +
+                "      in\n" +
+                "    - |-\n" +
+                "      a\n" +
+                "    - |-\n" +
+                "      separated\n" +
+                "    # Comment on a list item\n" +
+                "    - |- # :)\n" +
+                "      entry\n" +
+                "  # This is a\n" +
+                "  # multiline comment\n" +
+                "  \"wrap\": |-\n" +
+                "    # this is not a comment\n" +
                 "\n" +
-                "  # Multiple line comment with blank line\n" +
-                "  comment: 'text with # character' # Side #comment with # character\n" +
+                "  \"blank\": \"\"\n" +
                 "\n" +
-                "  # Multiple line comment\n" +
-                "  #  with blank line\n" +
-                "  blank: '' # Side #comment with # character\n" +
-                "  # Multiple line comment with blank line\n";
+                "# Wonderful numbers\n" +
+                "\"math\":\n" +
+                "  \"pi\": !!float |-\n" +
+                "    3.141592653589793\n" +
+                "  # Side comment below\n" +
+                "\n" +
+                "# Some timestamps\n" +
+                "\"timestamp\":\n" +
+                "  # ISO\n" +
+                "  \"canonicalDate\": 2020-07-04T13:18:04.458Z\n" +
+                "  # Date/Time with format\n" +
+                "  \"formattedDate\": |- # dd/MM/yyyy HH:mm:ss\n" +
+                "    04/07/2020 15:18:04\n" +
+                "\n" +
+                "# End\n";
+    }
+
+    public static String testCommentsFolded() {
+        return testCommentsLiteral().replace(" |-", " >-");
     }
 }

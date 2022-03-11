@@ -182,7 +182,7 @@ public class YamlConfiguration extends FileConfiguration {
      * @param quoteStyle The quote style to use.
      */
     public void set(final String path, final Object value, final QuoteStyle quoteStyle) {
-        super.set(path, this.yamlImplementation.quoteValue(value, quoteStyle));
+        this.set(path, this.yamlImplementation.quoteValue(value, quoteStyle));
     }
 
     /**
@@ -201,7 +201,7 @@ public class YamlConfiguration extends FileConfiguration {
      */
     @Override
     public void set(final String path, final Object value) {
-        if (value != null) {
+        if (value != null && !(value instanceof QuoteValue)) {
             final QuoteStyle quoteStyle = this.options().quoteStyleDefaults().getExplicitQuoteStyleInstanceOf(value.getClass());
             if (quoteStyle != null) {
                 this.set(path, value, quoteStyle);
@@ -232,7 +232,13 @@ public class YamlConfiguration extends FileConfiguration {
 
     protected void convertMapsToSections(final Map<?, ?> input, final ConfigurationSection section) {
         for (final Map.Entry<?, ?> entry : input.entrySet()) {
-            final String key = entry.getKey().toString();
+            Object keyObject = entry.getKey();
+            String key;
+            if (keyObject == null) {
+                key = "";
+            } else {
+                key = keyObject.toString();
+            }
             final Object value = entry.getValue();
 
             if (value instanceof Map) {

@@ -13,59 +13,78 @@ public class YamlCommentParser extends YamlCommentReader {
     private boolean blockCommentStarted = false;
     private boolean headerParsed = false;
 
-    private KeyTree.Node currentNode;
-
     public YamlCommentParser(final YamlConfigurationOptions options, final Reader reader) {
         super(options, reader);
     }
 
     public void parse() throws IOException {
         while (this.nextLine()) {
-            if (this.isBlank()) {
-                this.appendLine();
-            } else if (this.isComment()) {
-                this.appendCommentLine();
-            } else {
-                this.track();
-            }
+            this.processLine();
         }
 
         // Footer
         this.track();
+
+        this.close();
+    }
+
+    @Override
+    protected void processLine() throws IOException {
+        if (this.isBlank()) {
+            this.appendLine();
+        } else if (this.isComment()) {
+            this.appendCommentLine();
+        } else {
+            this.track();
+        }
     }
 
     private void appendLine() {
-        if (this.blockComment == null) {
-            this.blockComment = new StringBuilder();
+        if (!this.isExplicit()) {
+            if (this.blockComment == null) {
+                this.blockComment = new StringBuilder();
+            }
+            this.blockComment.append('\n');
         }
-        this.blockComment.append('\n');
     }
 
     private void appendCommentLine() {
         this.trackSideCommentBelow();
-        if (this.blockComment == null) {
-            this.blockComment = new StringBuilder(this.currentLine);
+        if (this.isExplicit()) {
+            this.explicitNotation.addComment(this.currentLine);
         } else {
-            if (this.blockCommentStarted) {
-                // multiline comment
-                this.blockComment.append('\n');
+            if (this.blockComment == null) {
+                this.blockComment = new StringBuilder(this.currentLine);
+            } else {
+                if (this.blockCommentStarted) {
+                    // multiline comment
+                    this.blockComment.append('\n');
+                }
+                this.blockComment.append(this.currentLine);
             }
-            this.blockComment.append(this.currentLine);
+            this.blockCommentStarted = true;
         }
-        this.blockCommentStarted = true;
     }
 
     @Override
     protected KeyTree.Node track() throws IOException {
+        this.trackSideCommentBelow();
         this.currentNode = super.track();
         this.trackBlockComment(this.currentNode);
         this.trackSideComment(this.currentNode);
         return this.currentNode;
     }
 
-    private void trackBlockComment(final KeyTree.Node node) {
-        if (node != null && this.blockComment != null) {
-            String blockComment = this.blockComment.toString();
+    @Override
+    protected void endExplicitBlock() throws IOException {
+        this.trackBlockCommentExplicit(this.currentNode);
+        this.trackSideComment(this.currentNode);
+    }
+
+    private String trackBlockComment(final KeyTree.Node node) {
+        String blockComment = null;
+        if (node != null && this.blockComment != null && (!this.isExplicit() || this.explicitNotation.getNode() == node)) {
+            blockComment = this.blockComment.toString();
             if (!this.headerParsed) {
                 // Remove header from first key comment
                 blockComment = this.removeHeader(blockComment);
@@ -73,8 +92,25 @@ public class YamlCommentParser extends YamlCommentReader {
             }
             this.setRawComment(node, blockComment, CommentType.BLOCK);
             this.blockComment = null;
+            this.blockCommentStarted = false;
         }
-        this.blockCommentStarted = false;
+        return blockComment;
+    }
+
+    private void trackBlockCommentExplicit(final KeyTree.Node node) {
+        String blockComment = this.trackBlockComment(node);
+        final String explicitBlockComment = this.explicitNotation.getKeyComment();
+        if (explicitBlockComment != null) {
+            if (blockComment == null) {
+                blockComment = node.getComment();
+            }
+            if (blockComment == null) {
+                blockComment = explicitBlockComment;
+            } else {
+                blockComment += '\n' + explicitBlockComment;
+            }
+            this.setRawComment(node, blockComment, CommentType.BLOCK);
+        }
     }
 
     private String removeHeader(String blockComment) {
@@ -89,17 +125,35 @@ public class YamlCommentParser extends YamlCommentReader {
     }
 
     private void trackSideComment(final KeyTree.Node node) throws IOException {
-        if (node != null && this.currentLine != null) {
+        if (this.isExplicit()) {
+            if (this.currentLine != null && !this.explicitNotation.isFinished()) {
+                this.readValue();
+
+                if (this.isComment() && this.isExplicit()) { // ensure it is still explicit, because reading multiline value it can be finished
+                    final String comment = this.currentLine.substring(this.position);
+                    if (node == null || node == this.explicitNotation.getNode()) {
+                        this.explicitNotation.addComment(comment);
+                    } else {
+                        this.setSideComment(node, comment);
+                    }
+                }
+            } else if (node != null) {
+                this.setSideComment(node, this.explicitNotation.getValueComment());
+            }
+        } else if (this.currentLine != null && node != null) {
             this.readValue();
 
             if (this.isComment()) {
-                String sideComment = this.currentLine.substring(this.position);
-                if (!sideComment.isEmpty() && !this.isSpace(sideComment.charAt(0))) {
-                    sideComment = " " + sideComment;
-                }
-                this.setRawComment(node, sideComment, CommentType.SIDE);
+                this.setSideComment(node, this.currentLine.substring(this.position));
             }
         }
+    }
+
+    private void setSideComment(final KeyTree.Node node, String sideComment) {
+        if (sideComment != null && !sideComment.isEmpty() && !isSpace(sideComment.charAt(0))) {
+            sideComment = " " + sideComment;
+        }
+        this.setRawComment(node, sideComment, CommentType.SIDE);
     }
 
     private void trackSideCommentBelow() {
@@ -128,4 +182,10 @@ public class YamlCommentParser extends YamlCommentReader {
         }
     }
 
+    @Override
+    protected void processMultiline(boolean inQuoteBlock) {
+        if (this.isExplicit() && this.isComment()) {
+            this.explicitNotation.addComment(this.currentLine.substring(this.position));
+        }
+    }
 }

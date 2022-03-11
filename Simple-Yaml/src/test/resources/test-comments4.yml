@@ -14,19 +14,26 @@ test:
   -? escape4: -'# not a \#comment # Side #comment with # character
   multiline: 'This is a string\" \" which got ''wrapped and also contains a     #
   in its ''content.' # Side #comment with # character
+  # This is a # multiline'
+  # comment
   multiline2: | # Side #comment with # character
     'line one' # not a comment
     line two # not a comment
-  # This is a'#
-  # multiline comment #~
   special2: text"#"' # Side #comment with # character
      # unexpected indentation comment but valid
   special3: text'#''# not comment # Side #comment with # character
   special4: text''#''# not comment # Side #comment with # character
+  deep0: # Side #comment with # character
+    deep1:
+      # Deep block comment
+      deep2: deep # Deep side comment
+      # Deep side comment below
   entries: # Side #comment with # character
     # Comment on a list item with # character
     - entry'#'' #:)
     # dangling comment
+
+blank:
   # Block #comment with # character
 
   # Multiple line comment with blank line
@@ -34,5 +41,26 @@ test:
 
   # Multiple line comment
   #  with blank line
-  blank: ''# Side #comment with # character
-  # Multiple line comment with blank line
+  empty: ''# Side #comment with # character
+           # Multiple line side comment
+
+explicit:
+  # This is explicit style
+  ? "this is a # multiline'
+    key" # Key comment 1
+  : value # Value comment
+  ? key # Key comment 2
+  : this is a multiline
+
+    value with blank line # Value comment
+  # Key comment 3
+  ? | # Key comment 4
+    this is a # multiline'
+    key literal
+  : | # Value comment
+    this is a # multiline'
+    value literal
+  # Value comment below
+
+# Multiline
+# footer with blank lines

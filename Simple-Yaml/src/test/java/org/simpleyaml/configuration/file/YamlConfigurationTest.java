@@ -1,7 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import org.cactoos.io.InputStreamOf;
-import org.cactoos.io.ResourceOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsInstanceOf;
@@ -11,7 +9,7 @@ import org.llorllale.cactoos.matchers.HasValues;
 import org.llorllale.cactoos.matchers.IsBlank;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
-import org.simpleyaml.obj.TestResources;
+import org.simpleyaml.utils.TestResources;
 
 import java.io.IOException;
 import java.math.BigInteger;

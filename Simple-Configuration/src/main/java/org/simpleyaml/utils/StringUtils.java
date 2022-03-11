@@ -7,11 +7,17 @@ public final class StringUtils {
 
     public static final String BLANK_LINE = "\n\n";
 
-    private static final Pattern NEW_LINE = Pattern.compile("\\R"); // like "\r?\n" but also with other unicode line separators
-    private static final Pattern INDENTATION = Pattern.compile("^[^\\S\n]+", Pattern.MULTILINE); // all leading whitespace except new line
+    public static final Pattern NEW_LINE = Pattern.compile("\\R"); // like "\r?\n" but also with other unicode line separators
+    public static final Pattern INDENTATION = Pattern.compile("^[^\\S\n]+", Pattern.MULTILINE); // all leading whitespace except new line
+
+    public static final Pattern LIST_INDEX = Pattern.compile("^(.*)\\[(-?\\d+)]$", Pattern.DOTALL); // for list indexing: list[0]
+
+    public static String[] splitNewLines(final String s, int limit) {
+        return NEW_LINE.split(s, limit);
+    }
 
     public static String[] lines(final String content, boolean stripTrailingNewLines) {
-        return NEW_LINE.split(content, stripTrailingNewLines ? 0 : -1);
+        return splitNewLines(content, stripTrailingNewLines ? 0 : -1);
     }
 
     public static String[] lines(final String content) {
@@ -77,6 +83,54 @@ public final class StringUtils {
         parts[0] = i >= 0 ? s.substring(0, i + 1) : "";
         parts[1] = s.substring(i + 1);
         return parts;
+    }
+
+    public static int lastSeparatorIndex(final String path, final char sep, int fromIndex) {
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        boolean escape = false;
+        int len = path.length();
+        int idx = -1;
+        for (int i = fromIndex; i < len; i++) {
+            char c = path.charAt(i);
+            if (c == '\\') { // escape separator with \
+                escape = !escape;
+            } else {
+                if (c == sep && !escape) {
+                    idx = i;
+                }
+                escape = false;
+            }
+        }
+        return idx;
+    }
+
+    public static int lastSeparatorIndex(final String path, final char sep) {
+        return lastSeparatorIndex(path, sep, 0);
+    }
+
+    public static int firstSeparatorIndex(String path, final char sep, int fromIndex) {
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        boolean escape = false;
+        int len = path.length();
+        for (int i = fromIndex; i < len; i++) {
+            char c = path.charAt(i);
+            if (c == '\\') { // escape separator with \
+                escape = !escape;
+            } else if (c == sep && !escape) {
+                return i;
+            } else {
+                escape = false;
+            }
+        }
+        return -1;
+    }
+
+    public static int firstSeparatorIndex(String path, final char sep) {
+        return firstSeparatorIndex(path, sep, 0);
     }
 
     public static boolean allLinesArePrefixed(final String comment, final String prefix) {

@@ -173,6 +173,16 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     /**
+     * Get the comment mapper. This has access to read the key-nodes directly.
+     * @return the comment mapper or null if this configuration is loaded without comments
+     * @see #getComment(String, CommentType)
+     * @see #setComment(String, String, CommentType)
+     */
+    public YamlCommentMapper getCommentMapper() {
+        return this.yamlCommentMapper;
+    }
+
+    /**
      * Set a comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
@@ -539,6 +549,11 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         if (this.useComments) {
             this.parseComments(contents);
         }
+    }
+
+    public void loadFromStringWithComments(final String contents) throws InvalidConfigurationException {
+        this.useComments = true;
+        this.loadFromString(contents);
     }
 
     /**

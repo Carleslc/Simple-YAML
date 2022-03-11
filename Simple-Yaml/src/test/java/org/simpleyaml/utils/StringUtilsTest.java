@@ -3,6 +3,7 @@ package org.simpleyaml.utils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
+import org.simpleyaml.configuration.file.YamlConfiguration;
 
 public class StringUtilsTest {
 
@@ -315,6 +316,135 @@ public class StringUtilsTest {
         MatcherAssert.assertThat(
                 StringUtils.quoteNewLines("#\n#\n 1"),
                 new IsEqual<>("#\\n#\\n 1")
+        );
+    }
+
+    @Test
+    void separatorIndex() {
+        final char sep = new YamlConfiguration().options().pathSeparator();
+
+        // last
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("", sep),
+                new IsEqual<>(-1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex(".", sep),
+                new IsEqual<>(0)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("\\.", sep),
+                new IsEqual<>(-1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("\\..", sep),
+                new IsEqual<>(2)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("\\\\.", sep),
+                new IsEqual<>(2)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("\\\\\\.", sep),
+                new IsEqual<>(-1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("a.b", sep),
+                new IsEqual<>(1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("a.b.c", sep),
+                new IsEqual<>(3)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("a.b\\.c", sep),
+                new IsEqual<>(1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.lastSeparatorIndex("a\\.b.c", sep),
+                new IsEqual<>(4)
+        );
+
+        // first
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("", sep),
+                new IsEqual<>(-1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex(".", sep),
+                new IsEqual<>(0)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("\\.", sep),
+                new IsEqual<>(-1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("\\..", sep),
+                new IsEqual<>(2)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("\\\\.", sep),
+                new IsEqual<>(2)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("\\\\\\.", sep),
+                new IsEqual<>(-1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("a.b", sep),
+                new IsEqual<>(1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("a.b.c", sep),
+                new IsEqual<>(1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("a.b\\.c", sep),
+                new IsEqual<>(1)
+        );
+
+        MatcherAssert.assertThat(
+                "The separator index is not correct!",
+                StringUtils.firstSeparatorIndex("a\\.b.c", sep),
+                new IsEqual<>(4)
         );
     }
 }

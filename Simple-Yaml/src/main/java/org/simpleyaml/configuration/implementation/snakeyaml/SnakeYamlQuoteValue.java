@@ -22,10 +22,12 @@ public class SnakeYamlQuoteValue<T> extends QuoteValue<T> {
 
     private static Map<QuoteStyle, DumperOptions.ScalarStyle> mapQuoteScalarStyles() {
         final Map<QuoteStyle, DumperOptions.ScalarStyle> map = new HashMap<>();
-        map.put(QuoteStyle.DOUBLE, DumperOptions.ScalarStyle.DOUBLE_QUOTED);
-        map.put(QuoteStyle.SINGLE, DumperOptions.ScalarStyle.SINGLE_QUOTED);
-        map.put(QuoteStyle.PLAIN, DumperOptions.ScalarStyle.PLAIN);
         map.put(null, DumperOptions.ScalarStyle.PLAIN);
+        map.put(QuoteStyle.PLAIN, DumperOptions.ScalarStyle.PLAIN);
+        map.put(QuoteStyle.SINGLE, DumperOptions.ScalarStyle.SINGLE_QUOTED);
+        map.put(QuoteStyle.DOUBLE, DumperOptions.ScalarStyle.DOUBLE_QUOTED);
+        map.put(QuoteStyle.LITERAL, DumperOptions.ScalarStyle.LITERAL);
+        map.put(QuoteStyle.FOLDED, DumperOptions.ScalarStyle.FOLDED);
         return Collections.unmodifiableMap(map);
     }
 }

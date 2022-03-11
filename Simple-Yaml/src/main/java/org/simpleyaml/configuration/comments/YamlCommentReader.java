@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
+import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
 
 import java.io.BufferedReader;
@@ -25,6 +26,13 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
     protected boolean isLiteral = false;
     protected ReadingQuoteStyle quoteNotation = ReadingQuoteStyle.NONE;
 
+    protected boolean beginExplicit = false;
+    protected ReadingExplicitStyle explicitNotation;
+
+    protected KeyTree.Node currentNode;
+    protected KeyTree.Node currentList;
+    protected boolean isListElement = false;
+
     protected ReaderStage stage = ReaderStage.START;
 
     protected YamlCommentReader(final YamlConfigurationOptions options, final Reader reader) {
@@ -37,16 +45,19 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         this.currentLine = this.reader.readLine();
         this.position = -1;
         this.currentChar = '\0';
+        this.isListElement = false;
         if (this.currentLine != null) {
             this.stage = ReaderStage.NEW_LINE;
+            boolean literal = this.isLiteral;
             int indent = this.readIndent();
-            this.checkLiteral(indent);
             this.trim = this.currentLine.substring(indent).trim();
+            this.checkSpecialLines(literal, indent);
             return true;
         } else {
             this.indent = 0;
             this.trim = null;
             this.stage = ReaderStage.END_OF_FILE;
+            this.endExplicitNotation();
             return false;
         }
     }
@@ -55,7 +66,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         if (this.hasNext()) {
             this.position++;
             this.currentChar = this.currentLine.charAt(this.position);
-            return this.checkSpecials();
+            return this.checkSpecialChars();
         }
         this.stage = ReaderStage.END_OF_LINE;
         return false;
@@ -77,12 +88,8 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         return this.trim.isEmpty();
     }
 
-    protected boolean isSpace(char c) {
+    public static boolean isSpace(char c) {
         return c == ' ' || c == '\t';
-    }
-
-    protected boolean isSpecialIndent(char c) {
-        return c == '-' || c == '?' || c == ':';
     }
 
     protected boolean isComment() {
@@ -105,12 +112,39 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         return this.quoteNotation != ReadingQuoteStyle.NONE;
     }
 
+    protected boolean isExplicit() {
+        return this.explicitNotation != null;
+    }
+
+    protected void endExplicitNotation() throws IOException {
+        if (this.isExplicit()) {
+            this.explicitNotation.finish();
+            this.currentNode = this.explicitNotation.getNode();
+            this.endExplicitBlock();
+        }
+        this.explicitNotation = null;
+    }
+
+    protected void processLine() throws IOException {
+        // overriden in children to process the current line
+    }
+
+    @SuppressWarnings("unused")
+    protected void processMultiline(boolean inQuoteBlock) {
+        // overriden in children to process the current line while reading a multiline value
+    }
+
+    @SuppressWarnings("unused")
+    protected void endExplicitBlock() throws IOException {
+        // overriden in children to process an explicit block
+    }
+
     protected boolean isLiteralChar() {
         return this.currentChar == '|' || this.currentChar == '>';
     }
 
-    protected void checkLiteral(final int indent) {
-        if (this.isLiteral) {
+    protected void checkSpecialLines(final boolean wasLiteral, final int indent) throws IOException {
+        if (wasLiteral && this.isLiteral) {
             if (this.quoteNotation != ReadingQuoteStyle.LITERAL) {
                 // First line of the block scalar literal
                 this.quoteNotation = ReadingQuoteStyle.LITERAL;
@@ -119,13 +153,26 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
                 this.quoteNotation = ReadingQuoteStyle.NONE;
                 this.isLiteral = false;
                 this.indent = indent;
+                this.checkSpecialChars();
             }
         } else {
             this.indent = indent;
         }
+        if (this.beginExplicit) {
+            this.beginExplicit = false;
+            this.endExplicitNotation();
+            this.explicitNotation = new ReadingExplicitStyle(indent);
+        } else if (this.isExplicit() && !this.isBlank() && indent <= this.explicitNotation.getIndentation()
+                && this.trim.charAt(0) != ReadingExplicitStyle.VALUE) {
+            this.endExplicitNotation();
+        }
+        if (this.currentList != null && indent <= this.currentList.getIndentation()) {
+            // No more elements for the current list
+            this.currentList = null;
+        }
     }
 
-    protected boolean checkSpecials() {
+    protected boolean checkSpecialChars() {
         if (this.quoteNotation == ReadingQuoteStyle.NONE) {
             // Default notation
             if (!this.isLiteral && (this.stage == ReaderStage.NEW_LINE || this.stage == ReaderStage.AFTER_KEY)) {
@@ -136,7 +183,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
                 } else if (this.currentChar == ReadingQuoteStyle.DOUBLE.getChar()) {
                     this.inQuote(ReadingQuoteStyle.DOUBLE);
                     return this.nextChar();
-                } else if (this.stage == ReaderStage.AFTER_KEY && this.isLiteralChar()) {
+                } else if (this.isLiteralChar()) {
                     this.isLiteral = true; // Flag new lines to be a block scalar literal until indentation resets
                 }
             }
@@ -190,7 +237,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
     protected boolean isSectionKey() {
         if (this.currentChar == ':' && (this.stage == ReaderStage.KEY || this.stage == ReaderStage.QUOTE_CLOSE)) {
             if (this.hasNext()) {
-                if (this.isSpace(this.peek(+1))) {
+                if (isSpace(this.peek(+1))) {
                     // space after colon, valid key
                     this.nextChar();
                     this.stage = ReaderStage.AFTER_KEY;
@@ -213,7 +260,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
             this.nextChar();
 
             //noinspection StatementWithEmptyBody
-            while (this.nextChar() && !this.isSpace(this.currentChar)) {
+            while (this.nextChar() && !isSpace(this.currentChar)) {
                 // skip
             }
 
@@ -224,14 +271,13 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
     protected int readIndent(boolean special) {
         int indent = 0;
         while (this.nextChar() && this.stage != ReaderStage.QUOTE_OPEN) {
-            if (this.isSpace(this.currentChar)) {
+            if (isSpace(this.currentChar)) {
                 indent++;
             } else {
-                if (special && this.isSpecialIndent(this.currentChar) && this.hasNext()
-                        && this.isSpace(this.peek(+1))) {
+                if (special && this.canStartSpecialIndent(indent) && (this.isListChar() || this.isExplicitChar())) {
                     // Skip special indent (do not increment indent)
                     this.nextChar();
-                    this.readIndent(false); // read additional spaces (like after - on a list item)
+                    this.readIndent(!this.isListElement); // read additional spaces (like after - on a list item)
                 }
                 break;
             }
@@ -243,19 +289,78 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         return readIndent(true);
     }
 
-    protected String readKey() {
+    protected boolean canStartSpecialIndent(int indent) {
+        return this.stage == ReaderStage.NEW_LINE &&
+                (this.quoteNotation == ReadingQuoteStyle.NONE || (this.quoteNotation == ReadingQuoteStyle.LITERAL && indent <= this.indent));
+    }
+
+    protected boolean isListChar() {
+        if (this.currentChar == '-') {
+            this.isListElement = this.nextIsSpace();
+            return this.isListElement;
+        }
+        return false;
+    }
+
+    protected boolean isExplicitChar() {
+        if (this.currentChar == ReadingExplicitStyle.KEY && this.nextIsSpace()) {
+            this.beginExplicit = true;
+            return true;
+        } else if (this.isExplicit() && this.currentChar == ReadingExplicitStyle.VALUE && this.nextIsSpace()) {
+            this.explicitNotation.valueStep();
+            return true;
+        }
+        return false;
+    }
+
+    protected final boolean nextIsSpace() {
+        return this.hasNext() && isSpace(this.peek(+1));
+    }
+
+    protected final boolean isMultiline() {
+        return !this.hasChar() && this.isInQuote();
+    }
+
+    protected boolean hasKey() {
+        if (this.isExplicit()) {
+            return this.explicitNotation.isKey() || this.explicitNotation.isListKey;
+        }
+        return !this.isLiteral; // - |
+    }
+
+    protected String readKey() throws IOException {
         String key = null;
 
-        if (this.currentLine != null) {
+        boolean hasChar = this.hasChar();
+
+        if (hasChar && this.hasKey()) {
             StringBuilder keyBuilder = new StringBuilder();
 
-            boolean hasChar = this.hasChar();
             boolean withinQuotes = this.isInQuote();
 
-            while (hasChar && !this.isSectionKey() && this.stage != ReaderStage.QUOTE_CLOSE && !this.isComment()) {
-                this.stage = ReaderStage.KEY;
-                keyBuilder.append(this.currentChar);
-                hasChar = this.nextChar();
+            this.stage = ReaderStage.KEY;
+
+            boolean explicitLiteral = this.isLiteral && this.isExplicit();
+
+            if (this.quoteNotation == ReadingQuoteStyle.LITERAL) {
+                keyBuilder.append(this.currentLine.substring(this.position));
+                this.skipToEnd();
+            } else if (explicitLiteral) { // ? |
+                if (this.isLiteralChar()) {
+                    this.nextChar();
+                }
+                this.stage = ReaderStage.COMMENT;
+                this.processMultiline(true);
+                this.skipToEnd();
+            } else {
+                while (hasChar && !this.isSectionKey() && this.stage != ReaderStage.QUOTE_CLOSE && !this.isComment()) {
+                    keyBuilder.append(this.currentChar);
+                    hasChar = this.nextChar();
+                }
+            }
+
+            if (explicitLiteral || this.isMultiline()) {
+                this.readKeyMultiline(keyBuilder);
             }
 
             key = keyBuilder.toString();
@@ -268,49 +373,136 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         return key;
     }
 
+    protected void readKeyMultiline(final StringBuilder keyBuilder) throws IOException {
+        ReadingQuoteStyle lastQuote = this.quoteNotation;
+        if (this.nextLine() && (!this.isExplicit() || this.explicitNotation.isKey())) {
+            boolean inQuoteBlock = lastQuote != ReadingQuoteStyle.LITERAL || this.quoteNotation == lastQuote;
+            this.processMultiline(inQuoteBlock);
+            if (inQuoteBlock) {
+                final String nextKey = this.readKey();
+                if (nextKey != null) {
+                    if (keyBuilder.length() > 0) {
+                        keyBuilder.append(' ');
+                    }
+                    keyBuilder.append(nextKey);
+                }
+            } else {
+                // End literal block, it is not multiline anymore
+                this.processLine();
+            }
+        }
+    }
+
     protected void readValue() throws IOException {
         boolean hasChar = this.hasChar();
 
-        if (hasChar && !this.isComment()) {
+        if (hasChar) {
             if (this.stage != ReaderStage.QUOTE_CLOSE) {
                 this.stage = ReaderStage.VALUE;
             }
-            while (hasChar && !this.isComment()) {
-                hasChar = this.nextChar();
+            if (this.quoteNotation == ReadingQuoteStyle.LITERAL) {
+                this.skipToEnd();
+            } else if (!this.isComment()) {
+                while (hasChar && !this.isComment()) {
+                    hasChar = this.nextChar();
+                }
             }
         }
 
-        if (this.isMultiline() && this.nextLine()) {
-            this.readValue();
+        if (this.isMultiline()) {
+            this.readValueMultiline();
         }
 
         if (this.isComment()) {
             // Do not skip the comment indent
-            this.position--;
-            while (this.position >= 0 && this.isSpace(this.peek(0))) {
+            while (this.position > 0 && isSpace(this.peek(-1))) {
                 this.position--;
             }
-            this.position++;
         }
 
         // Value is not stored because is not relevant to track comments (we are only handling quotes and literal blocks here)
     }
 
-    protected final boolean isMultiline() {
-        return !this.hasChar() && this.isInQuote();
+    protected void readValueMultiline() throws IOException {
+        ReadingQuoteStyle lastQuote = this.quoteNotation;
+        if (this.nextLine() && (!this.isExplicit() || this.explicitNotation.isValue())) {
+            boolean inQuoteBlock = lastQuote != ReadingQuoteStyle.LITERAL || this.quoteNotation == lastQuote;
+            this.processMultiline(inQuoteBlock);
+            if (inQuoteBlock) {
+                this.readValue();
+            } else {
+                // End literal block, it is not multiline anymore
+                this.processLine();
+            }
+        }
+    }
+
+    protected void skipToEnd() {
+        this.position = this.currentLine.length() - 1;
+        this.currentChar = this.peek(0);
+        this.nextChar();
     }
 
     protected KeyTree.Node track() throws IOException {
         if (this.quoteNotation == ReadingQuoteStyle.LITERAL) {
+            // Currently in a literal block, cannot add comments in this line
             return null;
         }
+        if (this.isExplicit()) {
+            return this.trackExplicit();
+        }
+
         this.key = this.readKey();
-        return this.track(this.indent, this.key);
+
+        if (this.isListElement && (this.currentNode != null || this.currentList != null)) {
+            this.trackListElement();
+        } else {
+            this.track(this.indent, this.key);
+        }
+
+        return this.currentNode;
+    }
+
+    protected void trackListElement() {
+        if (this.currentList == null) {
+            this.currentList = this.currentNode;
+        }
+        int index = this.currentList.isListNewElement();
+        if (this.isExplicit() && this.indent == this.explicitNotation.getIndentation()) { // : - value
+            this.currentNode = this.currentList.add(this.key, false, false);
+        } else { // - value
+            this.currentNode = this.currentList.add(this.indent, this.key, false, false);
+        }
+        this.currentNode.setElementIndex(index);
+    }
+
+    protected KeyTree.Node trackExplicit() throws IOException {
+        boolean addKey = this.explicitNotation.isKey();
+        boolean isListKey = addKey && this.isListElement; // ? -
+
+        this.key = this.readKey();
+
+        if (addKey) {
+            this.explicitNotation.addKey(this.key, isListKey);
+
+            if (this.explicitNotation.isKey()) {
+                return null; // may be more key lines to add
+            }
+        }
+
+        this.currentNode = this.explicitNotation.track();
+
+        if (!addKey && this.currentNode != null && this.isListElement) {
+            this.trackListElement();
+        }
+
+        return this.currentNode;
     }
 
     protected KeyTree.Node track(final int indent, final String key) {
         final KeyTree.Node parent = this.keyTree.findParent(indent);
-        return parent.add(indent, key);
+        this.currentNode = parent.add(indent, key);
+        return this.currentNode;
     }
 
     @Override
@@ -331,6 +523,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
                 ", isEscaping=" + isEscaping +
                 ", isLiteral=" + isLiteral +
                 ", quoteNotation=" + quoteNotation +
+                ", explicit= " + explicitNotation +
                 ", keyTree=" + keyTree +
                 '}';
     }
@@ -362,6 +555,138 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
         public char getChar() {
             return this.quote;
+        }
+    }
+
+    public final class ReadingExplicitStyle {
+
+        public static final char KEY = '?';
+        public static final char VALUE = ':';
+
+        private char step;
+        private final int indent;
+
+        private StringBuilder key;
+        private StringBuilder keyComment;
+        private StringBuilder valueComment;
+
+        private KeyTree.Node node;
+
+        private boolean finished = false;
+        private boolean isListKey = false;
+
+        ReadingExplicitStyle(int indent) {
+            this.step = KEY;
+            this.indent = indent;
+        }
+
+        public boolean isKey() {
+            return this.step == KEY;
+        }
+
+        public boolean isValue() {
+            return this.step == VALUE;
+        }
+
+        public void valueStep() {
+            this.step = VALUE;
+        }
+
+        public boolean isFinished() {
+            return this.finished;
+        }
+
+        public KeyTree.Node track() {
+            if (this.node == null) {
+                this.node = YamlCommentReader.this.track(this.getIndentation(), this.getKey());
+            }
+            return this.node;
+        }
+
+        public void finish() {
+            this.track();
+            this.finished = true;
+        }
+
+        public int getIndentation() {
+            return this.indent;
+        }
+
+        public KeyTree.Node getNode() {
+            return this.node;
+        }
+
+        public String getKey() {
+            if (this.key == null) {
+                return "";
+            }
+            String key = this.key.toString();
+            return this.isListKey ? key + ']' : key;
+        }
+
+        public void addKey(String key, final boolean isListKey) {
+            if (key != null && !key.isEmpty()) {
+                if (this.key == null) {
+                    if (isListKey) {
+                        this.isListKey = true;
+                        key = '[' + key;
+                    }
+                    this.key = new StringBuilder(key);
+                } else {
+                    this.key.append(this.isListKey ? ", " : " ").append(key);
+                }
+            }
+        }
+
+        public String getKeyComment() {
+            return this.keyComment != null ? this.keyComment.toString() : null;
+        }
+
+        public String getValueComment() {
+            return this.valueComment != null ? this.valueComment.toString() : null;
+        }
+
+        public void addComment(final String comment) {
+            if (this.isKey()) {
+                this.keyComment = this.addComment(comment, this.keyComment);
+            } else {
+                this.valueComment = this.addComment(comment, this.valueComment);
+            }
+        }
+
+        private StringBuilder addComment(final String comment, StringBuilder commentBuilder) {
+            if (commentBuilder == null) {
+                commentBuilder = new StringBuilder();
+                if (this.isKey()) {
+                    this.appendIndentComment(comment, commentBuilder);
+                } else {
+                    commentBuilder.append(comment);
+                }
+            } else {
+                commentBuilder.append('\n');
+                this.appendIndentComment(comment, commentBuilder);
+            }
+            return commentBuilder;
+        }
+
+        private void appendIndentComment(final String comment, final StringBuilder commentBuilder) {
+            commentBuilder.append(StringUtils.indentation(this.getIndentation()));
+            commentBuilder.append(StringUtils.stripIndentation(comment));
+        }
+
+        public String getStep() {
+            return this.isFinished() ? "END" : (this.isKey() ? "KEY" : "VALUE");
+        }
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "step = " + this.getStep() +
+                    ", indent = " + this.getIndentation() +
+                    ", key = " + this.getKey() +
+                    ", keyComment = " + this.getKeyComment() +
+                    ", valueComment = " + this.getValueComment() +
+                    "}";
         }
     }
 

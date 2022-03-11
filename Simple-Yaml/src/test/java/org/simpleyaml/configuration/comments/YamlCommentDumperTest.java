@@ -6,8 +6,6 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
 class YamlCommentDumperTest {
 
@@ -16,8 +14,7 @@ class YamlCommentDumperTest {
         final String content = "test: 'test'\n" + "test-2: 'test-2'\n" + "test-3: 'test-3 #'\n";
         final StringReader reader = new StringReader(content);
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentMapper mapper = new YamlCommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(configuration.options());
         mapper.setComment("test", "test comment");
         mapper.setComment("test", "test comment", CommentType.SIDE);
         mapper.setComment("test-2", "test comment");
@@ -42,8 +39,7 @@ class YamlCommentDumperTest {
     void getNode() {
         final StringReader reader = new StringReader("test: 'test'");
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentMapper mapper = new YamlCommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(configuration.options());
         mapper.setComment("test", "test comment");
         mapper.setComment("test", "test comment", CommentType.SIDE);
         final YamlCommentDumper dumper = new YamlCommentDumper(mapper, reader);
