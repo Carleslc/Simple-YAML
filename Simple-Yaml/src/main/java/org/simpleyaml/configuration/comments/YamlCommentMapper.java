@@ -4,7 +4,7 @@ import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 public class YamlCommentMapper implements Commentable {
 
-    protected KeyTree keyTree;
+    protected final KeyTree keyTree;
 
     public YamlCommentMapper(final YamlConfigurationOptions options) {
         this.keyTree = new KeyTree(options);
@@ -12,11 +12,11 @@ public class YamlCommentMapper implements Commentable {
 
     @Override
     public void setComment(final String path, String comment, final CommentType type) {
-        KeyTree.Node node = this.getNode(path);
-        if (node == null) {
-            node = this.keyTree.add(path);
+        if (comment == null) {
+            this.removeComment(this.getNode(path), type);
+        } else {
+            this.setFormattedComment(this.getOrAddNode(path), comment, type);
         }
-        this.setFormattedComment(node, comment, type);
     }
 
     protected final void setFormattedComment(final KeyTree.Node node, final String comment, final CommentType type) {
@@ -40,7 +40,7 @@ public class YamlCommentMapper implements Commentable {
 
     @Override
     public String getComment(final String path, final CommentType type) {
-        return getComment(this.getNode(path), type);
+        return this.getComment(this.getNode(path), type);
     }
 
     protected final String getComment(final KeyTree.Node node, final CommentType type) {
@@ -58,8 +58,30 @@ public class YamlCommentMapper implements Commentable {
         return type == CommentType.BLOCK ? node.getComment() : node.getSideComment();
     }
 
-    protected KeyTree.Node getNode(final String path) {
+    public void removeComment(final String path, final CommentType type) {
+        this.removeComment(this.getNode(path), type);
+    }
+
+    protected final void removeComment(final KeyTree.Node node, final CommentType type) {
+        if (node != null) {
+            if (type == CommentType.BLOCK) {
+                node.setComment(null);
+            } else {
+                node.setSideComment(null);
+            }
+        }
+    }
+
+    public KeyTree.Node getNode(final String path) {
         return this.keyTree.get(path);
+    }
+
+    public KeyTree.Node getOrAddNode(final String path) {
+        return this.keyTree.getOrAdd(path);
+    }
+
+    public KeyTree getKeyTree() {
+        return this.keyTree;
     }
 
     protected YamlConfigurationOptions options() {

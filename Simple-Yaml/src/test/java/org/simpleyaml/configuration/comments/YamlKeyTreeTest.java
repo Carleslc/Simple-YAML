@@ -1,25 +1,24 @@
 package org.simpleyaml.configuration.comments;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
+import org.hamcrest.core.IsSame;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.HasSize;
 import org.llorllale.cactoos.matchers.HasValues;
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.obj.TestYamlConfigurationOptions;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 final class YamlKeyTreeTest {
 
     @Test
     void add() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final KeyTree tree = new KeyTree(options);
+        final KeyTree tree = new KeyTree(configuration.options());
         final String defaultnodekey = "defaultnodekey";
         final String nodewithcommentkey = "nodewithcommentkey";
         tree.add(defaultnodekey);
@@ -77,8 +76,7 @@ final class YamlKeyTreeTest {
     @Test
     void findParent() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final KeyTree tree = new KeyTree(options);
+        final KeyTree tree = new KeyTree(configuration.options());
         final String nodekey = "nodekey";
         tree.add(nodekey);
         final KeyTree.Node node = tree.get(nodekey);
@@ -111,8 +109,7 @@ final class YamlKeyTreeTest {
     @Test
     void get() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final KeyTree tree = new KeyTree(options);
+        final KeyTree tree = new KeyTree(configuration.options());
         final String nodekey = "nodekey";
         tree.add(nodekey);
         final KeyTree.Node node = tree.get(nodekey);
@@ -140,10 +137,91 @@ final class YamlKeyTreeTest {
     }
 
     @Test
+    void getChild() {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        final KeyTree tree = new KeyTree(configuration.options());
+
+        final KeyTree.Node child = tree.add("test").add("child");
+        final KeyTree.Node child2 = child.add("child2");
+        final KeyTree.Node child3 = child.add("child3");
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                child2,
+                new IsSame<>(tree.get("test.child.child2"))
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child").getFirst(),
+                new IsSame<>(tree.get("test.child").get(0))
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child").getLast(),
+                new IsSame<>(tree.get("test.child").get(child.size() - 1))
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child").getLast(),
+                new IsSame<>(child3)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child[0]"),
+                new IsSame<>(child2)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child[-1]"),
+                new IsSame<>(child3)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                child.get("[-1]"),
+                new IsSame<>(child3)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                child.get(-1),
+                new IsSame<>(child3)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child[1]"),
+                new IsSame<>(child3)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child.[1]"),
+                new IsSame<>(child3)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                child.get(1),
+                new IsSame<>(child3)
+        );
+
+        MatcherAssert.assertThat(
+                "The node is not correct!",
+                tree.get("test.child[2]"),
+                new IsNull<>()
+        );
+    }
+
+    @Test
     void keys() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final KeyTree tree = new KeyTree(options);
+        final KeyTree tree = new KeyTree(configuration.options());
         final String nodekey1 = "nodekey1";
         final String nodekey2 = "nodekey2";
         final String nodekey3 = "nodekey3";
@@ -167,8 +245,7 @@ final class YamlKeyTreeTest {
     @Test
     void entries() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final KeyTree tree = new KeyTree(options);
+        final KeyTree tree = new KeyTree(configuration.options());
         final String nodekey1 = "nodekey1";
         final String nodekey2 = "nodekey2";
         final String nodekey3 = "nodekey3";
@@ -184,8 +261,7 @@ final class YamlKeyTreeTest {
         );
         MatcherAssert.assertThat(
             "The node's key are not correct!",
-            entries.stream().map(Map.Entry::getKey)
-                .collect(Collectors.toList()),
+            entries.stream().map(Map.Entry::getKey).collect(Collectors.toList()),
             new HasValues<>("nodekey1", "nodekey2", "nodekey3")
         );
     }
@@ -193,11 +269,10 @@ final class YamlKeyTreeTest {
     @Test
     void testToString() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final KeyTree tree = new KeyTree(options);
+        final KeyTree tree = new KeyTree(configuration.options());
         final String nodekey = "nodekey";
         tree.add(nodekey);
-        final String expected = "{indent=0, name='', comment='null', side='null', children=[{indent=0, name='nodekey', comment='null', side='null', children=[]}]}";
+        final String expected = "{indent=0, path='', name='', comment='null', side='null', children=[{indent=0, path='nodekey', name='nodekey', comment='null', side='null', children=[]}]}";
 
         MatcherAssert.assertThat(
             "toString returns a wrong value.",

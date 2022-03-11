@@ -88,6 +88,12 @@ public interface ConfigurationSection {
     boolean isSet(String path);
 
     /**
+     * Gets the size of the configuration.
+     * @return number of keys in this configuration section
+     */
+    int size();
+
+    /**
      * Gets the path of this {@link ConfigurationSection} from its root {@link
      * Configuration}
      * <p>

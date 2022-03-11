@@ -6,16 +6,13 @@ import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.obj.TestYamlConfigurationOptions;
 
 final class YamlCommentMapperTest {
 
     @Test
     void setComment() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentMapper mapper = new YamlCommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(configuration.options());
 
         final String key = "test";
 
@@ -63,8 +60,7 @@ final class YamlCommentMapperTest {
     @Test
     void getComment() {
         final YamlConfiguration configuration = new YamlConfiguration();
-        final YamlConfigurationOptions options = new TestYamlConfigurationOptions(configuration);
-        final YamlCommentMapper mapper = new YamlCommentMapper(options);
+        final YamlCommentMapper mapper = new YamlCommentMapper(configuration.options());
 
         MatcherAssert.assertThat(
             "There is a comment on test path",

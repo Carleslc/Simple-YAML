@@ -4,6 +4,7 @@ import org.simpleyaml.configuration.comments.*;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormatter;
 import org.simpleyaml.configuration.comments.format.YamlHeaderFormatter;
+import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Collection;
 
 /**
  * An extension of {@link YamlConfiguration} which saves all data in Yaml to a configuration file
@@ -505,6 +507,21 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public YamlFileWrapper path(final String path) {
         return new YamlFileWrapper(this, path);
+    }
+
+    @Override
+    public void set(final String path, final Object value) {
+        super.set(path, value);
+
+        if (this.yamlCommentMapper != null) {
+            final Object innerValue = value instanceof QuoteValue ? ((QuoteValue<?>) value).getValue() : value;
+            if (innerValue instanceof Collection) {
+                KeyTree.Node node = this.yamlCommentMapper.getNode(path);
+                if (node != null) {
+                    node.isList(((Collection<?>) innerValue).size());
+                }
+            }
+        }
     }
 
     /**

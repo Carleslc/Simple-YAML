@@ -1,14 +1,21 @@
 test:
+  # first
   - 1
+  # repeated
   - 2
   - 3
+  # repeated
+  - 2
+  # last
+  - 3
 people:
-  - ==: org.simpleyaml.examples.Person
+  - ==: Person
     id: 12345678A
     name: John
     birthYear: 1990
     isAlive: true
-  - ==: org.simpleyaml.examples.Person
+  - ==: Person
+    # Comment on list map element
     id: 12345678B
     name: Maria
     birthYear: 1990

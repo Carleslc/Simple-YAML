@@ -9,13 +9,14 @@ import org.hamcrest.core.IsSame;
 import org.junit.jupiter.api.Test;
 import org.llorllale.cactoos.matchers.IsTrue;
 import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.KeyTree;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormatter;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormatterConfiguration;
 import org.simpleyaml.configuration.comments.format.YamlHeaderFormatter;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
+import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.simpleyaml.examples.Person;
-import org.simpleyaml.obj.TestResources;
 import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.TestResources;
 
@@ -1048,21 +1049,313 @@ class YamlFileTest {
     }
 
     @Test
-    void testDefaultListFormatting() throws Exception {
+    void testMapListSerialization() throws Exception {
+        ConfigurationSerialization.registerClass(Person.class);
+
+        final YamlFile mapListYamlFile = new YamlFile(TestResources.getResourceURI("test-map-list.yml"));
+        final String expected = TestResources.fileToStringUnix(mapListYamlFile);
+
+        mapListYamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+                "Could not load/save map list elements!",
+                mapListYamlFile.saveToString(),
+                new IsEqual<>(expected));
+
+        MatcherAssert.assertThat(
+                "Could not load map list comments!",
+                mapListYamlFile.getComment("people[-1].id"),
+                new IsEqual<>("Comment on list map element"));
+
         final Person p1 = new Person("12345678A", "John", 1990);
         final Person p2 = new Person("12345678B", "Maria", 1990);
 
-        final YamlFile yamlFile = new YamlFile();
+        final List<Integer> testList = Arrays.asList(1, 2, 3, 2, 3);
+        final List<Person> peopleList = Arrays.asList(p1, p2); // Serializable
 
-        yamlFile.set("test", Arrays.asList(1, 2, 3));
-        yamlFile.set("people", Arrays.asList(p1, p2));
+        // Set -> Comment
 
-        final String expected = TestResources.fileToStringUnix(new YamlFile(TestResources.getResourceURI("test-map-list.yml")));
+        YamlFile yamlFile = new YamlFile();
+
+        yamlFile.set("test", testList);
+        yamlFile.set("people", peopleList);
+
+        yamlFile.setComment("test[-1]", "last");
+        yamlFile.setComment("test.2", "repeated");
+        yamlFile.setComment("test[0]", "first");
+        yamlFile.setComment("people[1].id", "Comment on list map element");
+
+        final String output = yamlFile.saveToString();
 
         MatcherAssert.assertThat(
-                "List formatting is not the expected!",
+                "Could not save map list elements!",
+                output,
+                new IsEqual<>(expected));
+
+        yamlFile.loadFromString(output);
+
+        MatcherAssert.assertThat(
+                "Could not parse list elements!",
+                yamlFile.getIntegerList("test"),
+                new IsEqual<>(testList));
+
+        MatcherAssert.assertThat(
+                "Could not parse map list elements!",
+                yamlFile.getList("people"),
+                new IsEqual<>(peopleList));
+
+        MatcherAssert.assertThat(
+                "Could not load/save map list elements!",
                 yamlFile.saveToString(),
                 new IsEqual<>(expected));
+
+        // Comment -> Set
+
+        yamlFile = new YamlFile();
+
+        yamlFile.setComment("test[0]", "first");
+        yamlFile.setComment("test.2", "repeated");
+        yamlFile.setComment("test[-1]", "last");
+        yamlFile.setComment("people[1].id", "Comment on list map element");
+
+        yamlFile.set("test", testList);
+        yamlFile.set("people", peopleList);
+
+        MatcherAssert.assertThat(
+                "Could not save map list elements!",
+                yamlFile.saveToString(),
+                new IsEqual<>(expected));
+
+        // Comment (different order) -> Set
+
+        yamlFile = new YamlFile();
+
+        yamlFile.setComment("people[1].id", "Comment on list map element");
+        yamlFile.setComment("test[-1]", "last");
+        yamlFile.setComment("test[0]", "first");
+        yamlFile.setComment("test.2", "repeated");
+
+        yamlFile.set("test", testList);
+        yamlFile.set("people", peopleList);
+
+        MatcherAssert.assertThat(
+                "Could not save map list elements!",
+                yamlFile.saveToString(),
+                new IsEqual<>(expected));
+    }
+
+    @Test
+    void getListMap() throws Exception {
+        ConfigurationSerialization.registerClass(Person.class);
+
+        final Person p1 = new Person("12345678A", "John", 1990);
+        final Person p2 = new Person("12345678B", "Maria", 1990);
+
+        YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test-map-list.yml"));
+        yamlFile.loadWithComments();
+
+        final KeyTree tree = yamlFile.getCommentMapper().getKeyTree();
+
+        MatcherAssert.assertThat(
+                "List map node must be a list!",
+                tree.get("people").isList(),
+                new IsTrue()
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map keys!",
+                tree.get("people[0].name"),
+                new IsNot<>(new IsNull<>())
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map keys!",
+                tree.get("people[0].name").getName(),
+                new IsEqual<>("name")
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.get("people[0]"),
+                new IsEqual<>(p1)
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.get("people[1]"),
+                new IsEqual<>(p2)
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.getString("people[0].name"),
+                new IsEqual<>(p1.getName())
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.getString("people[-1].id"),
+                new IsEqual<>(p2.getId())
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.getInt("test[-3]"),
+                new IsEqual<>(3)
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.get("test[-6]"),
+                new IsNull<>()
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.get("test[5]"),
+                new IsNull<>()
+        );
+
+        yamlFile.set("test[-1]", 4);
+
+        MatcherAssert.assertThat(
+                "Could not set list map values!",
+                yamlFile.getInt("test[5]"),
+                new IsEqual<>(4)
+        );
+
+        Map<String, Integer> innerMap = new LinkedHashMap<>();
+        innerMap.put("one", 1);
+        innerMap.put("two", 2);
+
+        Map<String, Collection<Map<String, Integer>>> deepMap = new LinkedHashMap<>();
+
+        List<Map<String, Integer>> listMap = new ArrayList<>(Collections.singletonList(innerMap));
+        Set<Map<String, Integer>> setMap = new LinkedHashSet<>(Collections.singleton(innerMap));
+
+        deepMap.put("list", listMap);
+        deepMap.put("set", setMap);
+
+        yamlFile.createSection("section").set("deep", deepMap);
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.getMapList("section.deep.list"),
+                new IsEqual<>(listMap)
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.get("section.deep.list[0]"),
+                new IsEqual<>(listMap.get(0))
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.getInt("section.deep.list[0].one"),
+                new IsEqual<>(listMap.get(0).get("one"))
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.get("section.deep.set"),
+                new IsEqual<>(setMap)
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.get("section.deep.set[0]"),
+                new IsEqual<>(listMap.get(0))
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.getInt("section.deep.list[0].one"),
+                new IsEqual<>(listMap.get(0).get("one"))
+        );
+
+        yamlFile.set("section.deep.list[0].three", 3);
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.getInt("section.deep.list[0].three"),
+                new IsEqual<>(3)
+        );
+
+        Map<String, String> innerMap2 = new LinkedHashMap<>();
+        innerMap2.put("a", "a");
+        innerMap2.put("b", "b");
+
+        yamlFile.set("section.deep.list[-1]", innerMap2);
+        yamlFile.set("section.deep.set[-1]", innerMap2);
+
+        MatcherAssert.assertThat(
+                "Could not set list map values!",
+                yamlFile.get("section.deep.list[1]"),
+                new IsEqual<>(innerMap2)
+        );
+
+        MatcherAssert.assertThat(
+                "Could not set set map values!",
+                yamlFile.get("section.deep.set[-1]"),
+                new IsEqual<>(innerMap2)
+        );
+
+        yamlFile.set("section.deep.list[-1]", null);
+        yamlFile.set("section.deep.set", null);
+
+        MatcherAssert.assertThat(
+                "Could not get list map values!",
+                yamlFile.get("section.deep.list[1]"),
+                new IsNull<>()
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.get("section.deep.set"),
+                new IsNull<>()
+        );
+
+        yamlFile = new YamlFile();
+
+        yamlFile.set("section.deep", deepMap);
+
+        yamlFile.setComment("section.deep.list[0]", "[0]");
+        yamlFile.setComment("section.deep.list[0].one", "[0].one");
+        yamlFile.setComment("section.deep.list[0].one", "ONE", CommentType.SIDE);
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.getComment("section.deep.list[0]"),
+                new IsEqual<>("[0]")
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.getComment("section.deep.list[0].one"),
+                new IsEqual<>("[0].one")
+        );
+
+        MatcherAssert.assertThat(
+                "Could not get set map values!",
+                yamlFile.getComment("section.deep.list[0].one", CommentType.SIDE),
+                new IsEqual<>("ONE")
+        );
+
+        final String output = "section:\n" +
+                "  deep:\n" +
+                "    list:\n" +
+                "      # [0]\n" +
+                "        # [0].one\n" +
+                "      - one: 1 # ONE\n" +
+                "        two: 2\n" +
+                "        three: 3\n";
+
+        MatcherAssert.assertThat(
+                "Could not save list map comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
+        );
     }
 
 }

@@ -1,10 +1,13 @@
 package org.simpleyaml.configuration;
 
-import java.util.stream.Collectors;
+import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.utils.NumberConversions;
+import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  * A type of {@link ConfigurationSection} that is stored in memory.
@@ -191,6 +194,11 @@ public class MemorySection implements ConfigurationSection {
     }
 
     @Override
+    public int size() {
+        return this.map.size();
+    }
+
+    @Override
     public String getCurrentPath() {
         return this.fullPath;
     }
@@ -232,24 +240,24 @@ public class MemorySection implements ConfigurationSection {
         // i1 is the leading (higher) index
         // i2 is the trailing (lower) index
         int i1 = -1, i2;
-        ConfigurationSection section = this;
-        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
-            section = section.getConfigurationSection(path.substring(i2, i1));
+        Object section = this;
+        while ((i1 = StringUtils.firstSeparatorIndex(path, separator, i2 = i1 + 1)) != -1) {
+            final String node = path.substring(i2, i1);
+            section = this.getSection(section, node);
             if (section == null) {
                 return def;
             }
         }
 
         final String key = path.substring(i2);
-        if (section == this) {
-            final Object result = this.map.get(key);
-            return result == null ? def : result;
-        }
-        return section.get(key, def);
+
+        return this.getObject(section, key, def);
     }
 
     @Override
     public void set(final String path, final Object value) {
+        Validate.notNull(path, "Path cannot be null");
+
         final Configuration root = this.getRoot();
         if (root == null) {
             throw new IllegalStateException("Cannot use section without a root");
@@ -259,27 +267,24 @@ public class MemorySection implements ConfigurationSection {
         // i1 is the leading (higher) index
         // i2 is the trailing (lower) index
         int i1 = -1, i2;
-        ConfigurationSection section = this;
-        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
+        Object section = this;
+        while ((i1 = StringUtils.firstSeparatorIndex(path, separator, i2 = i1 + 1)) != -1) {
             final String node = path.substring(i2, i1);
-            final ConfigurationSection subSection = section.getConfigurationSection(node);
+            final Object subSection = this.getSection(section, node);
             if (subSection == null) {
-                section = section.createSection(node);
+                if (section instanceof ConfigurationSection) {
+                    section = ((ConfigurationSection) section).createSection(node);
+                } else {
+                    return;
+                }
             } else {
                 section = subSection;
             }
         }
 
         final String key = path.substring(i2);
-        if (section == this) {
-            if (value == null) {
-                this.map.remove(key);
-            } else {
-                this.map.put(key, value);
-            }
-        } else {
-            section.set(key, value);
-        }
+
+        this.setObject(section, key, value);
     }
 
     @Override
@@ -294,27 +299,289 @@ public class MemorySection implements ConfigurationSection {
         // i1 is the leading (higher) index
         // i2 is the trailing (lower) index
         int i1 = -1, i2;
-        ConfigurationSection section = this;
-        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
+        Object section = this;
+        while ((i1 = StringUtils.firstSeparatorIndex(path, separator, i2 = i1 + 1)) != -1) {
             final String node = path.substring(i2, i1);
-            final ConfigurationSection subSection = section.getConfigurationSection(node);
+            final Object subSection = this.getSection(section, node);
             if (subSection == null) {
-                section = section.createSection(node);
+                if (section instanceof ConfigurationSection) {
+                    section = ((ConfigurationSection) section).createSection(node);
+                } else {
+                    return null;
+                }
             } else {
                 section = subSection;
             }
         }
 
         final String key = path.substring(i2);
+
         if (section == this) {
             final ConfigurationSection result = new MemorySection(this, key);
             this.map.put(key, result);
             return result;
         }
-        return section.createSection(key);
+        if (section instanceof ConfigurationSection) {
+            return ((ConfigurationSection) section).createSection(key);
+        }
+        return null;
+    }
+
+    private Object getObject(final Object section, final String node, final Object def) {
+        Matcher listIndex = StringUtils.LIST_INDEX.matcher(node);
+
+        if (!listIndex.matches()) {
+            // Not indexed
+            return this.getObjectRaw(section, node, def);
+        }
+
+        // Indexed
+        Object object = findIndexed(section, listIndex.group(1), Integer.parseInt(listIndex.group(2)));
+
+        return object != null ? object : def;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object getObjectRaw(Object section, final String node, final Object def) {
+        if (section == this) {
+            section = this.map;
+        }
+        if (section instanceof ConfigurationSection) {
+            return ((ConfigurationSection) section).get(node, def);
+        }
+        if (section instanceof ConfigurationSerializable) {
+            section = ((ConfigurationSerializable) section).serialize();
+        }
+        if (section instanceof Map) {
+            return ((Map<?, Object>) section).getOrDefault(node, def);
+        }
+        return def;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <K, V> void setObject(final Object section, final K node, final V value) {
+        Matcher listIndex = StringUtils.LIST_INDEX.matcher((CharSequence) node);
+
+        if (!listIndex.matches()) {
+            // Not indexed
+            this.setObjectRaw(section, node, value);
+        } else {
+            // Indexed
+            Object it = null;
+            String iterableNode = listIndex.group(1);
+
+            if (iterableNode != null && !iterableNode.isEmpty()) {
+                it = find(section, iterableNode);
+            }
+
+            if (it instanceof MemorySection) {
+                it = ((MemorySection) section).map;
+            } else if (it instanceof ConfigurationSection) {
+                it = ((ConfigurationSection) section).getValues(false);
+            }
+
+            if (it != null) {
+                int index = Integer.parseInt(listIndex.group(2));
+
+                if (it instanceof Map) {
+                    int len = ((Map<K, V>) it).size();
+                    index = asListIndex(index, len);
+                    if (index >= 0 && index < len) {
+                        K key = null;
+                        Iterator<K> iterator = ((Map<K, V>) it).keySet().iterator();
+                        int j = -1;
+                        while (iterator.hasNext() && ++j <= index) {
+                            key = iterator.next();
+                        }
+                        this.setObjectRaw(section, key, value);
+                    }
+                } else if (it instanceof List) {
+                    final List<V> list = (List<V>) it;
+                    int len = list.size();
+
+                    if (value == null && index == -1 && !list.isEmpty()) {
+                        list.remove(len - 1);
+                    } else if (value != null && (index == -1 || index == len)) {
+                        list.add(value);
+                    } else {
+                        index = asListIndex(index, len);
+                        if (index >= 0 && index < len) {
+                            if (value == null) {
+                                list.remove(index);
+                            } else {
+                                list.set(index, value);
+                            }
+                        }
+                    }
+                } else if (it instanceof Collection && value != null) {
+                    final Collection<V> collection = (Collection<V>) it;
+                    int len = collection.size();
+
+                    if (index == -1 || index == 0 || index == len) {
+                        ((Collection<V>) it).add(value);
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <K, V> void setObjectRaw(Object section, final K key, final V value) {
+        if (key != null) {
+            if (section == this) {
+                section = this.map;
+            }
+            if (section instanceof ConfigurationSection) {
+                ((ConfigurationSection) section).set(String.valueOf(key), value);
+            } else if (section instanceof Map) {
+                if (value == null) {
+                    ((Map<K, V>) section).remove(key);
+                } else {
+                    ((Map<K, V>) section).put(key, value);
+                }
+            }
+        }
+    }
+
+    private Object getSection(final Object parent, final String node) {
+        Matcher listIndex = StringUtils.LIST_INDEX.matcher(node);
+
+        if (!listIndex.matches()) {
+            // Not indexed
+            return findSection(parent, node);
+        }
+
+        // Indexed
+        final Object section = findIndexed(parent, listIndex.group(1), Integer.parseInt(listIndex.group(2)));
+
+        return isSection(section) ? section : null;
+    }
+
+    private static boolean isSection(Object section) {
+        return section instanceof ConfigurationSection || section instanceof ConfigurationSerializable || section instanceof Map;
+    }
+
+    private static Object findSection(Object section, final String node) {
+        if (section instanceof ConfigurationSection) {
+            final ConfigurationSection configurationSection = (ConfigurationSection) section;
+            section = configurationSection.get(node, null);
+            if (section == null && configurationSection instanceof MemorySection) {
+                section = ((MemorySection) configurationSection).getDefault(node);
+                if (section instanceof ConfigurationSection) {
+                    section = configurationSection.createSection(node);
+                }
+            }
+        } else if (section instanceof Map) {
+            section = ((Map<?, ?>) section).get(node);
+        }
+        return isSection(section) ? section : null;
+    }
+
+    private static Object find(final Object section, final String node) {
+        Object it = null;
+        if (section instanceof ConfigurationSection) {
+            final ConfigurationSection configurationSection = (ConfigurationSection) section;
+            it = configurationSection.get(node, null);
+            if (it == null && configurationSection instanceof MemorySection) {
+                it = ((MemorySection) configurationSection).getDefault(node);
+            }
+        } else if (section instanceof Map) {
+            it = ((Map<?, ?>) section).get(node);
+        }
+        return it;
+    }
+
+    private static Iterable<?> getIterable(Object section, final String node) {
+        if (node != null && !node.isEmpty()) {
+            section = find(section, node);
+        }
+        if (section instanceof ConfigurationSection) {
+            section = ((ConfigurationSection) section).getValues(false).values();
+        }
+        return section instanceof Iterable ? (Iterable<?>) section : null;
+    }
+
+    private static Object findIndexed(final Object section, final String iterableNode, final int index) {
+        return getIndexed(getIterable(section, iterableNode), index);
+    }
+
+    private static Object getIndexed(final Iterable<?> iterable, int index) {
+        if (iterable == null) {
+            return null;
+        }
+
+        if (iterable instanceof Collection) {
+            int len = ((Collection<?>) iterable).size();
+
+            index = asListIndex(index, len);
+            if (index < 0 || index >= len) {
+                return null;
+            }
+        }
+
+        if (iterable instanceof List) {
+            return ((List<?>) iterable).get(index); // O(1) for ArrayList, O(N) for LinkedList ...
+        }
+
+        Object value = null;
+
+        final Iterator<?> it = iterable.iterator();
+
+        if (index >= 0) {
+            // Positive indexing of a iterable
+            // time O(index + 1) <= O(N), N = iterable size
+
+            int i = -1;
+
+            while (it.hasNext()) {
+                value = it.next();
+
+                if (++i == index) {
+                    break;
+                }
+            }
+
+            if (i != index) {
+                return null; // out of bounds
+            }
+        } else {
+            // Negative indexing of a non-Collection iterable
+            // time O(N), N = iterable size
+            // memory O(W) <= O(N), W = -index
+
+            LinkedList<Object> window = new LinkedList<>();
+            int windowSize = -index;
+            int filled = 0;
+
+            while (it.hasNext()) {
+                window.add(it.next());
+
+                if (filled == windowSize) {
+                    window.removeFirst();
+                } else {
+                    filled++;
+                }
+            }
+
+            if (filled < windowSize) {
+                return null; // out of bounds
+            }
+
+            value = window.getFirst();
+        }
+
+        return value;
+    }
+
+    private static int asListIndex(int i, int size) {
+        if (i < 0) {
+            return size + i; // convert negative to positive indexing
+        }
+        return i;
     }
 
     // Primitives
+
     @Override
     public String getString(final String path) {
         final Object def = this.getDefault(path);
