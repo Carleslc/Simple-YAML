@@ -107,9 +107,8 @@ public class YamlCommentFormatter implements CommentFormatter {
 
     /**
      * Set if stripping the prefix is desired.
-     * <p></p>
-     * If strip is true then the comment prefix will be stripped away.
-     * <p></p>
+     * <p>If strip is true then the comment prefix will be stripped away.</p>
+     * <p>
      * Default is true.
      * @param strip if stripping the prefix is desired
      * @return this object, for chaining
@@ -122,9 +121,8 @@ public class YamlCommentFormatter implements CommentFormatter {
 
     /**
      * Set if leading and trailing spaces and blank lines at the beginning and end of the comments should be stripped away.
+     * <p>This does not affect to every line of a multiline comment. Only to the beginning and end of the whole comment.</p>
      * <p>
-     * This does not affect to every line of a multiline comment. Only to the beginning and end of the whole comment.
-     * <p></p>
      * Default is true.
      * @param trim if {@link String#trim} should be applied to comments
      * @return this object, for chaining

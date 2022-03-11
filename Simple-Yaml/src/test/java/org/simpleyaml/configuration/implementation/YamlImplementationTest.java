@@ -152,10 +152,10 @@ public class YamlImplementationTest {
 
     /**
      <code>snakeyaml</code> can now process comments since version 1.29
-     <p></p>This test shows how to use that with Simple-YAML.
-     <p></p>The output though is not exactly the same as current Simple-YAML comment parser/dumper,
+     <p/>This test shows how to use that with Simple-YAML.
+     <p/>The output though is not exactly the same as current Simple-YAML comment parser/dumper,
      check {@link #testCommentsSnakeYaml} method below for some example differences.
-     <p></p>Setting and getting comments using {@link YamlFile#setComment(String, String, CommentType)}
+     <p/>Setting and getting comments using {@link YamlFile#setComment(String, String, CommentType)}
      or {@link YamlFile#getComment(String, CommentType)} will not modify the snakeyaml {@link org.yaml.snakeyaml.Yaml} comments,
      so you will have to use the implementation snakeyaml methods like {@link org.yaml.snakeyaml.nodes.Node#setBlockComments(List)}
      and {@link org.yaml.snakeyaml.nodes.Node#getBlockComments()}.

@@ -166,12 +166,12 @@ public class YamlConfiguration extends FileConfiguration {
      * Sets the specified path to the given value.
      * <p>
      * The value will be represented with the specified quote style in the configuration file.
-     * <p></p>
+     * <p/>
      * Any existing entry will be replaced, regardless of what the new value is.
-     * <p></p>
+     * <p/>
      * Null value is valid and will not remove the key, this is different to {@link #set(String, Object)}.
      * Instead, a null value will be written as a yaml empty null value.
-     * <p></p>
+     * <p/>
      * Some implementations may have limitations on what you may store. See
      * their individual javadocs for details. No implementations should allow
      * you to store {@link Configuration}s or {@link ConfigurationSection}s,

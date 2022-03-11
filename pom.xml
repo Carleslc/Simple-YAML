@@ -53,6 +53,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <show>protected</show>
+                    <doclint>-html</doclint>
                 </configuration>
                 <executions>
                     <execution>

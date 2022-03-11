@@ -3,21 +3,21 @@ package org.simpleyaml.configuration.implementation.api;
 public enum QuoteStyle {
     /**
      * Wrap values with single quotes.
-     * <p></p>
+     * <p/>
      * <pre>single: 'value'</pre>
      */
     SINGLE,
     /**
      * Wrap values with double quotes.
-     * <p></p>
+     * <p/>
      * <pre>double: "value"</pre>
      */
     DOUBLE,
     /**
      * Default style, without quotes when possible.
-     * <p></p>
+     * <p/>
      * <pre>plain: value</pre>
-     * <p></p>
+     * <p/>
      * If value have characters that must be escaped then {@link #SINGLE} quote style is used.
      */
     PLAIN,
@@ -32,7 +32,7 @@ public enum QuoteStyle {
     LITERAL,
     /**
      * <pre>
-     * folded: >-
+     * folded: {@code >-}
      *   Each line
      *   is literal
      *   and are joined with spaces

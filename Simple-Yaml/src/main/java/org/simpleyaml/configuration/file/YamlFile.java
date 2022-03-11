@@ -188,7 +188,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Set a comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
      * @param path    path of desired section or key
@@ -208,7 +208,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Set a block comment above the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
      * @param path    path of desired section or key
@@ -222,7 +222,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Set a comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
      *
      * @param path    path of desired section or key
@@ -241,7 +241,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Set a comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
      *
      * @param path    path of desired section or key
@@ -258,7 +258,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Set a block comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
      *
      * @param path    path of desired section or key
@@ -273,7 +273,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Set a block comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
      *
      * @param path    path of desired section or key
@@ -303,7 +303,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Retrieve the comment of the section or value selected by path.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
      * @param path path of desired section or key
@@ -318,7 +318,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Retrieve the block comment of the section or value selected by path.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
      * @param path path of desired section or key
@@ -331,7 +331,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Retrieve the comment of the section or value selected by path.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
      *
      * @param path path of desired section or key
@@ -350,7 +350,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Retrieve the comment of the section or value selected by path.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
      *
      * @param path path of desired section or key
@@ -366,7 +366,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Retrieve the block comment of the section or value selected by path.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
      *
      * @param path path of desired section or key
@@ -380,7 +380,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Retrieve the block comment of the section or value selected by path.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
      *
      * @param path path of desired section or key
@@ -394,7 +394,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Change the comment formatter to one of the defaults provided by {@link YamlCommentFormat}.
-     * <p></p>
+     * <p/>
      * This will change the behaviour for parsing comments with {@link #getComment(String, CommentType)}
      * and for dumping comments with {@link #setComment(String, String, CommentType)}.
      * If default behaviour does not suits you then change the format before calling one of these methods.
@@ -408,7 +408,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     /**
      * Change the comment formatter for parsing and dumping comments.
      * This is a shortcut to {@link #options()} {@link YamlConfigurationOptions#commentFormatter(YamlCommentFormatter)}.
-     * <p></p>
+     * <p/>
      * This will change the behaviour for parsing comments with {@link #getComment(String, CommentType)}
      * and for dumping comments with {@link #setComment(String, String, CommentType)}.
      * @param yamlCommentFormatter desired formatter to set/dump and get/parse comments
@@ -419,10 +419,10 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Gets the header of this configuration file.
-     * <p></p>
+     * <p/>
      * The string format will respect the rules of the {@link #options()} {@link YamlConfigurationOptions#headerFormatter()}.
      * By default the {@link YamlHeaderFormatter} is used and the result string will not have a blank line at the end.
-     * <p></p>
+     * <p/>
      * Null is a valid value which will indicate that no header is applied.
      * The default value is null.
      *
@@ -437,15 +437,15 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     /**
      * Sets the header that will be applied to the top of the saved output.
      * This is a shortcut to {@link #options()} {@link YamlConfigurationOptions#header(String)}.
-     * <p></p>
+     * <p/>
      * This header will be commented out and applied directly at the top of
      * the generated output of this configuration file.
-     * <p></p>
+     * <p/>
      * The rules of {@link #options()} {@link YamlConfigurationOptions#headerFormatter()} will be respected.
      * By default the {@link YamlHeaderFormatter} is used and the header will have a blank line written at the end of the header in the file.
      * It is not required to include a newline at the end of the header as it will
      * automatically be applied, but you may include one if you wish for extra spacing.
-     * <p></p>
+     * <p/>
      * Null is a valid value which will indicate that no header is to be applied.
      *
      * @param header New header
@@ -457,9 +457,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     /**
      * Gets the footer of this configuration file.
      * This is a shortcut to {@link #getComment(String)} with null path.
-     * <p></p>
+     * <p/>
      * The string format will respect the rules of the {@link #options()} {@link YamlConfigurationOptions#commentFormatter()}.
-     * <p></p>
+     * <p/>
      * Null is a valid value which will indicate that no footer is applied.
      * The default value is null.
      * @return the footer comment at the end of the file
@@ -471,11 +471,11 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     /**
      * Sets the footer of this configuration file.
      * This is a shortcut to {@link #setComment(String, String)} with null path.
-     * <p></p>
+     * <p/>
      * This footer will be commented out and applied at the bottom of the generated output of this configuration file.
      * The end of the file will have a new line character '\n'.
      * The rules of {@link #options()} {@link YamlConfigurationOptions#commentFormatter()} will be respected.
-     * <p></p>
+     * <p/>
      * Null is a valid value which will indicate that no footer is applied.
      * @param footer the footer comment to write at the end of the file
      */
@@ -485,7 +485,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Get a wrapper builder to set a value to the given path and optionally set comments.
-     * <p></p>
+     * <p/>
      * This is an alternative API for the following pattern:
      * <pre>
      * {@code
@@ -504,6 +504,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * }
      * </pre>
      * @param path path of the object or configuration to set
+     * @return the wrapper builder
      */
     public YamlFileWrapper path(final String path) {
         return new YamlFileWrapper(this, path);
@@ -846,7 +847,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param file Input file
      * @return Resulting configuration
-     * @throws IllegalArgumentException Thrown if file is null
+     * @throws IOException if configuration cannot be loaded
+     * @throws IllegalArgumentException if file is null
      * @see #loadConfiguration(File, boolean)
      */
     public static YamlFile loadConfiguration(final File file) throws IOException {
@@ -866,7 +868,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @param stream Input stream
      * @param withComments if comments should be parsed
      * @return Resulting configuration
-     * @throws IllegalArgumentException Thrown if stream is null
+     * @throws IOException if configuration cannot be loaded
+     * @throws IllegalArgumentException if stream is null
      */
     public static YamlFile loadConfiguration(final InputStream stream, boolean withComments) throws IOException {
         Validate.notNull(stream, "Stream cannot be null");
@@ -885,7 +888,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param stream Input stream
      * @return Resulting configuration
-     * @throws IllegalArgumentException Thrown if stream is null
+     * @throws IOException if configuration cannot be loaded
+     * @throws IllegalArgumentException if stream is null
      * @see #loadConfiguration(InputStream, boolean)
      */
     public static YamlFile loadConfiguration(final InputStream stream) throws IOException {
@@ -902,7 +906,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @param reader input
      * @param withComments if comments should be parsed
      * @return resulting configuration
-     * @throws IllegalArgumentException Thrown if stream is null
+     * @throws IOException if configuration cannot be loaded
+     * @throws IllegalArgumentException if stream is null
      */
     public static YamlFile loadConfiguration(final Reader reader, boolean withComments) throws IOException {
         Validate.notNull(reader, "Reader cannot be null");
@@ -918,7 +923,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param reader input
      * @return resulting configuration
-     * @throws IllegalArgumentException Thrown if stream is null
+     * @throws IllegalArgumentException if stream is null
+     * @throws IOException if configuration cannot be loaded
      * @see #loadConfiguration(Reader, boolean)
      */
     public static YamlFile loadConfiguration(final Reader reader) throws IOException {

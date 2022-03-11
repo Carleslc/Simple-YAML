@@ -126,7 +126,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
 
     /**
      * Gets the comment formatter used to format comments.
-     * <p></p>
+     * <p/>
      * The default comment formatter is {@link YamlCommentFormat#DEFAULT}, which comment prefix is "# ", i.e. a # followed by a space.
      *
      * @return the comment formatter
@@ -140,7 +140,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
 
     /**
      * Sets the comment formatter to be used to format comments.
-     * <p></p>
+     * <p/>
      * If unset, the default comment formatter prefix is "# ", i.e. a # followed by a space.
      *
      * @param commentFormatter the comment formatter to use
@@ -153,7 +153,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
 
     /**
      * Get the quote style default options.
-     * <p></p>
+     * <p/>
      * You can change the default quote style globally or for specific value types.
      * @see QuoteStyle#PLAIN
      * @see QuoteStyle#SINGLE
@@ -212,13 +212,13 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
          * Set the default quote style for a specific type.
          * <p>
          * This style is applied to values which class is the specified class or is a child of that class.
-         * <p></p>
+         * <p/>
          * Example:
          * <p><pre>
          * options.setQuoteStyle(String.class, QuoteStyle.DOUBLE);
          * yamlConfig.set("key", "This string will be set with double quote style");
          * </pre>
-         * <p></p>
+         * <p/>
          * Set quoteStyle to null to set new values again with the default quote style.
          * @param valueClass the specific class to override default quote style
          * @param quoteStyle the quote style to apply
@@ -235,7 +235,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
 
         /**
          * Get the quote style to apply to a specific type.
-         * <p></p>
+         * <p/>
          * If it was not explicitly set using the {@link #setQuoteStyle(Class, QuoteStyle)} method
          * then the {@link #getDefaultQuoteStyle()} is returned.
          * @param valueClass the type class
@@ -257,7 +257,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         /**
          * Get the specific quote style explicitly set to apply to a specific type,
          * or to an inherited class of that type.
-         * <p></p>
+         * <p/>
          * If neither the valueClass nor a superclass of that type was explicitly set
          * using the {@link #setQuoteStyle(Class, QuoteStyle)} method then null is returned.
          * @param valueClass the specific class to override default quote style

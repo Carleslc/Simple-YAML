@@ -20,7 +20,7 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set a block comment above the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of {@link YamlFile#options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
      * @param comment the block comment to add, # character is not needed
@@ -35,7 +35,7 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set a block comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
      *
      * @param comment the block comment to add, # prefix is not needed
@@ -51,7 +51,7 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set a block comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
      *
      * @param comment the block comment to add, # prefix is not needed
@@ -67,7 +67,7 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set a side comment above the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of {@link YamlFile#options()} {@link YamlConfigurationOptions#commentFormatter()}.
      *
      * @param comment the side comment to add, # symbol is not needed
@@ -82,7 +82,7 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set a side comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormatter}.
      *
      * @param comment the side comment to add, # prefix is not needed
@@ -98,7 +98,7 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set a side comment to the section or value selected by path.
      * Comment will be indented automatically.
      * Multi-line comments can be provided using \n character.
-     * <p></p>
+     * <p/>
      * Comment format will follow the rules of the provided {@link YamlCommentFormat}.
      *
      * @param comment the side to add, # prefix is not needed
@@ -142,9 +142,9 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set the given value to this path.
      * <p>
      * The value will be represented with the specified quote style in the configuration file.
-     * <p></p>
+     * <p/>
      * Any existing entry will be replaced, regardless of what the new value is.
-     * <p></p>
+     * <p/>
      * Null value is valid and will not remove the key, this is different to {@link #set(Object)}.
      * Instead, a null value will be written as a yaml empty null value.
      *
@@ -161,9 +161,9 @@ public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
      * Set the given value to the provided child path.
      * <p>
      * The value will be represented with the specified quote style in the configuration file.
-     * <p></p>
+     * <p/>
      * Any existing entry will be replaced, regardless of what the new value is.
-     * <p></p>
+     * <p/>
      * Null value is valid and will not remove the key, this is different to {@link #setChild(String, Object)}.
      * Instead, a null value will be written as a yaml empty null value.
      *

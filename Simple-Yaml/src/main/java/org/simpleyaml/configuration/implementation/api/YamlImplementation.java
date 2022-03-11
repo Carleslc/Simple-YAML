@@ -33,6 +33,7 @@ public interface YamlImplementation {
      * Get a representation of a value following the specified quote style.
      * @param value the value to be dumped
      * @param quoteStyle the quote style to use
+     * @param <T> the value type
      * @return a representation of the value to serialize it using the specified quote style
      */
     default <T> QuoteValue<T> quoteValue(final T value, final QuoteStyle quoteStyle) {

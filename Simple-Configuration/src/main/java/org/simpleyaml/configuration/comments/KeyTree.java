@@ -218,10 +218,10 @@ public class KeyTree implements Iterable<KeyTree.Node> {
 
         /**
          * Get a child list element from its index, or optionally add a new one if it is not created.
-         * <p></p>
-         * If <code>i</code> is negative then gets the child at index <code>{@link #size()} + i</code>
-         * <p>Example: <code>node.get(-1)</code> gets the last child of <code>node</code>
-         *
+         * <p>
+         * <br>If <code>i</code> is negative then gets the child at index <code>{@link #size()} + i</code>
+         * <br>Example: <code>node.get(-1)</code> gets the last child of <code>node</code>
+         * </p>
          * @param i the index of the child
          * @param add if a new node must be added if it does not exist
          * @return the child with index i or null if not found and not created
@@ -248,10 +248,10 @@ public class KeyTree implements Iterable<KeyTree.Node> {
 
         /**
          * Get a child list element from its index.
-         * <p></p>
-         * If <code>i</code> is negative then gets the child element indexed by <code>{@link #size()} + i</code>
-         * <p>Example: <code>node.get(-1)</code> gets the last child element of the <code>node</code> list.
-         *
+         * <p>
+         * <br>If <code>i</code> is negative then gets the child element indexed by <code>{@link #size()} + i</code>
+         * <br>Example: <code>node.get(-1)</code> gets the last child element of the <code>node</code> list.
+         * </p>
          * @param i the index of the child element
          * @return the child with index i or null if not found
          */
@@ -261,10 +261,10 @@ public class KeyTree implements Iterable<KeyTree.Node> {
 
         /**
          * Get a child from its index.
-         * <p></p>
-         * If <code>i</code> is negative then gets the child at index <code>{@link #size()} + i</code>
-         * <p>Example: <code>node.get(-1)</code> gets the last child of <code>node</code>
-         *
+         * <p>
+         * <br>If <code>i</code> is negative then gets the child at index <code>{@link #size()} + i</code>
+         * <br>Example: <code>node.get(-1)</code> gets the last child of <code>node</code>
+         * </p>
          * @param i the index of the child
          * @return the child with index i or null if not found
          */

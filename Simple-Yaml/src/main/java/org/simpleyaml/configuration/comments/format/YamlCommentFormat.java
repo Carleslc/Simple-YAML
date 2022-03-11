@@ -5,11 +5,11 @@ public enum YamlCommentFormat {
     /**
      * DEFAULT comment format gets comments in a readable way stripping the # comment prefix,
      * without leading and trailing spaces or blank lines and without indentation.
-     * <p></p>
+     * <p/>
      * The prefix for setting new comments is:
      * <p>  - BLOCK comments: "# ", i.e. a # followed by a space.
      * <p>  - SIDE comments: " # ", i.e. a space followed by # with a space.
-     * <p></p>
+     * <p/>
      * If when setting a comment all lines are blank or already prefixed with a comment prefix # then it does not add additional formatting.
      */
     DEFAULT (YamlCommentFormatter::new),
@@ -17,13 +17,13 @@ public enum YamlCommentFormat {
     /**
      * PRETTY comment format gets comments in a readable way stripping the # comment prefix,
      * without leading and trailing spaces or blank lines and without indentation.
-     * <p></p>
+     * <p/>
      * The prefix for setting new comments is:
      * <p>  - BLOCK comments with 0 indentation (root keys) except first key: "\n# ", i.e. a blank line followed by # with a space.
      *        Multiline comments do not add additional blank lines.
      * <p>  - BLOCK comments with some indentation (child keys) or first key: "# ", i.e. a # followed by a space.
      * <p>  - SIDE comments: " # ", i.e. a space followed by # with a space.
-     * <p></p>
+     * <p/>
      * If when setting a comment all lines are blank or already prefixed with a comment prefix # then it does not add additional formatting.
      */
     PRETTY (PrettyYamlCommentFormatter::new),
@@ -31,13 +31,13 @@ public enum YamlCommentFormat {
     /**
      * BLANK_LINE comment format gets comments in a readable way stripping the # comment prefix and without indentation,
      * but it keeps trailing spaces and blank lines.
-     * <p></p>
+     * <p/>
      * The prefix for setting new comments is:
      * <p>  - BLOCK comments: "\n# ", i.e. a blank line followed by # with a space.
      *        Multiline comments do not add additional blank lines.
      * <p>  - SIDE comments: "\n# ", i.e. a new line followed by # with a space.
      *        This will add the comment below.
-     * <p></p>
+     * <p/>
      * If when setting a comment all lines are blank or already prefixed with a comment prefix # then it does not add additional formatting.
      */
     BLANK_LINE (BlankLineYamlCommentFormatter::new),
@@ -46,11 +46,11 @@ public enum YamlCommentFormat {
      * RAW comment format gets comments as they are in the file configuration,
      * with blank lines and the comment prefix with # character,
      * but without the indentation prefix.
-     * <p></p>
+     * <p/>
      * The prefix for setting new comments is:
      * <p>  - BLOCK comments: "# ", i.e. a # followed by a space.
      * <p>  - SIDE comments: " # ", i.e. a space followed by # with a space.
-     * <p></p>
+     * <p/>
      * If when setting a comment all lines are blank or already prefixed with a comment prefix # then it does not add additional formatting.
      */
     RAW (() -> new YamlCommentFormatter().stripPrefix(false).trim(false));

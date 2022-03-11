@@ -15,7 +15,7 @@ import static org.simpleyaml.utils.StringUtils.BLANK_LINE;
 
 /**
  * The header is the first block comment at the top of the configuration file.
- * <p></p>
+ * <p/>
  * It ends with a blank line or with the end of the file.
  */
 public class YamlHeaderFormatter implements CommentFormatter {
@@ -37,15 +37,15 @@ public class YamlHeaderFormatter implements CommentFormatter {
 
     /**
      * Parse the header of a contents string, like a file contents.
-     * <p></p>
+     * <p/>
      * The header is the first block comment at the top of the configuration file.
      * It ends with a blank line or with the end of the file.
-     * <p></p>
+     * <p/>
      * If no blank line is found after the first block comment and it is not the end of the file then null is returned
      * (the comment will be attached to the first key, so that comment is not considered a header).
-     * <p></p>
+     * <p/>
      * The blank line suffix will be stripped away, i.e. the result string will not have a blank line at the end.
-     * <p></p>
+     * <p/>
      * If {@link #stripPrefix} is true then {@link String#trim()} will be applied to every line of the header
      * and the {@link #commentPrefix()} will be stripped away.
      *
@@ -96,7 +96,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
     /**
      * Given the header (for instance the one returned by {@link #parse}),
      * returns the final string formatted to be dumped somewhere like a file.
-     * <p></p>
+     * <p/>
      * The header ends with a blank line and every line is prefixed with the {@link #commentPrefix()}.
      * <p>
      * If all header lines are already prefixed with a # then the {@link #commentPrefix()} is not applied.
@@ -140,7 +140,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
     /**
      * If strip is true then {@link String#trim()} will be applied to every line of the header
      * and the {@link #commentPrefix()} will be stripped away.
-     * <p></p>
+     * <p/>
      * Default is false.
      * @return if stripping the prefix is desired
      */
@@ -150,10 +150,10 @@ public class YamlHeaderFormatter implements CommentFormatter {
 
     /**
      * Set if stripping the prefix is desired.
-     * <p></p>
+     * <p/>
      * If strip is true then {@link String#trim()} will be applied to every line of the header
      * and the {@link #commentPrefix()} will be stripped away.
-     * <p></p>
+     * <p/>
      * Default is false.
      * @param stripPrefix if stripping the prefix is desired
      * @return this object, for chaining
@@ -165,7 +165,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
 
     /**
      * Gets the comment prefix to apply to every line of the header.
-     * <p></p>
+     * <p/>
      * By default is "# ", i.e. a # followed by a space.
      * @return the comment prefix
      */
@@ -175,7 +175,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
 
     /**
      * Sets the comment prefix to apply to every line of the header.
-     * <p></p>
+     * <p/>
      * By default is "# ", i.e. a # followed by a space.
      * @param commentPrefix the comment prefix
      * @return this object, for chaining
@@ -212,7 +212,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
     /**
      * Set the suffix to append to the end of the header.
      * If not included, a blank line \n\n will be added to the suffix.
-     * <p></p>
+     * <p/>
      * Default is a blank line.
      * @param suffixLast the suffix to append to the end of the header
      * @return this object, for chaining
