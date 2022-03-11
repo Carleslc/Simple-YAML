@@ -1,8 +1,11 @@
 package org.simpleyaml.examples;
 
+import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
+import org.simpleyaml.configuration.serialization.SerializableAs;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
+import java.util.Objects;
 
 /**
  * Class that represents a Person that is used only for the test examples.<br>
@@ -10,6 +13,7 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
  *
  * @author Carlos Lazaro Costa
  */
+@SerializableAs("Person") // this is an alias to org.simpleyaml.examples.Person
 public class Person implements ConfigurationSerializable {
 
     private final String id;
@@ -81,4 +85,16 @@ public class Person implements ConfigurationSerializable {
         return "Person [id= " + this.id + ", name= " + this.name + ", birthYear= " + this.birthYear + ", isAlive= " + this.isAlive + "]";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return birthYear == person.birthYear && isAlive == person.isAlive && Objects.equals(id, person.id) && Objects.equals(name, person.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, birthYear, isAlive);
+    }
 }
