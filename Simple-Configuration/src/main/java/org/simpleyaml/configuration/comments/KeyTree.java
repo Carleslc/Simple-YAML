@@ -6,6 +6,7 @@ import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 public class KeyTree implements Iterable<KeyTree.Node> {
@@ -80,11 +81,8 @@ public class KeyTree implements Iterable<KeyTree.Node> {
     }
 
     private KeyTree.Node findParent(final KeyTree.Node parent, final int indent) {
-        if (parent.children.isEmpty()) {
-            return parent;
-        }
         final KeyTree.Node last = parent.getLast();
-        if (last.indent < indent) {
+        if (last != null && last.indent < indent) {
             return this.findParent(last, indent);
         }
         return parent;
@@ -96,8 +94,8 @@ public class KeyTree implements Iterable<KeyTree.Node> {
 
         private final KeyTree.Node parent;
 
-        private final List<KeyTree.Node> children = new ArrayList<>();
-        private final Map<String, KeyTree.Node> indexByName = new LinkedHashMap<>();
+        private List<KeyTree.Node> children;
+        private Map<String, KeyTree.Node> indexByName;
         private Map<Integer, KeyTree.Node> indexByElementIndex; // parent list
 
         private final int indent;
@@ -174,8 +172,8 @@ public class KeyTree implements Iterable<KeyTree.Node> {
          * @return the child that has the provided path or null if not found
          */
         protected KeyTree.Node get(final String path, boolean add) {
-            KeyTree.Node node;
-            if (path != null && !this.indexByName.containsKey(path)) {
+            KeyTree.Node node = null;
+            if (path != null && (this.indexByName == null || !this.indexByName.containsKey(path))) {
                 final int i = StringUtils.firstSeparatorIndex(path, KeyTree.this.options.pathSeparator());
                 if (i >= 0) {
                     final String childPath = path.substring(0, i);
@@ -199,7 +197,9 @@ public class KeyTree implements Iterable<KeyTree.Node> {
                     return node.getElement(Integer.parseInt(listIndex.group(2)), add);
                 }
             }
-            node = this.indexByName.get(path);
+            if (this.indexByName != null) {
+                node = this.indexByName.get(path);
+            }
             if (node == null && add) {
                 node = this.add(path);
             }
@@ -270,22 +270,24 @@ public class KeyTree implements Iterable<KeyTree.Node> {
          */
         public KeyTree.Node get(int i) {
             KeyTree.Node child = null;
-            i = this.asListIndex(i, this.children.size());
-            if (i >= 0 && i < this.children.size()) {
-                child = this.children.get(i);
+            if (this.hasChildren()) {
+                i = this.asListIndex(i, this.children.size());
+                if (i >= 0 && i < this.children.size()) {
+                    child = this.children.get(i);
+                }
             }
             return child;
         }
 
         public KeyTree.Node getFirst() {
-            if (this.children.isEmpty()) {
+            if (!this.hasChildren()) {
                 return null;
             }
             return this.children.get(0);
         }
 
         public KeyTree.Node getLast() {
-            if (this.children.isEmpty()) {
+            if (!this.hasChildren()) {
                 return null;
             }
             return this.children.get(this.children.size() - 1);
@@ -305,27 +307,37 @@ public class KeyTree implements Iterable<KeyTree.Node> {
 
         protected KeyTree.Node add(final int indent, final String key, final boolean isList, final boolean indexed) {
             final KeyTree.Node child = new KeyTree.Node(this, indent, key, isList);
+            if (this.children == null) {
+                this.children = new ArrayList<>();
+            }
             this.children.add(child);
             if (!indexed) { // not already indexed
+                if (this.indexByName == null) {
+                    this.indexByName = new LinkedHashMap<>();
+                }
                 this.indexByName.put(key, child); // allow repetitions
             }
             return child;
         }
 
-        public Set<String> keys() {
-            return Collections.unmodifiableSet(this.indexByName.keySet());
+        public boolean hasChildren() {
+            return this.children != null && !this.children.isEmpty();
         }
 
         public List<KeyTree.Node> children() {
-            return Collections.unmodifiableList(this.children);
+            return this.hasChildren() ? Collections.unmodifiableList(this.children) : Collections.emptyList();
+        }
+
+        public Set<String> keys() {
+            return this.indexByName != null ? Collections.unmodifiableSet(this.indexByName.keySet()) : Collections.emptySet();
         }
 
         public Set<Map.Entry<String, KeyTree.Node>> entries() {
-            return Collections.unmodifiableSet(this.indexByName.entrySet());
+            return this.indexByName != null ? Collections.unmodifiableSet(this.indexByName.entrySet()) : Collections.emptySet();
         }
 
         public int size() {
-            return this.children.size();
+            return this.hasChildren() ? this.children.size() : 0;
         }
 
         public boolean isList() {
@@ -437,9 +449,60 @@ public class KeyTree implements Iterable<KeyTree.Node> {
             return i;
         }
 
+        protected void clearNode() {
+            if (this.children != null) {
+                this.children.clear();
+                this.children = null;
+            }
+            if (this.indexByName != null) {
+                this.indexByName.clear();
+                this.indexByName = null;
+            }
+            if (this.indexByElementIndex != null) {
+                this.indexByElementIndex.clear();
+                this.indexByElementIndex = null;
+            }
+            if (this.parent != null) {
+                if (this.parent.indexByName != null && this.parent.indexByName.get(this.name) == this) {
+                    this.parent.indexByName.remove(this.name);
+
+                    if (this.parent.indexByElementIndex != null && this.elementIndex != null) {
+                        this.parent.indexByElementIndex.remove(this.elementIndex);
+                    }
+                }
+            }
+        }
+
+        protected boolean clearIf(final Predicate<Node> condition, final boolean removeFromParent) {
+            if (this.children != null) {
+                this.children.removeIf(child -> child.clearIf(condition, false));
+            }
+            if (!this.hasChildren() && condition.test(this)) {
+                this.clearNode();
+                if (removeFromParent && this.parent != null) {
+                    this.parent.children.remove(this);
+
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public boolean clearIf(final Predicate<Node> condition) {
+            return this.clearIf(condition, true);
+        }
+
+        public void clear() {
+            this.clearNode();
+
+            if (this.parent != null) {
+                this.parent.children.remove(this);
+            }
+        }
+
         @Override
         public Iterator<Node> iterator() {
-            return this.children.iterator();
+            return this.hasChildren() ? this.children.iterator() : Collections.emptyIterator();
         }
 
         @Override

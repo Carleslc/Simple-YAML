@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.function.Predicate;
 
 public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
@@ -443,6 +444,10 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         this.nextChar();
     }
 
+    protected boolean isSectionEnd() {
+        return this.currentNode != null && this.indent <= (this.currentNode.getIndentation() - this.options().indent());
+    }
+
     protected KeyTree.Node track() throws IOException {
         if (this.quoteNotation == ReadingQuoteStyle.LITERAL) {
             // Currently in a literal block, cannot add comments in this line
@@ -503,6 +508,30 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
         final KeyTree.Node parent = this.keyTree.findParent(indent);
         this.currentNode = parent.add(indent, key);
         return this.currentNode;
+    }
+
+    /*
+      Free memory of empty nodes
+     */
+
+    protected void clearCurrentNode() {
+        if (this.currentNode != null) {
+            final KeyTree.Node parent = this.currentNode.getParent();
+            final KeyTree.Node node = parent != null ? parent : this.currentNode;
+            node.clear();
+            this.currentNode = null;
+        }
+    }
+
+    protected static final Predicate<KeyTree.Node> NO_COMMENTS = node -> node.getComment() == null && node.getSideComment() == null;
+
+    protected void clearCurrentNodeIfNoComments() {
+        if (this.currentNode != null) {
+            final KeyTree.Node parent = this.currentNode.getParent();
+            final KeyTree.Node node = parent != null ? parent : this.currentNode;
+            node.clearIf(NO_COMMENTS);
+            this.currentNode = null;
+        }
     }
 
     @Override

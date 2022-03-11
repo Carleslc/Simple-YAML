@@ -1164,14 +1164,14 @@ class YamlFileTest {
 
         MatcherAssert.assertThat(
                 "Could not get list map keys!",
-                tree.get("people[0].name"),
+                tree.get("people[1].id"),
                 new IsNot<>(new IsNull<>())
         );
 
         MatcherAssert.assertThat(
                 "Could not get list map keys!",
-                tree.get("people[0].name").getName(),
-                new IsEqual<>("name")
+                tree.get("people[1].id").getName(),
+                new IsEqual<>("id")
         );
 
         MatcherAssert.assertThat(

@@ -157,7 +157,7 @@ public class YamlCommentParser extends YamlCommentReader {
     }
 
     private void trackSideCommentBelow() {
-        if (this.currentNode != null && this.indent <= (this.currentNode.getIndentation() - this.options().indent())) {
+        if (this.isSectionEnd()) {
             // Indent level changed
             if (this.blockComment != null && this.blockCommentStarted) {
                 // Add current block comment as a side comment below the last key
@@ -178,7 +178,7 @@ public class YamlCommentParser extends YamlCommentReader {
                 this.setRawComment(this.currentNode, sideComment, CommentType.SIDE);
             }
             // Last key is not on the same indent level so next comment lines belong to the next key
-            this.currentNode = null;
+            this.clearCurrentNodeIfNoComments();
         }
     }
 

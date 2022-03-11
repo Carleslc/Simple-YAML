@@ -40,6 +40,7 @@ public class YamlCommentDumper extends YamlCommentReader {
             }
 
             // Append end of file (footer) comment (null path), if found
+            this.clearSection();
             this.appendBlockComment(this.getNode(null));
 
             result = this.builder.toString();
@@ -52,11 +53,18 @@ public class YamlCommentDumper extends YamlCommentReader {
 
     @Override
     protected void processLine() throws IOException {
+        this.clearSection();
         final KeyTree.Node readerNode = this.track();
-        final KeyTree.Node commentNode = getCommentNode(readerNode);
+        final KeyTree.Node commentNode = this.getCommentNode(readerNode);
         this.appendBlockComment(commentNode);
         this.builder.append(this.currentLine);
         this.appendSideComment(commentNode);
+    }
+
+    protected void clearSection() {
+        if (this.isSectionEnd()) {
+            this.clearCurrentNode();
+        }
     }
 
     public KeyTree.Node getCommentNode(final KeyTree.Node readerNode) {
