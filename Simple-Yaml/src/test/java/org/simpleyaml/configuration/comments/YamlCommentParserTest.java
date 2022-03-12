@@ -88,12 +88,10 @@ final class YamlCommentParserTest {
 
     @Test
     void testExplicitStyle() throws IOException {
-        YamlFile yamlFile = new YamlFile();
-
-        yamlFile.loadFromStringWithComments("# block comment\n" +
+        YamlFile yamlFile = YamlFile.loadConfigurationFromString("# block comment\n" +
                 "? - key 1 # comment 1\n" +
                 "  - key 2 # comment 2\n" +
-                ": - list value # comment 3");
+                ": - list value # comment 3", true);
 
         String output = "# block comment\n" +
                 "# comment 1\n" +
@@ -119,8 +117,7 @@ final class YamlCommentParserTest {
                 new IsEqual<>("comment 3")
         );
 
-        yamlFile = new YamlFile();
-        yamlFile.loadFromStringWithComments("# block comment\n? blank\n?\n:");
+        yamlFile = YamlFile.loadConfigurationFromString("# block comment\n? blank\n?\n:", true);
 
         MatcherAssert.assertThat(
                 "Couldn't parse the comments!",
@@ -134,11 +131,11 @@ final class YamlCommentParserTest {
                 new IsNull<>()
         );
 
-        yamlFile = new YamlFile();
-        yamlFile.loadFromStringWithComments("# block comment\n" +
+        yamlFile = YamlFile.loadConfigurationFromString(
+                "# block comment\n" +
                 "? | # comment 1\n" +
                 "    key\n" +
-                ": - list value # comment 2");
+                ": - list value # comment 2", true);
 
         output = "# block comment\n" +
                 "# comment 1\n" +

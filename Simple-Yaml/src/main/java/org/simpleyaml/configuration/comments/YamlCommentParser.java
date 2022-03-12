@@ -2,19 +2,25 @@ package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.utils.StringUtils;
+import org.simpleyaml.utils.Validate;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.regex.Pattern;
 
 public class YamlCommentParser extends YamlCommentReader {
 
+    private final BufferedReader reader;
+
     private StringBuilder blockComment;
     private boolean blockCommentStarted = false;
     private boolean headerParsed = false;
 
     public YamlCommentParser(final YamlConfigurationOptions options, final Reader reader) {
-        super(options, reader);
+        super(options);
+        Validate.notNull(reader, "Reader is null!");
+        this.reader = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
     }
 
     public void parse() throws IOException {
@@ -26,6 +32,11 @@ public class YamlCommentParser extends YamlCommentReader {
         this.track();
 
         this.close();
+    }
+
+    @Override
+    protected String readLine() throws IOException {
+        return this.reader.readLine();
     }
 
     @Override
@@ -187,5 +198,10 @@ public class YamlCommentParser extends YamlCommentReader {
         if (this.isExplicit() && this.isComment()) {
             this.explicitNotation.addComment(this.currentLine.substring(this.position));
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.reader.close();
     }
 }

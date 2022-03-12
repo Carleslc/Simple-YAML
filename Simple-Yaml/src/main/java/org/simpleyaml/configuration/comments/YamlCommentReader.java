@@ -2,17 +2,12 @@ package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.utils.StringUtils;
-import org.simpleyaml.utils.Validate;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.function.Predicate;
 
-public class YamlCommentReader extends YamlCommentMapper implements Closeable {
-
-    protected final BufferedReader reader;
+public abstract class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
     protected String currentLine;
     protected String trim;
@@ -36,14 +31,14 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
     protected ReaderStage stage = ReaderStage.START;
 
-    protected YamlCommentReader(final YamlConfigurationOptions options, final Reader reader) {
+    protected YamlCommentReader(final YamlConfigurationOptions options) {
         super(options);
-        Validate.notNull(reader, "Reader is null!");
-        this.reader = new BufferedReader(reader);
     }
 
-    protected boolean nextLine() throws IOException {
-        this.currentLine = this.reader.readLine();
+    protected abstract String readLine() throws IOException;
+
+    protected synchronized boolean nextLine() throws IOException {
+        this.currentLine = this.readLine();
         this.position = -1;
         this.currentChar = '\0';
         this.isListElement = false;
@@ -131,7 +126,7 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
     }
 
     @SuppressWarnings("unused")
-    protected void processMultiline(boolean inQuoteBlock) {
+    protected void processMultiline(boolean inQuoteBlock) throws IOException {
         // overriden in children to process the current line while reading a multiline value
     }
 
@@ -532,11 +527,6 @@ public class YamlCommentReader extends YamlCommentMapper implements Closeable {
             node.clearIf(NO_COMMENTS);
             this.currentNode = null;
         }
-    }
-
-    @Override
-    public void close() throws IOException {
-        this.reader.close();
     }
 
     @Override

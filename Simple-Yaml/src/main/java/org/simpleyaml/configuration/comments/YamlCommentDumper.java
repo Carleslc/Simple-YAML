@@ -1,54 +1,55 @@
 package org.simpleyaml.configuration.comments;
 
+import org.simpleyaml.utils.DumperBus;
 import org.simpleyaml.utils.StringUtils;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.stream.Collectors;
+import java.io.*;
 
 public class YamlCommentDumper extends YamlCommentReader {
 
     protected final YamlCommentMapper yamlCommentMapper;
 
-    protected StringBuilder builder;
-    protected StringBuilder explicitBlock;
+    protected final DumperBus bus;
+    protected BufferedWriter writer;
+    protected StringWriter explicitBlock;
 
     protected KeyTree.Node firstListMapElement;
 
-    public YamlCommentDumper(final YamlCommentMapper yamlCommentMapper, final Reader reader) {
-        super(yamlCommentMapper.options(), reader);
+    public YamlCommentDumper(final YamlCommentMapper yamlCommentMapper, final DumperBus.Dumper source, final Writer writer) {
+        super(yamlCommentMapper.options());
         this.yamlCommentMapper = yamlCommentMapper;
+        this.writer = writer instanceof BufferedWriter ? (BufferedWriter) writer : new BufferedWriter(writer);
+        this.bus = new DumperBus(source);
     }
 
     /**
-     * Merge comments from the comment mapper with lines from the reader.
+     * Merge comments from the comment mapper with lines from the source.
+     * <p>The result is written to the writer.</p>
      *
-     * @return the resulting String
-     * @throws IOException if any problem while reading arise
+     * @throws IOException if any problem arise while reading or writing
      */
-    public String dump() throws IOException {
-        String result;
-
+    public void dump() throws IOException {
         if (this.yamlCommentMapper == null) {
-            result = this.reader.lines().collect(Collectors.joining("\n"));
+            this.bus.source().dump(this.writer);
         } else {
-            this.builder = new StringBuilder();
+            this.bus.dump();
 
             while (this.nextLine()) {
                 this.processLine();
-                this.builder.append('\n');
+                this.writer.newLine();
             }
 
             // Append end of file (footer) comment (null path), if found
             this.clearSection();
             this.appendBlockComment(this.getNode(null));
-
-            result = this.builder.toString();
         }
 
         this.close();
+    }
 
-        return result;
+    @Override
+    protected String readLine() throws IOException {
+        return this.bus.await();
     }
 
     @Override
@@ -57,7 +58,7 @@ public class YamlCommentDumper extends YamlCommentReader {
         final KeyTree.Node readerNode = this.track();
         final KeyTree.Node commentNode = this.getCommentNode(readerNode);
         this.appendBlockComment(commentNode);
-        this.builder.append(this.currentLine);
+        this.writer.write(this.currentLine);
         this.appendSideComment(commentNode);
     }
 
@@ -104,7 +105,7 @@ public class YamlCommentDumper extends YamlCommentReader {
         return this.yamlCommentMapper.getNode(path);
     }
 
-    protected void appendBlockComment(final KeyTree.Node node) {
+    protected void appendBlockComment(final KeyTree.Node node) throws IOException {
         if (node != null) {
             this.appendBlockComment(node.getComment());
 
@@ -114,18 +115,18 @@ public class YamlCommentDumper extends YamlCommentReader {
         }
 
         if (this.explicitBlock != null) {
-            this.builder.append(this.explicitBlock);
-            this.builder.append('\n');
+            this.writer.write(this.explicitBlock.toString());
+            this.writer.newLine();
             this.explicitBlock = null;
         }
     }
 
-    protected void appendBlockComment(final String comment) {
+    protected void appendBlockComment(final String comment) throws IOException {
         if (comment != null) {
-            this.builder.append(comment);
+            this.writer.write(comment);
 
             if (!comment.endsWith("\n")) {
-                this.builder.append('\n');
+                this.writer.newLine();
             }
         }
     }
@@ -147,7 +148,7 @@ public class YamlCommentDumper extends YamlCommentReader {
             if (this.isLiteral) {
                 this.appendSideCommentLiteral(sideComment);
             } else {
-                this.builder.append(sideComment);
+                this.writer.write(sideComment);
             }
         }
     }
@@ -156,23 +157,25 @@ public class YamlCommentDumper extends YamlCommentReader {
         final String[] sideCommentParts = StringUtils.splitNewLines(sideComment, 2);
 
         // Append first side comment line
-        this.builder.append(sideCommentParts[0]);
+        this.writer.write(sideCommentParts[0]);
 
         // Read multiline block literal
         if (sideCommentParts.length > 1 && this.nextLine()) {
-            this.builder.append('\n');
-            this.builder.append(this.currentLine);
+            this.writer.newLine();
+            this.writer.write(this.currentLine);
 
             while (this.nextLine() && this.isLiteral) { // is still literal after reading next line
-                this.builder.append('\n').append(this.currentLine);
+                this.writer.newLine();
+                this.writer.write(this.currentLine);
             }
 
             // Append side comment below
-            this.builder.append('\n').append(sideCommentParts[1]);
+            this.writer.newLine();
+            this.writer.write(sideCommentParts[1]);
 
             if (this.stage != ReaderStage.END_OF_FILE) {
                 // Track last line read that is not literal
-                this.builder.append('\n');
+                this.writer.newLine();
                 this.processLine();
             }
         }
@@ -206,25 +209,29 @@ public class YamlCommentDumper extends YamlCommentReader {
     }
 
     @Override
-    protected void processMultiline(boolean inQuoteBlock) {
-        StringBuilder builder;
+    protected void processMultiline(boolean inQuoteBlock) throws IOException {
+        Writer writer;
         if (this.isExplicit()) {
             if (this.explicitBlock == null) {
-                this.explicitBlock = new StringBuilder();
+                this.explicitBlock = new StringWriter();
             }
-            builder = this.explicitBlock;
+            writer = this.explicitBlock;
         } else {
-            builder = this.builder;
+            writer = this.writer;
         }
         if (this.isLiteral && this.quoteNotation != ReadingQuoteStyle.LITERAL) {
-            builder.append(this.currentLine); // ? | # comment
+            writer.write(this.currentLine); // ? | # comment
         } else {
-            builder.append('\n');
+            writer.write('\n');
 
             if (inQuoteBlock) {
-                builder.append(this.currentLine);
+                writer.write(this.currentLine);
             }
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        this.writer.close();
+    }
 }

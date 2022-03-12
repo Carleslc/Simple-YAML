@@ -140,7 +140,7 @@ class YamlConfigurationTest {
             new IsBlank()
         );
 
-        configuration.load(TestResources.getResourceInputStream("test-comments.yml"));
+        configuration.load(() -> TestResources.getResourceInputStream("test-comments.yml"));
 
         MatcherAssert.assertThat(
             "Couldn't build the header!",
@@ -428,7 +428,7 @@ class YamlConfigurationTest {
 
     @SuppressWarnings("SameParameterValue")
     private YamlConfiguration resourceLoadYamlConfiguration(final String file) throws IOException {
-        return YamlConfiguration.loadConfiguration(TestResources.getResourceInputStream(file));
+        return YamlConfiguration.loadConfiguration(() -> TestResources.getResourceInputStream(file));
     }
 
 }

@@ -5,6 +5,9 @@ import org.simpleyaml.configuration.comments.KeyTree;
 import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Objects;
 
 /**
@@ -34,34 +37,40 @@ public class YamlCommentFormatter implements CommentFormatter {
     }
 
     @Override
-    public String parse(String raw, CommentType type, KeyTree.Node node) {
+    public String parse(Reader raw, CommentType type, KeyTree.Node node) throws IOException {
+        if (raw == null) {
+            return null;
+        }
+
         YamlCommentFormatterConfiguration formatterConfiguration = formatterConfiguration(type);
 
         // Remove prefix indentation so the comment prefix can be stripped ignoring the indentation
         String prefixFirst = StringUtils.stripIndentation(formatterConfiguration.prefixFirst());
         String prefixMultiline = StringUtils.stripIndentation(formatterConfiguration.prefixMultiline());
 
-        StringBuilder commentBuilder = new StringBuilder();
+        try (final BufferedReader reader = raw instanceof BufferedReader ? (BufferedReader) raw : new BufferedReader(raw)) {
+            StringBuilder commentBuilder = new StringBuilder();
 
-        // Split comment in lines
-        String[] lines = StringUtils.lines(raw);
+            boolean strip = formatterConfiguration.stripPrefix();
 
-        boolean strip = formatterConfiguration.stripPrefix();
+            final String firstLine = reader.readLine();
 
-        if (lines.length > 0) {
-            // Append first line without indentation and optional first prefix
-            commentBuilder.append(parseCommentLine(lines[0], prefixFirst, strip));
+            if (firstLine != null) {
+                // Append first line without indentation and optional first prefix
+                commentBuilder.append(parseCommentLine(firstLine, prefixFirst, strip));
+            }
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Append remaining lines without indentation and optional multiline prefix
+                commentBuilder.append('\n').append(parseCommentLine(line, prefixMultiline, strip));
+            }
+
+            final String comment = commentBuilder.toString();
+
+            // If set, trim leading and trailing space and blank lines
+            return formatterConfiguration.trim() ? comment.trim() : comment;
         }
-
-        for (int i = 1; i < lines.length; i++) {
-            // Append remaining lines without indentation and optional multiline prefix
-            commentBuilder.append('\n').append(parseCommentLine(lines[i], prefixMultiline, strip));
-        }
-
-        final String comment = commentBuilder.toString();
-
-        // If set, trim leading and trailing space and blank lines
-        return formatterConfiguration.trim() ? comment.trim() : comment;
     }
 
     protected String parseCommentLine(String line, String prefix, boolean strip) {

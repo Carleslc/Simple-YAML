@@ -4,6 +4,9 @@ import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.comments.KeyTree;
 import org.simpleyaml.utils.StringUtils;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,15 +18,16 @@ import java.util.stream.Stream;
 public interface CommentFormatter {
 
     /**
-     * Parse the comment from a string that may contain a raw-formatted comment (for instance from a configuration file)
+     * Parse the comment from a reader that may contain a raw-formatted comment (for instance from a configuration file)
      * to a human-friendly contentful representation of that comment.
      *
      * @param raw the comment to parse that may contain special format characters with leading and trailing space
      * @param type the comment type
      * @param node the comment node
      * @return the comment in the expected format to be read by humans
+     * @throws IOException if comment cannot be parsed
      */
-    String parse(String raw, CommentType type, KeyTree.Node node);
+    String parse(Reader raw, CommentType type, KeyTree.Node node) throws IOException;
 
     /**
      * Given a comment returns the raw-formatted string to be dumped somewhere like a file.
@@ -35,11 +39,32 @@ public interface CommentFormatter {
      */
     String dump(String comment, CommentType type, KeyTree.Node node);
 
-    default String parse(String raw, CommentType type) {
+    /**
+     * Parse the comment from a string that may contain a raw-formatted comment (for instance from a configuration file)
+     * to a human-friendly contentful representation of that comment.
+     *
+     * @param raw the comment to parse that may contain special format characters with leading and trailing space
+     * @param type the comment type
+     * @param node the comment node
+     * @return the comment in the expected format to be read by humans
+     */
+    default String parse(String raw, CommentType type, KeyTree.Node node) throws IOException {
+        return parse(new StringReader(raw), type, node);
+    }
+
+    default String parse(Reader raw, CommentType type) throws IOException {
         return parse(raw, type, null);
     }
 
-    default String parse(String raw) {
+    default String parse(String raw, CommentType type) throws IOException {
+        return parse(raw, type, null);
+    }
+
+    default String parse(Reader raw) throws IOException {
+        return parse(raw, CommentType.BLOCK);
+    }
+
+    default String parse(String raw) throws IOException {
         return parse(raw, CommentType.BLOCK);
     }
 

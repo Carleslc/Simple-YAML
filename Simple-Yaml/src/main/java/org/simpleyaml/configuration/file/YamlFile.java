@@ -130,14 +130,23 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if it hasn't been possible to save configuration file
      */
     public String saveToString() throws IOException {
+        return super.saveToString();
+    }
+
+    @Override
+    public void dump(final Writer output) throws IOException {
+        Validate.notNull(output, "Writer cannot be null");
+
         if (this.useComments) {
             final YamlCommentDumper commentDumper = new YamlCommentDumper(
                     this.parseComments(),
-                    new StringReader(super.dump())
+                    super::dump,
+                    output
             );
-            return this.buildHeader() + commentDumper.dump();
+            commentDumper.dump();
+        } else {
+            super.dump(output);
         }
-        return super.saveToString();
     }
 
     /**
@@ -150,23 +159,23 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         if (this.yamlCommentMapper != null) {
             return this.yamlCommentMapper;
         }
-        return parseComments(fileToString());
+        return this.parseComments(this.exists() ? Files.newBufferedReader(this.configFile.toPath(), this.options().charset()) : null);
     }
 
     /**
-     * Parse comments from a string.
+     * Parse comments from a reader.
      *
-     * @param contents Contents of a Configuration to parse.
+     * @param reader Reader of a Configuration to parse.
      * @return a comment mapper with comments parsed
      * @throws InvalidConfigurationException if it hasn't been possible to read the contents
      */
-    private YamlCommentMapper parseComments(final String contents) throws InvalidConfigurationException {
+    private YamlCommentMapper parseComments(final Reader reader) throws InvalidConfigurationException {
         try {
-            if (contents != null) {
-                this.yamlCommentMapper = new YamlCommentParser(options(), new StringReader(contents));
+            if (reader != null) {
+                this.yamlCommentMapper = new YamlCommentParser(this.options(), reader);
                 ((YamlCommentParser) this.yamlCommentMapper).parse();
             } else {
-                this.yamlCommentMapper = new YamlCommentMapper(options());
+                this.yamlCommentMapper = new YamlCommentMapper(this.options());
             }
             return this.yamlCommentMapper;
         } catch (IOException e) {
@@ -175,7 +184,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     /**
-     * Get the comment mapper. This has access to read the key-nodes directly.
+     * Get the comment mapper. This has access to read the comment nodes directly.
      * @return the comment mapper or null if this configuration is loaded without comments
      * @see #getComment(String, CommentType)
      * @see #setComment(String, String, CommentType)
@@ -431,7 +440,11 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     public String getHeader() {
         final YamlConfigurationOptions options = this.options();
         final YamlHeaderFormatter headerFormatter = options.headerFormatter();
-        return headerFormatter.parse(headerFormatter.dump(options.header()));
+        try {
+            return headerFormatter.parse(headerFormatter.dump(options.header()));
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot parse header", e);
+        }
     }
 
     /**
@@ -561,17 +574,27 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         this.load();
     }
 
+    /**
+     * Loads this {@link YamlFile} from the specified reader.
+     * <p>
+     * All the values contained within this configuration will be removed,
+     * leaving only settings and defaults, and the new values will be loaded
+     * from the given stream.
+     * <p>
+     * If the file cannot be loaded for any reason, an exception will be thrown.
+     *
+     * @param readerSupplier                 a function providing the reader to load from (new instance)
+     * @throws IOException                   Thrown when underlying reader throws an IOException.
+     * @throws InvalidConfigurationException Thrown when the reader does not represent a valid Configuration.
+     * @throws IllegalArgumentException      Thrown when reader is null.
+     */
     @Override
-    public void loadFromString(final String contents) throws InvalidConfigurationException {
-        super.loadFromString(contents);
-        if (this.useComments) {
-            this.parseComments(contents);
-        }
-    }
+    public void load(final ReaderSupplier readerSupplier) throws IOException, InvalidConfigurationException {
+        super.load(readerSupplier);
 
-    public void loadFromStringWithComments(final String contents) throws InvalidConfigurationException {
-        this.useComments = true;
-        this.loadFromString(contents);
+        if (this.useComments) {
+            this.parseComments(readerSupplier.get());
+        }
     }
 
     /**
@@ -801,7 +824,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Returns a representation of this configuration file.
      *
      * @return a representation of this configuration file
-     * If something goes wrong then this string is an error message.
+     * <br>If something goes wrong then this string is an error message.
      */
     @Override
     public String toString() {
@@ -815,21 +838,18 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     /**
      * Creates a new {@link YamlFile}, loading from the given file.
      * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
-     * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
      *
      * @param file Input file
      * @param withComments if comments should be parsed
      * @return Resulting configuration
-     * @throws IllegalArgumentException Thrown if file is null
+     * @throws IOException if configuration cannot be loaded
+     * @throws IllegalArgumentException if file is null
      */
     public static YamlFile loadConfiguration(final File file, boolean withComments) throws IOException {
         Validate.notNull(file, "File cannot be null");
-        return load(config -> {
+        return YamlFile.load(config -> {
             config.setConfigurationFile(file);
             config.load();
         }, withComments);
@@ -837,10 +857,6 @@ public class YamlFile extends YamlConfiguration implements Commentable {
 
     /**
      * Creates a new {@link YamlFile}, loading from the given file (without comments).
-     * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
      * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
@@ -852,83 +868,130 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @see #loadConfiguration(File, boolean)
      */
     public static YamlFile loadConfiguration(final File file) throws IOException {
-        return loadConfiguration(file, false);
+        return YamlFile.loadConfiguration(file, false);
+    }
+
+    /**
+     * Creates a new {@link YamlFile}, loading from the specified string contents.
+     * <p>
+     * If the file cannot be loaded for any reason, an exception will be thrown.
+     *
+     * @param contents the contents to load from
+     * @param withComments if comments should be parsed
+     * @return resulting configuration
+     * @throws IOException if underlying reader throws an IOException.
+     * @throws InvalidConfigurationException if the contents does not represent a valid Configuration.
+     * @throws IllegalArgumentException if contents is null.
+     */
+    public static YamlFile loadConfigurationFromString(final String contents, boolean withComments) throws IOException {
+        return YamlFile.load(config -> config.loadFromString(contents), withComments);
+    }
+
+    /**
+     * Creates a new {@link YamlFile}, loading from the specified string contents (without comments).
+     * <p>
+     * If the file cannot be loaded for any reason, an exception will be thrown.
+     *
+     * @param contents the contents to load from
+     * @return resulting configuration
+     * @throws IOException if underlying reader throws an IOException.
+     * @throws InvalidConfigurationException if the contents does not represent a valid Configuration.
+     * @throws IllegalArgumentException if contents is null.
+     */
+    public static YamlFile loadConfigurationFromString(final String contents) throws IOException {
+        return YamlFile.loadConfigurationFromString(contents, false);
+    }
+
+    /**
+     * Creates a new {@link YamlFile}, loading from the given reader.
+     *
+     * @param readerSupplier reader supplier
+     * @param withComments if comments should be parsed
+     * @return resulting configuration
+     * @throws IOException if configuration cannot be loaded
+     * @throws IllegalArgumentException if stream is null
+     */
+    public static YamlFile loadConfiguration(final ReaderSupplier readerSupplier, boolean withComments) throws IOException {
+        Validate.notNull(readerSupplier, "Reader supplier cannot be null");
+        return YamlFile.load(config -> config.load(readerSupplier), withComments);
+    }
+
+    /**
+     * Creates a new {@link YamlFile}, loading from the given reader (without comments).
+     *
+     * @param readerSupplier reader supplier
+     * @return resulting configuration
+     * @throws IOException if configuration cannot be loaded
+     * @throws IllegalArgumentException if stream is null
+     */
+    public static YamlFile loadConfiguration(final ReaderSupplier readerSupplier) throws IOException {
+        return YamlFile.loadConfiguration(readerSupplier, false);
     }
 
     /**
      * Creates a new {@link YamlFile}, loading from the given stream.
      * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
-     * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
      *
-     * @param stream Input stream
+     * @param streamSupplier input stream supplier
      * @param withComments if comments should be parsed
      * @return Resulting configuration
      * @throws IOException if configuration cannot be loaded
      * @throws IllegalArgumentException if stream is null
      */
-    public static YamlFile loadConfiguration(final InputStream stream, boolean withComments) throws IOException {
-        Validate.notNull(stream, "Stream cannot be null");
-        return load(config -> config.load(stream), withComments);
+    public static YamlFile loadConfiguration(final InputStreamSupplier streamSupplier, boolean withComments) throws IOException {
+        Validate.notNull(streamSupplier, "Stream supplier cannot be null");
+        return YamlFile.load(config -> config.load(streamSupplier), withComments);
     }
 
     /**
      * Creates a new {@link YamlFile}, loading from the given stream (without comments).
      * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
-     * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
      *
-     * @param stream Input stream
+     * @param streamSupplier input stream supplier
      * @return Resulting configuration
      * @throws IOException if configuration cannot be loaded
      * @throws IllegalArgumentException if stream is null
-     * @see #loadConfiguration(InputStream, boolean)
      */
-    public static YamlFile loadConfiguration(final InputStream stream) throws IOException {
-        return loadConfiguration(stream, false);
+    public static YamlFile loadConfiguration(final InputStreamSupplier streamSupplier) throws IOException {
+        return YamlFile.loadConfiguration(streamSupplier, false);
     }
 
     /**
-     * Creates a new {@link YamlFile}, loading from the given reader.
-     * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
-     *
-     * @param reader input
-     * @param withComments if comments should be parsed
-     * @return resulting configuration
-     * @throws IOException if configuration cannot be loaded
-     * @throws IllegalArgumentException if stream is null
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link YamlFile#loadConfiguration(InputStreamSupplier, boolean)}
      */
+    @Deprecated
+    public static YamlFile loadConfiguration(final InputStream stream, boolean withComments) throws IOException {
+        Validate.notNull(stream, "Stream cannot be null");
+        return YamlFile.load(config -> config.load(stream), withComments);
+    }
+
+    /**
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #loadConfiguration(InputStreamSupplier)}
+     */
+    @Deprecated
+    public static YamlFile loadConfiguration(final InputStream stream) throws IOException {
+        return YamlFile.loadConfiguration(stream, false);
+    }
+
+    /**
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link YamlFile#loadConfiguration(ReaderSupplier, boolean)}
+     */
+    @Deprecated
     public static YamlFile loadConfiguration(final Reader reader, boolean withComments) throws IOException {
         Validate.notNull(reader, "Reader cannot be null");
-        return load(config -> config.load(reader), withComments);
+        return YamlFile.load(config -> config.load(reader), withComments);
     }
 
     /**
-     * Creates a new {@link YamlFile}, loading from the given reader (without comments).
-     * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
-     *
-     * @param reader input
-     * @return resulting configuration
-     * @throws IllegalArgumentException if stream is null
-     * @throws IOException if configuration cannot be loaded
-     * @see #loadConfiguration(Reader, boolean)
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #loadConfiguration(ReaderSupplier)}
      */
+    @Deprecated
     public static YamlFile loadConfiguration(final Reader reader) throws IOException {
-        return loadConfiguration(reader, false);
+        return YamlFile.loadConfiguration(reader, false);
     }
 
     private static YamlFile load(final YamlFileLoader loader, boolean withComments) throws IOException {

@@ -11,6 +11,11 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.resolver.Resolver;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SnakeYamlImplementation implements YamlImplementation {
@@ -78,10 +83,12 @@ public class SnakeYamlImplementation implements YamlImplementation {
     }
 
     @Override
-    public String dump(final Map<String, Object> values, final YamlConfigurationOptions options) {
-        this.configure(options);
+    public String dump(final Map<String, Object> values, final YamlConfigurationOptions options) throws IOException {
+        final StringWriter stringWriter = new StringWriter();
 
-        String dump = this.yaml.dump(values);
+        this.dump(stringWriter, values, options);
+
+        String dump = stringWriter.toString();
 
         if (dump.equals(BLANK_CONFIG)) {
             dump = "";
@@ -91,14 +98,31 @@ public class SnakeYamlImplementation implements YamlImplementation {
     }
 
     @Override
-    public Map<String, Object> load(final String contents) throws InvalidConfigurationException {
+    public void dump(final Writer writer, final Map<String, Object> values, final YamlConfigurationOptions options) throws IOException {
+        this.configure(options);
+
+        try {
+            this.yaml.dump(values, writer);
+        } catch (YAMLException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("DuplicateThrows")
+    public Map<String, Object> load(final Reader reader) throws IOException, InvalidConfigurationException {
+        if (reader == null) {
+            return new LinkedHashMap<>();
+        }
         final Map<String, Object> values;
         try {
-            values = this.yaml.load(contents);
+            values = this.yaml.load(reader);
         } catch (final YAMLException e) {
             throw new InvalidConfigurationException(e);
         } catch (final ClassCastException e) {
             throw new InvalidConfigurationException("Top level is not a Map.");
+        } finally {
+            reader.close();
         }
         return values;
     }

@@ -1,6 +1,5 @@
 package org.simpleyaml.configuration.file;
 
-import org.cactoos.io.InputStreamOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
@@ -22,13 +21,13 @@ import org.simpleyaml.utils.TestResources;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.util.*;
 
 class YamlFileTest {
 
     @Test
+    @SuppressWarnings("deprecation")
     void load() throws Exception {
         final YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test.yml"));
         final String content = TestResources.testContent();
@@ -50,6 +49,12 @@ class YamlFileTest {
             yamlFile.saveToString(),
             new IsEqual<>(content)
         );
+        yamlFile.load(() -> TestResources.getResourceURL("test.yml").openStream());
+        MatcherAssert.assertThat(
+                "Couldn't load the file!",
+                yamlFile.saveToString(),
+                new IsEqual<>(content)
+        );
     }
     
     @Test
@@ -65,6 +70,7 @@ class YamlFileTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void loadConfiguration() throws Exception {
         YamlFile yamlFile = YamlFile.loadConfiguration(new File(TestResources.getResourceURI("test.yml")));
         final String content = TestResources.testContent();
@@ -73,13 +79,19 @@ class YamlFileTest {
             yamlFile.saveToString(),
             new IsEqual<>(content)
         );
-        yamlFile = YamlFile.loadConfiguration(new InputStreamOf(TestResources.getResourceURI("test.yml")));
+        yamlFile = YamlFile.loadConfiguration(TestResources.getResourceInputStream("test.yml"));
         MatcherAssert.assertThat(
             "Couldn't load the file!",
             yamlFile.saveToString(),
             new IsEqual<>(content)
         );
-        yamlFile = YamlFile.loadConfiguration(new StringReader(content));
+        yamlFile = YamlFile.loadConfiguration(() -> TestResources.getResourceInputStream("test.yml"));
+        MatcherAssert.assertThat(
+                "Couldn't load the file!",
+                yamlFile.saveToString(),
+                new IsEqual<>(content)
+        );
+        yamlFile = YamlFile.loadConfigurationFromString(content);
         MatcherAssert.assertThat(
             "Couldn't load the file!",
             yamlFile.saveToString(),
@@ -100,6 +112,7 @@ class YamlFileTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void loadConfigurationWithComments() throws Exception {
         YamlFile yamlFile = YamlFile.loadConfiguration(new File(TestResources.getResourceURI("test-comments.yml")), true);
         final String content = TestResources.testComments();
@@ -108,13 +121,19 @@ class YamlFileTest {
             yamlFile.saveToString(),
             new IsEqual<>(content)
         );
-        yamlFile = YamlFile.loadConfiguration(new InputStreamOf(TestResources.getResourceURI("test-comments.yml")), true);
+        yamlFile = YamlFile.loadConfiguration(TestResources.getResourceInputStream("test-comments.yml"), true);
         MatcherAssert.assertThat(
             "Couldn't load the file!",
             yamlFile.saveToString(),
             new IsEqual<>(content)
         );
-        yamlFile = YamlFile.loadConfiguration(new StringReader(content), true);
+        yamlFile = YamlFile.loadConfiguration(() -> TestResources.getResourceInputStream("test-comments.yml"), true);
+        MatcherAssert.assertThat(
+                "Couldn't load the file!",
+                yamlFile.saveToString(),
+                new IsEqual<>(content)
+        );
+        yamlFile = YamlFile.loadConfigurationFromString(content, true);
         MatcherAssert.assertThat(
             "Couldn't load the file!",
             yamlFile.saveToString(),

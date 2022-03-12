@@ -2,6 +2,8 @@ package org.simpleyaml.configuration.comments;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
+import java.io.IOException;
+
 public class YamlCommentMapper implements Commentable {
 
     protected final KeyTree keyTree;
@@ -48,7 +50,11 @@ public class YamlCommentMapper implements Commentable {
         if (raw == null) {
             return null;
         }
-        return this.options().commentFormatter().parse(raw, type, node);
+        try {
+            return this.options().commentFormatter().parse(raw, type, node);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot parse comment", e);
+        }
     }
 
     protected final String getRawComment(final KeyTree.Node node, final CommentType type) {

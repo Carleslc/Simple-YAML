@@ -7,6 +7,7 @@ import org.simpleyaml.utils.Validate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Objects;
 
@@ -49,13 +50,23 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * If {@link #stripPrefix} is true then {@link String#trim()} will be applied to every line of the header
      * and the {@link #commentPrefix()} will be stripped away.
      *
-     * @param contents the string to parse
+     * @param raw the string to parse
      * @return the header
      */
-    public String parse(String contents, CommentType type, KeyTree.Node node) {
-        try {
-            // using buffered reader to avoid processing and allocating the whole contents as with split lines
-            final BufferedReader reader = new BufferedReader(new StringReader(contents));
+    @Override
+    public String parse(String raw, CommentType type, KeyTree.Node node) throws IOException {
+        if (raw == null) {
+            return null;
+        }
+        return parse(new StringReader(raw), type, node);
+    }
+
+    @Override
+    public String parse(Reader raw, CommentType type, KeyTree.Node node) throws IOException {
+        if (raw == null) {
+            return null;
+        }
+        try (BufferedReader reader = raw instanceof BufferedReader ? (BufferedReader) raw : new BufferedReader(raw)) {
             final StringBuilder headerBuilder = new StringBuilder();
             boolean headerFound = false;
             String line, trim;
@@ -87,8 +98,6 @@ public class YamlHeaderFormatter implements CommentFormatter {
             if (headerFound) {
                 return headerBuilder.toString();
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot parse header", e);
         }
         return null;
     }
@@ -103,6 +112,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * @param header the header to dump
      * @return the final string to be dumped
      */
+    @Override
     public String dump(String header, CommentType type, KeyTree.Node node) {
         if (header == null) {
             return null;
