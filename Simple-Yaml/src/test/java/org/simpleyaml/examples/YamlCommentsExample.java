@@ -69,6 +69,10 @@ public final class YamlCommentsExample {
         // You can add comments even on list values!
         yamlFile.setComment("test.list.entry", "Comment on a list item");
 
+        // You can use indexing as well to select list values
+        yamlFile.setComment("test.list[7]", "Comment on a list item");
+        yamlFile.setComment("test.list[-1]", "Comment on a list item"); // -1 stands for the last element
+
         // Side comments
         yamlFile.setComment("test.list.entry", ":)", CommentType.SIDE);
 

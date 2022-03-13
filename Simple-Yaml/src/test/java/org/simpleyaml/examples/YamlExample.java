@@ -113,6 +113,12 @@ public final class YamlExample {
         final List<String> list = yamlFile.getStringList("test.list");
         System.out.println("test.list: " + list);
 
+        // If you want to select only one value from a list you can use list indexing
+
+        System.out.println("test.list[0]: " + yamlFile.getString("test.list[0]"));
+        System.out.println("test.list[1]: " + yamlFile.getString("test.list[1]"));
+        System.out.println("test.list[-1]: " + yamlFile.getString("test.list[-1]")); // -1 stands for the last element
+
         // And you can also use methods with default values if the path is unknown
 
         final String value = yamlFile.getString("randomSection.noValue"); // returns null
