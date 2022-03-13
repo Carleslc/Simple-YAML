@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.simpleyaml.configuration.comments"},{"l":"org.simpleyaml.configuration.file"}]

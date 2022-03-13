@@ -1,5 +1,6 @@
 org.simpleyaml.configuration
 org.simpleyaml.configuration.comments
+org.simpleyaml.configuration.comments.format
 org.simpleyaml.configuration.file
 org.simpleyaml.configuration.serialization
 org.simpleyaml.exceptions
