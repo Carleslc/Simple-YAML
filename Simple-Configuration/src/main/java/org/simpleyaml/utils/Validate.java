@@ -111,7 +111,7 @@ public class Validate {
      * @throws IllegalArgumentException if expression is <code>false</code>
      */
     public static void isTrue(final boolean expression, final String message, final double value) {
-        if (expression == false) {
+        if (!expression) {
             throw new IllegalArgumentException(message + value);
         }
     }

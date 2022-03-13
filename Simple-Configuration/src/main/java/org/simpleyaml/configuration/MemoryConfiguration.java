@@ -47,7 +47,11 @@ public class MemoryConfiguration extends MemorySection implements Configuration 
     public void addDefaults(final Configuration defaults) {
         Validate.notNull(defaults, "Defaults may not be null");
 
-        this.addDefaults(defaults.getValues(true));
+        for (String key : defaults.getKeys(true)) {
+            if (!defaults.isConfigurationSection(key)) {
+                addDefault(key, defaults.get(key));
+            }
+        }
     }
 
     @Override

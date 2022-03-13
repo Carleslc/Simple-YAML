@@ -411,7 +411,9 @@ public class KeyTree implements Iterable<KeyTree.Node> {
                         final int index = this.asListIndex(i, size);
                         if (index >= 0 && index < size) {
                             Object item = ((List<?>) value).get(index);
-                            child = this.add((item instanceof String || item instanceof Number) ? String.valueOf(item) : null, false, true);
+                            final String name = (item instanceof String || item instanceof Number || item instanceof Boolean)
+                                    ? String.valueOf(item) : null;
+                            child = this.add(name, false, true);
                         }
                     }
                 } else {
