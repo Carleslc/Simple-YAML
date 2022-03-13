@@ -132,6 +132,7 @@ public class DumperBus extends Writer {
             this.append(null);
         }
         this.lineBuffer = null;
+        this.executor.shutdown();
     }
 
     protected boolean isClosed() {
