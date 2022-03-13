@@ -3,7 +3,10 @@ package org.simpleyaml.configuration.comments;
 import org.simpleyaml.utils.DumperBus;
 import org.simpleyaml.utils.StringUtils;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 public class YamlCommentDumper extends YamlCommentReader {
 
@@ -29,20 +32,16 @@ public class YamlCommentDumper extends YamlCommentReader {
      * @throws IOException if any problem arise while reading or writing
      */
     public void dump() throws IOException {
-        if (this.yamlCommentMapper == null) {
-            this.bus.source().dump(this.writer);
-        } else {
-            this.bus.dump();
+        this.bus.dump();
 
-            while (this.nextLine()) {
-                this.processLine();
-                this.writer.newLine();
-            }
-
-            // Append end of file (footer) comment (null path), if found
-            this.clearSection();
-            this.appendBlockComment(this.getNode(null));
+        while (this.nextLine()) {
+            this.processLine();
+            this.writer.newLine();
         }
+
+        // Append end of file (footer) comment (null path), if found
+        this.clearSection();
+        this.appendBlockComment(this.getNode(null));
 
         this.close();
     }

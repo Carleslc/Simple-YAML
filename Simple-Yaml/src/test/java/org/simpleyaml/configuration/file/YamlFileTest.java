@@ -102,12 +102,11 @@ class YamlFileTest {
     @Test
     void loadWithComments() throws Exception {
         final YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test-comments.yml"));
-        final String content = TestResources.testComments();
         yamlFile.loadWithComments();
         MatcherAssert.assertThat(
             "Couldn't load the file with comments!",
             yamlFile.saveToString(),
-            new IsEqual<>(content)
+            new IsEqual<>(TestResources.testComments())
         );
     }
 

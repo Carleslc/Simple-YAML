@@ -321,7 +321,7 @@ public class StringUtilsTest {
 
     @Test
     void separatorIndex() {
-        final char sep = new YamlConfiguration().options().pathSeparator();
+        final char sep = '.';
 
         // last
 

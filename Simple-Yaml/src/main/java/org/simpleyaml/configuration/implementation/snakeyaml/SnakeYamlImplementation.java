@@ -1,9 +1,7 @@
 package org.simpleyaml.configuration.implementation.snakeyaml;
 
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
-import org.simpleyaml.configuration.implementation.api.QuoteStyle;
-import org.simpleyaml.configuration.implementation.api.QuoteValue;
-import org.simpleyaml.configuration.implementation.api.YamlImplementation;
+import org.simpleyaml.configuration.implementation.api.YamlImplementationCommentable;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -13,18 +11,15 @@ import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SnakeYamlImplementation implements YamlImplementation {
-
-    protected static final String BLANK_CONFIG = "{}\n";
+public class SnakeYamlImplementation extends YamlImplementationCommentable {
 
     private SnakeYamlConstructor yamlConstructor;
     private SnakeYamlRepresenter yamlRepresenter;
-    private DumperOptions yamlOptions;
+    private DumperOptions dumperOptions;
     private LoaderOptions loaderOptions;
     private Resolver resolver;
     private Yaml yaml;
@@ -47,15 +42,15 @@ public class SnakeYamlImplementation implements YamlImplementation {
 
     protected final void setYaml(final SnakeYamlConstructor yamlConstructor,
                                  final SnakeYamlRepresenter yamlRepresenter,
-                                 final DumperOptions yamlOptions,
+                                 final DumperOptions dumperOptions,
                                  final LoaderOptions loaderOptions,
                                  final Resolver resolver) {
         this.yamlConstructor = yamlConstructor;
         this.yamlRepresenter = yamlRepresenter;
-        this.yamlOptions = yamlOptions;
+        this.dumperOptions = dumperOptions;
         this.loaderOptions = loaderOptions;
         this.resolver = resolver;
-        this.yaml = new Yaml(this.yamlConstructor, this.yamlRepresenter, this.yamlOptions, this.loaderOptions, this.resolver);
+        this.yaml = new Yaml(this.yamlConstructor, this.yamlRepresenter, this.dumperOptions, this.loaderOptions, this.resolver);
     }
 
     public Yaml getYaml() {
@@ -71,7 +66,7 @@ public class SnakeYamlImplementation implements YamlImplementation {
     }
 
     public DumperOptions getDumperOptions() {
-        return this.yamlOptions;
+        return this.dumperOptions;
     }
 
     public LoaderOptions getLoaderOptions() {
@@ -80,32 +75,6 @@ public class SnakeYamlImplementation implements YamlImplementation {
 
     public Resolver getResolver() {
         return this.resolver;
-    }
-
-    @Override
-    public String dump(final Map<String, Object> values, final YamlConfigurationOptions options) throws IOException {
-        final StringWriter stringWriter = new StringWriter();
-
-        this.dump(stringWriter, values, options);
-
-        String dump = stringWriter.toString();
-
-        if (dump.equals(BLANK_CONFIG)) {
-            dump = "";
-        }
-
-        return dump;
-    }
-
-    @Override
-    public void dump(final Writer writer, final Map<String, Object> values, final YamlConfigurationOptions options) throws IOException {
-        this.configure(options);
-
-        try {
-            this.yaml.dump(values, writer);
-        } catch (YAMLException e) {
-            throw new IOException(e);
-        }
     }
 
     @Override
@@ -128,23 +97,50 @@ public class SnakeYamlImplementation implements YamlImplementation {
     }
 
     @Override
+    public void dump(final Writer writer, final Map<String, Object> values) throws IOException {
+        this.configure(this.options);
+
+        if (this.hasContent(writer, values)) {
+            this.dumpYaml(writer, values);
+        }
+    }
+
+    protected void dumpYaml(final Writer writer, final Map<String, Object> values) throws IOException {
+        try {
+            this.yaml.dump(values, writer);
+        } catch (YAMLException e) {
+            throw new IOException(e);
+        }
+    }
+
+    protected boolean hasContent(final Writer writer, final Map<String, Object> values) throws IOException {
+        if (values == null || values.isEmpty()) {
+            if (writer != null) {
+                writer.write("");
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public void configure(final YamlConfigurationOptions options) {
-        this.yamlOptions.setAllowUnicode(options.isUnicode());
+        super.configure(options);
 
-        this.yamlOptions.setIndent(options.indent());
-        this.yamlOptions.setIndicatorIndent(options.indentList());
-        this.yamlOptions.setIndentWithIndicator(true);
+        this.dumperOptions.setAllowUnicode(options.isUnicode());
 
-        this.yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        this.dumperOptions.setIndent(options.indent());
+        this.dumperOptions.setIndicatorIndent(options.indentList());
+        this.dumperOptions.setIndentWithIndicator(true);
+
+        this.dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         this.yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
         this.yamlRepresenter.setDefaultScalarStyle(
                 SnakeYamlQuoteValue.getQuoteScalarStyle(options.quoteStyleDefaults().getDefaultQuoteStyle()));
-    }
 
-    @Override
-    public <T> QuoteValue<T> quoteValue(final T value, final QuoteStyle quoteStyle) {
-        return new SnakeYamlQuoteValue<>(value, quoteStyle);
+        final boolean useComments = options.useComments();
+        this.loaderOptions.setProcessComments(useComments);
+        this.dumperOptions.setProcessComments(useComments);
     }
-
 }

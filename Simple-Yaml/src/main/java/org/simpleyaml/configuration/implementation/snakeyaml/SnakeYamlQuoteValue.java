@@ -1,20 +1,15 @@
 package org.simpleyaml.configuration.implementation.snakeyaml;
 
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
-import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SnakeYamlQuoteValue<T> extends QuoteValue<T> {
+public class SnakeYamlQuoteValue {
 
     private static final Map<QuoteStyle, DumperOptions.ScalarStyle> QUOTE_SCALAR_STYLES = mapQuoteScalarStyles();
-
-    public SnakeYamlQuoteValue(T value, QuoteStyle quoteStyle) {
-        super(value, quoteStyle);
-    }
 
     public static DumperOptions.ScalarStyle getQuoteScalarStyle(final QuoteStyle quoteStyle) {
         return QUOTE_SCALAR_STYLES.get(quoteStyle);

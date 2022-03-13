@@ -8,6 +8,7 @@ import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.simpleyaml.configuration.implementation.api.YamlImplementation;
 import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlImplementation;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
+import org.simpleyaml.utils.SupplierIO;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
@@ -58,6 +59,7 @@ public class YamlConfiguration extends FileConfiguration {
     public void setImplementation(final YamlImplementation yamlImplementation) {
         Validate.notNull(yamlImplementation, "YAML implementation cannot be null!");
         this.yamlImplementation = yamlImplementation;
+        this.yamlImplementation.configure(this.options());
     }
 
     /**
@@ -96,7 +98,7 @@ public class YamlConfiguration extends FileConfiguration {
      * @see #saveToString()
      */
     public String dump() throws IOException {
-        return this.yamlImplementation.dump(this.getValues(false), this.options());
+        return this.yamlImplementation.dump(this.getValues(false));
     }
 
     /**
@@ -107,7 +109,7 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public void dump(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        this.yamlImplementation.dump(writer, this.getValues(false), this.options());
+        this.yamlImplementation.dump(writer, this.getValues(false));
     }
 
     /**
@@ -124,12 +126,12 @@ public class YamlConfiguration extends FileConfiguration {
      * @throws InvalidConfigurationException Thrown when the reader does not represent a valid Configuration.
      * @throws IllegalArgumentException      Thrown when reader is null.
      */
-    public void load(final ReaderSupplier readerSupplier) throws IOException, InvalidConfigurationException {
+    public void load(final SupplierIO.Reader readerSupplier) throws IOException, InvalidConfigurationException {
         Validate.notNull(readerSupplier, "Reader supplier cannot be null");
 
         this.loadHeader(readerSupplier.get());
 
-        final Map<?, ?> input = this.yamlImplementation.load(readerSupplier.get());
+        final Map<?, ?> input = this.yamlImplementation.load(readerSupplier);
 
         if (input != null) {
             this.convertMapsToSections(input, this);
@@ -155,7 +157,7 @@ public class YamlConfiguration extends FileConfiguration {
      * @throws IllegalArgumentException if stream is null
      * @throws IOException if cannot load configuration
      */
-    public static YamlConfiguration loadConfiguration(final ReaderSupplier readerSupplier) throws IOException {
+    public static YamlConfiguration loadConfiguration(final SupplierIO.Reader readerSupplier) throws IOException {
         Validate.notNull(readerSupplier, "Reader supplier cannot be null");
         return YamlConfiguration.load(config -> config.load(readerSupplier));
     }
@@ -246,7 +248,7 @@ public class YamlConfiguration extends FileConfiguration {
      * @throws IllegalArgumentException if stream is null
      * @throws IOException if cannot load configuration
      */
-    public static YamlConfiguration loadConfiguration(final InputStreamSupplier streamSupplier) throws IOException {
+    public static YamlConfiguration loadConfiguration(final SupplierIO.InputStream streamSupplier) throws IOException {
         Validate.notNull(streamSupplier, "Reader supplier cannot be null");
         return YamlConfiguration.load(config -> config.load(streamSupplier));
     }
@@ -267,17 +269,15 @@ public class YamlConfiguration extends FileConfiguration {
      * @throws IOException                   Thrown when the given file cannot be read.
      * @throws InvalidConfigurationException Thrown when the given file is not a valid Configuration.
      * @throws IllegalArgumentException      Thrown when stream is null.
-     * @see #load(ReaderSupplier)
+     * @see #load(SupplierIO.Reader)
      */
-    public void load(final InputStreamSupplier streamSupplier) throws IOException, InvalidConfigurationException {
+    public void load(final SupplierIO.InputStream streamSupplier) throws IOException, InvalidConfigurationException {
         Validate.notNull(streamSupplier, "Stream supplier cannot be null");
         load(() -> new InputStreamReader(streamSupplier.get(), this.options().charset()));
     }
 
     /**
      * Creates a new {@link YamlConfiguration}, loading from the given stream.
-     * <p>
-     * If the specified input is not a valid config, a blank config will be returned.
      * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
@@ -286,9 +286,9 @@ public class YamlConfiguration extends FileConfiguration {
      * @return Resulting configuration
      * @throws IllegalArgumentException if stream is null
      * @throws IOException if cannot load configuration
-     * @see #load(InputStream)
-     * @see #loadConfiguration(ReaderSupplier)
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(InputStreamSupplier)}
+     * @see #loadConfiguration(SupplierIO.InputStream)
+     * @see #loadConfiguration(SupplierIO.Reader)
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(SupplierIO.InputStream)}
      */
     @Deprecated
     public static YamlConfiguration loadConfiguration(final InputStream stream) throws IOException {
@@ -297,7 +297,8 @@ public class YamlConfiguration extends FileConfiguration {
     }
 
     /**
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(InputStreamSupplier)}
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(SupplierIO.InputStream)}
+     * @see #loadConfiguration(SupplierIO.InputStream)
      */
     @Override
     @Deprecated
@@ -308,14 +309,14 @@ public class YamlConfiguration extends FileConfiguration {
 
     /**
      * Creates a new {@link YamlConfiguration}, loading from the given reader.
-     * <p>
-     * If the specified input is not a valid config, a blank config will be returned.
      *
      * @param reader input reader
      * @return resulting configuration
      * @throws IllegalArgumentException if stream is null
      * @throws IOException if cannot load configuration
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(ReaderSupplier)}
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(SupplierIO.Reader)}
+     * @see #loadConfiguration(SupplierIO.Reader)
+     * @see #loadConfiguration(SupplierIO.InputStream)
      */
     @Deprecated
     public static YamlConfiguration loadConfiguration(final Reader reader) throws IOException {
@@ -324,7 +325,8 @@ public class YamlConfiguration extends FileConfiguration {
     }
 
     /**
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(ReaderSupplier)}
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #load(SupplierIO.Reader)}
+     * @see #loadConfiguration(SupplierIO.Reader)
      */
     @Override
     @Deprecated
@@ -353,7 +355,7 @@ public class YamlConfiguration extends FileConfiguration {
      * @param quoteStyle The quote style to use.
      */
     public void set(final String path, final Object value, final QuoteStyle quoteStyle) {
-        this.set(path, this.yamlImplementation.quoteValue(value, quoteStyle));
+        this.set(path, new QuoteValue<>(value, quoteStyle));
     }
 
     /**
@@ -432,25 +434,4 @@ public class YamlConfiguration extends FileConfiguration {
     private interface YamlConfigurationLoader {
         void load(YamlConfiguration config) throws IOException;
     }
-
-    /**
-     * {@code Reader get()}
-     * <br>
-     * Can be implemented as a lambda function. e.g. {@code () -> new BufferedReader(...)}
-     */
-    @FunctionalInterface
-    public interface ReaderSupplier {
-        Reader get() throws IOException;
-    }
-
-    /**
-     * {@code InputStream get()}
-     * <br>
-     * Can be implemented as a lambda function. e.g. {@code () -> new FileInputStream(file)}
-     */
-    @FunctionalInterface
-    public interface InputStreamSupplier {
-        InputStream get() throws IOException;
-    }
-
 }

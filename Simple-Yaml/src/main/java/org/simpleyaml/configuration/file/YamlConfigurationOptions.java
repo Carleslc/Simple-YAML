@@ -21,11 +21,25 @@ import java.util.Objects;
  */
 public class YamlConfigurationOptions extends FileConfigurationOptions {
 
+    /**
+     * Additional indentation for list elements.
+     */
     private int indentList = 2;
 
+    /**
+     * Comment formatter used to format comments.
+     */
     private YamlCommentFormatter commentFormatter;
 
+    /**
+     * Defines what {@link QuoteStyle} should each type use for its values.
+     */
     private final QuoteStyleDefaults quoteStyleDefaults = new QuoteStyleDefaults();
+
+    /**
+     * A flag that indicates if the configuration file should parse comments.
+     */
+    private boolean useComments = false;
 
     protected YamlConfigurationOptions(final YamlConfiguration configuration) {
         super(configuration);
@@ -149,6 +163,35 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     public YamlConfigurationOptions commentFormatter(final YamlCommentFormatter commentFormatter) {
         this.commentFormatter = commentFormatter;
         return this;
+    }
+
+    /**
+     * Sets if parsing comments is needed.
+     * <p>If you don't use comments in your configuration file keep this disabled to improve parsing performance.</p>
+     * Default is false.
+     * <p/>
+     * With {@link YamlFile} it is updated automatically when you load a file with comments or set new comments programmatically.
+     *
+     * @param useComments if parsing comments is needed
+     * @return This object, for chaining
+     */
+    public YamlConfigurationOptions useComments(final boolean useComments) {
+        this.useComments = useComments;
+        return this;
+    }
+
+    /**
+     * Indicates if parsing comments is enabled.
+     * <p>If you don't use comments in your configuration file keep this disabled to improve parsing performance.</p>
+     * Default is false.
+     * <p/>
+     * With {@link YamlFile} it is updated automatically when you load a file with comments or set new comments programmatically.
+     *
+     * @return This object, for chaining
+     * @see #useComments(boolean)
+     */
+    public boolean useComments() {
+        return this.useComments;
     }
 
     /**

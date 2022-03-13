@@ -15,7 +15,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.emitter.Emitter;
 import org.yaml.snakeyaml.events.Event;
-import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 
 import java.io.FileInputStream;
@@ -41,8 +41,6 @@ public class YamlImplementationTest {
         final SnakeYamlImplementation implementation = (SnakeYamlImplementation) yamlFile.getImplementation();
         final Yaml yaml = implementation.getYaml();
 
-        implementation.configure(yamlFile.options());
-
         try (Writer writer = new StringWriter()) { // to print on console, use new PrintWriter(System.out)
             final Iterator<Event> events = yaml.parse(new UnicodeReader(new FileInputStream(yamlFile.getConfigurationFile()))).iterator();
             final Emitter emitter = new Emitter(writer, implementation.getDumperOptions());
@@ -61,7 +59,7 @@ public class YamlImplementationTest {
 
         MatcherAssert.assertThat(
                 "Wrong implementation load/dump!",
-                implementation.dump(values, yamlFile.options()),
+                implementation.dump(values),
                 new IsEqual<>(TestResources.testContent())
         );
 
@@ -81,7 +79,7 @@ public class YamlImplementationTest {
         final YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test-comments.yml"));
         yamlFile.loadWithComments();
 
-        final YamlImplementation customYamlImplementationSingle = new SnakeYamlImplementation() {
+        final YamlImplementation customYamlImplementationSingle = new SimpleYamlImplementation() {
             @Override
             public void configure(final YamlConfigurationOptions options) {
                 super.configure(options);
@@ -97,7 +95,7 @@ public class YamlImplementationTest {
                 new IsEqual<>(TestResources.testCommentsSingle())
         );
 
-        final YamlImplementation yamlImplementationLiteral = new SnakeYamlImplementation() {
+        final YamlImplementation yamlImplementationLiteral = new SimpleYamlImplementation() {
             @Override
             public void configure(final YamlConfigurationOptions options) {
                 super.configure(options);
@@ -123,7 +121,7 @@ public class YamlImplementationTest {
                 new IsEqual<>(literalOutput)
         );
 
-        final YamlImplementation yamlImplementationFolded = new SnakeYamlImplementation() {
+        final YamlImplementation yamlImplementationFolded = new SimpleYamlImplementation() {
             @Override
             public void configure(final YamlConfigurationOptions options) {
                 super.configure(options);
@@ -163,31 +161,24 @@ public class YamlImplementationTest {
     /*
      TODO maybe we can provide this implementation as an alternative (or as default) in the public API
      we would need to:
-     - use KeyTree or similar interface decoupled from snakeyaml in YamlImplementation load/dump instead Map<String, Object>
-     - add useComments(bool) to YamlConfigurationOptions & remove useComments from YamlFile (set/get from options)
-     - add setProcessComments to loader and dumper options in SnakeYamlImplementation configure
-     - use yaml.compose to load the Node instead yaml.load
-     - use yaml.serialize(node, StringWriter) to dump on saveToString instead yaml.dump
-     - use yaml.serialize(node, FileWriter) to dump on save
-     - track snakeyaml Node in KeyTree/YamlCommentMapper
-     - add comments from KeyTree/YamlCommentMapper to snakeyaml Node setBlockComments/setInLineComments/setEndComments
-     - remove header from first snakeyaml Node blockComments
-     - modify YamlCommentReader/Parser/Dumper accordingly
+     - load: use yaml.compose to load the Node instead yaml.load
+     - load: remove header from first snakeyaml Node blockComments
+     - load: add comments from snakeyaml MappingNode to SnakeYamlCommentMapper (getBlockComments/getInLineComments/getEndComments)
+     - dump: convert ConfigurationSection and YamlCommentMapper to MappingNode
+     - dump: use yaml.serialize(node, writer) to dump on save instead yaml.dump
     */
     @Test
-    void processComments() throws Exception {
-        final YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test-comments.yml"));
+    void processCommentsWithSnakeYaml() throws Exception {
+        // Create the YamlFile using the SnakeYaml implementation
+        final YamlFile yamlFile = new YamlFile(new SnakeYamlImplementation());
 
-        // Get snakeyaml implementation Yaml
+        // Get snakeyaml Yaml
         final SnakeYamlImplementation implementation = (SnakeYamlImplementation) yamlFile.getImplementation();
         final Yaml yaml = implementation.getYaml();
 
-        // Apply default Simple-YAML configuration
-        implementation.configure(yamlFile.options());
-
         // Set snakeyaml to process comments
-        implementation.getLoaderOptions().setProcessComments(true);
-        implementation.getDumperOptions().setProcessComments(true);
+        yamlFile.options().useComments(true);
+        implementation.configure(yamlFile.options());
 
         MatcherAssert.assertThat(
                 implementation.getDumperOptions().isProcessComments() &&
@@ -195,8 +186,11 @@ public class YamlImplementationTest {
                 new IsTrue()
         );
 
+        // Set the file to load
+        yamlFile.setConfigurationFile(TestResources.getResourceURI("test-comments.yml"));
+
         // Load file using snakeyaml
-        final MappingNode node = (MappingNode) yaml.compose(new InputStreamReader(
+        final Node node = yaml.compose(new InputStreamReader(
                 new FileInputStream(yamlFile.getConfigurationFile()), yamlFile.options().charset()));
 
         // Dump values

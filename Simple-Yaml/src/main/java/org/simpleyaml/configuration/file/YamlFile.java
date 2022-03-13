@@ -1,11 +1,18 @@
 package org.simpleyaml.configuration.file;
 
-import org.simpleyaml.configuration.comments.*;
+import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.comments.Commentable;
+import org.simpleyaml.configuration.comments.KeyTree;
+import org.simpleyaml.configuration.comments.YamlCommentMapper;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormatter;
 import org.simpleyaml.configuration.comments.format.YamlHeaderFormatter;
+import org.simpleyaml.configuration.implementation.SimpleYamlImplementation;
 import org.simpleyaml.configuration.implementation.api.QuoteValue;
+import org.simpleyaml.configuration.implementation.api.YamlImplementation;
+import org.simpleyaml.configuration.implementation.api.YamlImplementationCommentable;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
+import org.simpleyaml.utils.SupplierIO;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
@@ -30,16 +37,6 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     private File configFile;
 
     /**
-     * A comment mapper to add comments to sections or values
-     **/
-    private YamlCommentMapper yamlCommentMapper;
-
-    /**
-     * A flag that indicates if this configuration file should parse comments.
-     */
-    private boolean useComments = false;
-
-    /**
      * Builds this {@link FileConfiguration} without any configuration file.
      * <p>
      * In order to save changes you will have to use one of these methods before:<br>
@@ -47,7 +44,13 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * - {@link #setConfigurationFile(String)}<br>
      * Or set the file when saving changes with {@link #save(File)}
      */
-    public YamlFile() {}
+    public YamlFile() {
+        super(new SimpleYamlImplementation());
+    }
+
+    public YamlFile(final YamlImplementation yamlImplementation) {
+        super(yamlImplementation);
+    }
 
     /**
      * Builds this {@link FileConfiguration} with the file specified by path.
@@ -58,6 +61,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *                                  configuration file will be <b>null</b>.
      */
     public YamlFile(final String path) throws IllegalArgumentException {
+        this();
         this.setConfigurationFile(path);
     }
 
@@ -70,6 +74,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *                                  configuration file will be <b>null</b>.
      */
     public YamlFile(final File file) throws IllegalArgumentException {
+        this();
         this.setConfigurationFile(file);
     }
 
@@ -82,6 +87,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *                                  configuration file will be <b>null</b>.
      */
     public YamlFile(final URI uri) throws IllegalArgumentException {
+        this();
         this.setConfigurationFile(uri);
     }
 
@@ -133,66 +139,6 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         return super.saveToString();
     }
 
-    @Override
-    public void dump(final Writer output) throws IOException {
-        Validate.notNull(output, "Writer cannot be null");
-
-        if (this.useComments) {
-            final YamlCommentDumper commentDumper = new YamlCommentDumper(
-                    this.parseComments(),
-                    super::dump,
-                    output
-            );
-            commentDumper.dump();
-        } else {
-            super.dump(output);
-        }
-    }
-
-    /**
-     * Parse comments from the current file configuration.
-     *
-     * @return a comment mapper with comments parsed
-     * @throws IOException if it hasn't been possible to parse the comments
-     */
-    private YamlCommentMapper parseComments() throws IOException {
-        if (this.yamlCommentMapper != null) {
-            return this.yamlCommentMapper;
-        }
-        return this.parseComments(this.exists() ? Files.newBufferedReader(this.configFile.toPath(), this.options().charset()) : null);
-    }
-
-    /**
-     * Parse comments from a reader.
-     *
-     * @param reader Reader of a Configuration to parse.
-     * @return a comment mapper with comments parsed
-     * @throws InvalidConfigurationException if it hasn't been possible to read the contents
-     */
-    private YamlCommentMapper parseComments(final Reader reader) throws InvalidConfigurationException {
-        try {
-            if (reader != null) {
-                this.yamlCommentMapper = new YamlCommentParser(this.options(), reader);
-                ((YamlCommentParser) this.yamlCommentMapper).parse();
-            } else {
-                this.yamlCommentMapper = new YamlCommentMapper(this.options());
-            }
-            return this.yamlCommentMapper;
-        } catch (IOException e) {
-            throw new InvalidConfigurationException(e);
-        }
-    }
-
-    /**
-     * Get the comment mapper. This has access to read the comment nodes directly.
-     * @return the comment mapper or null if this configuration is loaded without comments
-     * @see #getComment(String, CommentType)
-     * @see #setComment(String, String, CommentType)
-     */
-    public YamlCommentMapper getCommentMapper() {
-        return this.yamlCommentMapper;
-    }
-
     /**
      * Set a comment to the section or value selected by path.
      * Comment will be indented automatically.
@@ -206,11 +152,9 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     @Override
     public void setComment(final String path, final String comment, final CommentType type) {
-        if (this.yamlCommentMapper == null) {
-            this.useComments = true;
-            this.yamlCommentMapper = new YamlCommentMapper(options());
+        if (this.yamlImplementation instanceof YamlImplementationCommentable) {
+            ((YamlImplementationCommentable) this.yamlImplementation).setComment(path, comment, type);
         }
-        this.yamlCommentMapper.setComment(path, comment, type);
     }
 
     /**
@@ -322,7 +266,10 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     @Override
     public String getComment(final String path, final CommentType type) {
-        return this.yamlCommentMapper != null ? this.yamlCommentMapper.getComment(path, type) : null;
+        if (this.yamlImplementation instanceof YamlImplementationCommentable) {
+            return ((YamlImplementationCommentable) this.yamlImplementation).getComment(path, type);
+        }
+        return null;
     }
 
     /**
@@ -523,14 +470,27 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         return new YamlFileWrapper(this, path);
     }
 
+    /**
+     * Get the comment mapper. This has access to read the comment nodes directly.
+     * @return the comment mapper or null if this configuration is loaded without comments
+     * @see #getComment(String, CommentType)
+     * @see #setComment(String, String, CommentType)
+     */
+    public YamlCommentMapper getCommentMapper() {
+        if (this.yamlImplementation instanceof YamlImplementationCommentable) {
+            return ((YamlImplementationCommentable) this.yamlImplementation).getCommentMapper();
+        }
+        return null;
+    }
+
     @Override
     public void set(final String path, final Object value) {
         super.set(path, value);
 
-        if (this.yamlCommentMapper != null) {
+        if (this.getCommentMapper() != null) {
             final Object innerValue = value instanceof QuoteValue ? ((QuoteValue<?>) value).getValue() : value;
             if (innerValue instanceof Collection) {
-                KeyTree.Node node = this.yamlCommentMapper.getNode(path);
+                KeyTree.Node node = this.getCommentMapper().getNode(path);
                 if (node != null) {
                     node.isList(((Collection<?>) innerValue).size());
                 }
@@ -550,6 +510,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException                   if it hasn't been possible to load file
      * @throws InvalidConfigurationException if there has been an error while parsing configuration file
      * @throws FileNotFoundException         if configuration file is not found
+     * @see #loadWithComments()
      */
     public void load() throws InvalidConfigurationException, IOException {
         Validate.notNull(this.configFile, "This configuration file is null!");
@@ -559,18 +520,18 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     /**
      * Loads configurations from this configuration file including comments.
      * <p>
-     * <b>IMPORTANT: Use {@link #load()} if configuration file has no comments or don't need it
-     * to improve time efficiency.</b>
-     * <p>
      * This method will use the {@link #options()} {@link FileConfigurationOptions#charset() charset} encoding,
      * which defaults to UTF8.
+     * <p>
+     * <b>Use {@link #load()} instead to improve performance when configuration file has no comments or don't need it.</b>
      *
      * @throws IOException                   if it hasn't been possible to load file
      * @throws InvalidConfigurationException if there has been an error while parsing configuration file
      * @throws FileNotFoundException         if configuration file is not found
+     * @see #load()
      */
     public void loadWithComments() throws InvalidConfigurationException, IOException {
-        this.useComments = true;
+        this.options().useComments(true);
         this.load();
     }
 
@@ -589,12 +550,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IllegalArgumentException      Thrown when reader is null.
      */
     @Override
-    public void load(final ReaderSupplier readerSupplier) throws IOException, InvalidConfigurationException {
+    public void load(final SupplierIO.Reader readerSupplier) throws IOException, InvalidConfigurationException {
         super.load(readerSupplier);
-
-        if (this.useComments) {
-            this.parseComments(readerSupplier.get());
-        }
     }
 
     /**
@@ -911,7 +868,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if configuration cannot be loaded
      * @throws IllegalArgumentException if stream is null
      */
-    public static YamlFile loadConfiguration(final ReaderSupplier readerSupplier, boolean withComments) throws IOException {
+    public static YamlFile loadConfiguration(final SupplierIO.Reader readerSupplier, boolean withComments) throws IOException {
         Validate.notNull(readerSupplier, "Reader supplier cannot be null");
         return YamlFile.load(config -> config.load(readerSupplier), withComments);
     }
@@ -924,7 +881,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if configuration cannot be loaded
      * @throws IllegalArgumentException if stream is null
      */
-    public static YamlFile loadConfiguration(final ReaderSupplier readerSupplier) throws IOException {
+    public static YamlFile loadConfiguration(final SupplierIO.Reader readerSupplier) throws IOException {
         return YamlFile.loadConfiguration(readerSupplier, false);
     }
 
@@ -940,7 +897,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if configuration cannot be loaded
      * @throws IllegalArgumentException if stream is null
      */
-    public static YamlFile loadConfiguration(final InputStreamSupplier streamSupplier, boolean withComments) throws IOException {
+    public static YamlFile loadConfiguration(final SupplierIO.InputStream streamSupplier, boolean withComments) throws IOException {
         Validate.notNull(streamSupplier, "Stream supplier cannot be null");
         return YamlFile.load(config -> config.load(streamSupplier), withComments);
     }
@@ -956,12 +913,12 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * @throws IOException if configuration cannot be loaded
      * @throws IllegalArgumentException if stream is null
      */
-    public static YamlFile loadConfiguration(final InputStreamSupplier streamSupplier) throws IOException {
+    public static YamlFile loadConfiguration(final SupplierIO.InputStream streamSupplier) throws IOException {
         return YamlFile.loadConfiguration(streamSupplier, false);
     }
 
     /**
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link YamlFile#loadConfiguration(InputStreamSupplier, boolean)}
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link YamlFile#loadConfiguration(SupplierIO.InputStream, boolean)}
      */
     @Deprecated
     public static YamlFile loadConfiguration(final InputStream stream, boolean withComments) throws IOException {
@@ -970,7 +927,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     /**
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link #loadConfiguration(InputStreamSupplier)}
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #loadConfiguration(SupplierIO.InputStream)}
      */
     @Deprecated
     public static YamlFile loadConfiguration(final InputStream stream) throws IOException {
@@ -978,7 +935,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     /**
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link YamlFile#loadConfiguration(ReaderSupplier, boolean)}
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link YamlFile#loadConfiguration(SupplierIO.Reader, boolean)}
      */
     @Deprecated
     public static YamlFile loadConfiguration(final Reader reader, boolean withComments) throws IOException {
@@ -987,7 +944,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     }
 
     /**
-     * @deprecated this method loads the entire file into memory, for larger files please use {@link #loadConfiguration(ReaderSupplier)}
+     * @deprecated this method loads the entire file into memory, for larger files please use {@link #loadConfiguration(SupplierIO.Reader)}
      */
     @Deprecated
     public static YamlFile loadConfiguration(final Reader reader) throws IOException {
@@ -997,7 +954,8 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     private static YamlFile load(final YamlFileLoader loader, boolean withComments) throws IOException {
         final YamlFile config = new YamlFile();
 
-        config.useComments = withComments;
+        config.options().useComments(withComments);
+
         loader.load(config);
 
         return config;
