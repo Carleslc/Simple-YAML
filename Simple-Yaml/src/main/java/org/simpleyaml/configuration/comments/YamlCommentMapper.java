@@ -3,13 +3,18 @@ package org.simpleyaml.configuration.comments;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 
 public class YamlCommentMapper implements Commentable {
 
     protected final KeyTree keyTree;
 
     public YamlCommentMapper(final YamlConfigurationOptions options) {
-        this.keyTree = new KeyTree(options);
+        this(new YamlKeyTree(options));
+    }
+
+    protected YamlCommentMapper(final YamlKeyTree keyTree) {
+        this.keyTree = keyTree;
     }
 
     @Override
@@ -64,6 +69,10 @@ public class YamlCommentMapper implements Commentable {
         return type == CommentType.BLOCK ? node.getComment() : node.getSideComment();
     }
 
+    public String getRawComment(final String path, final CommentType type) {
+        return this.getRawComment(this.getNode(path), type);
+    }
+
     public void removeComment(final String path, final CommentType type) {
         this.removeComment(this.getNode(path), type);
     }
@@ -78,14 +87,6 @@ public class YamlCommentMapper implements Commentable {
         }
     }
 
-    public KeyTree.Node getNode(final String path) {
-        return this.keyTree.get(path);
-    }
-
-    public KeyTree.Node getOrAddNode(final String path) {
-        return this.keyTree.getOrAdd(path);
-    }
-
     public KeyTree getKeyTree() {
         return this.keyTree;
     }
@@ -94,4 +95,37 @@ public class YamlCommentMapper implements Commentable {
         return (YamlConfigurationOptions) this.keyTree.options();
     }
 
+    public KeyTree.Node getNode(final String path) {
+        return this.keyTree.get(path);
+    }
+
+    protected KeyTree.Node getPriorityNode(final String path) {
+        return this.keyTree.getPriority(path);
+    }
+
+    protected KeyTree.Node getOrAddNode(final String path) {
+        return this.keyTree.add(path);
+    }
+
+    /*
+      Free memory of empty nodes
+     */
+
+    protected static final Predicate<KeyTree.Node> NO_COMMENTS = node -> node.getComment() == null && node.getSideComment() == null;
+
+    protected void clearNodeIfNoComments(final KeyTree.Node node) {
+        if (node != null) {
+            KeyTree.Node parent = node.getParent();
+            parent = parent != null ? parent : node;
+            parent.clearIf(NO_COMMENTS);
+        }
+    }
+
+    protected void clearNode(final KeyTree.Node node) {
+        if (node != null) {
+            KeyTree.Node parent = node.getParent();
+            parent = parent != null ? parent : node;
+            parent.clear();
+        }
+    }
 }

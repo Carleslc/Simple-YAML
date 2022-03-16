@@ -1376,4 +1376,108 @@ class YamlFileTest {
         );
     }
 
+    @Test
+    void indentListFormat() throws Exception {
+        final List<String> list = Arrays.asList("entry 1", "entry 2");
+
+        YamlFile yamlFile = new YamlFile();
+
+        yamlFile.set("test.list", list);
+        yamlFile.setComment("test.list.entry 1", "Comment on a list item");
+        yamlFile.setComment("test.list.entry 2", ":)", CommentType.SIDE);
+
+        String output = "test:\n" +
+                "  list:\n" +
+                "    # Comment on a list item\n" +
+                "    - entry 1\n" +
+                "    - entry 2 # :)\n";
+
+        MatcherAssert.assertThat(
+                "Could not save list comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
+        );
+
+        yamlFile = new YamlFile();
+
+        yamlFile.set("test.list", list);
+        yamlFile.setComment("test.list.entry 2", "Comment on a list item");
+        yamlFile.setComment("test.list.entry 2", ":)", CommentType.SIDE);
+
+        output = "test:\n" +
+                "  list:\n" +
+                "    - entry 1\n" +
+                "    # Comment on a list item\n" +
+                "    - entry 2 # :)\n";
+
+        MatcherAssert.assertThat(
+                "Could not save list comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
+        );
+
+        yamlFile = new YamlFile();
+
+        yamlFile.options().indentList(0);
+
+        yamlFile.set("test.list", list);
+        yamlFile.setComment("test.list.entry 2", "Comment on a list item");
+        yamlFile.setComment("test.list.entry 2", ":)", CommentType.SIDE);
+
+        output = "test:\n" +
+                "  list:\n" +
+                "  - entry 1\n" +
+                "  # Comment on a list item\n" +
+                "  - entry 2 # :)\n";
+
+        MatcherAssert.assertThat(
+                "Could not save list comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
+        );
+
+        yamlFile = new YamlFile();
+
+        yamlFile.options().indentList(1);
+
+        yamlFile.set("test.list", list);
+        yamlFile.setComment("test.list.entry 2", "Comment on a list item");
+        yamlFile.setComment("test.list.entry 2", ":)", CommentType.SIDE);
+
+        output = "test:\n" +
+                "  list:\n" +
+                "   - entry 1\n" +
+                "   # Comment on a list item\n" +
+                "   - entry 2 # :)\n";
+
+        MatcherAssert.assertThat(
+                "Could not save list comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
+        );
+
+        yamlFile = new YamlFile();
+
+        yamlFile.set("test.list", Arrays.asList(list, list));
+        yamlFile.setComment("test.list[0].entry 1", "Comment on a list item 1");
+        yamlFile.setComment("test.list[0].entry 1", ":)", CommentType.SIDE);
+        yamlFile.setComment("test.list[0].entry 2", "Comment on a list item 2");
+        yamlFile.setComment("test.list[0].entry 2", ":)", CommentType.SIDE);
+
+        output = "test:\n" +
+                "  list:\n" +
+                "    - &id001\n" +
+                "        # Comment on a list item 1\n" +
+                "        - entry 1 # :)\n" +
+                "        # Comment on a list item 2\n" +
+                "        - entry 2 # :)\n" +
+                "    - *id001\n";
+
+        MatcherAssert.assertThat(
+                "Could not save list comments!",
+                yamlFile.saveToString(),
+                new IsEqual<>(output)
+        );
+    }
+
 }

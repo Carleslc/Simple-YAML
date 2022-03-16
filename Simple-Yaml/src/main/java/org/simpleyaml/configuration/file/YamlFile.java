@@ -490,10 +490,23 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         if (this.getCommentMapper() != null) {
             final Object innerValue = value instanceof QuoteValue ? ((QuoteValue<?>) value).getValue() : value;
             if (innerValue instanceof Collection) {
-                KeyTree.Node node = this.getCommentMapper().getNode(path);
-                if (node != null) {
-                    node.isList(((Collection<?>) innerValue).size());
+                this.setListNode((Collection<?>) innerValue, this.getCommentMapper().getNode(path));
+            }
+        }
+    }
+
+    protected void setListNode(final Collection<?> value, KeyTree.Node node) {
+        if (node != null) {
+            node.isList(value.size());
+
+            // Check list of lists
+            int i = 0;
+            for (Object element : value) {
+                if (!(element instanceof Collection)) {
+                    return;
                 }
+                node = node.getElement(i++);
+                setListNode((Collection<?>) element, node);
             }
         }
     }

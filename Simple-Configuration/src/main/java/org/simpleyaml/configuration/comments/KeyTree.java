@@ -8,16 +8,18 @@ import org.simpleyaml.utils.Validate;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 public class KeyTree implements Iterable<KeyTree.Node> {
 
-    private final KeyTree.Node root = new KeyTree.Node(null, 0, "");
+    protected final KeyTree.Node root;
 
-    private final ConfigurationOptions options;
+    protected final ConfigurationOptions options;
 
     public KeyTree(final ConfigurationOptions options) {
         Validate.notNull(options);
         this.options = options;
+        this.root = this.createNode(null, 0, "");
     }
 
     /**
@@ -31,13 +33,31 @@ public class KeyTree implements Iterable<KeyTree.Node> {
     }
 
     /**
-     * Get a child from its path.
+     * Get the root node.
+     * @return the root node of this key tree
+     */
+    public KeyTree.Node getRoot() {
+        return this.root;
+    }
+
+    /**
+     * Get a child from its path. May contain repetitions with list elements when using names (values can be repeated on a list).
      *
      * @param path the path of names to look for separated by {@link #options()} {@link ConfigurationOptions#pathSeparator()}
      * @return the child that has the provided path or null if not found
      */
     public KeyTree.Node get(final String path) {
-        return this.root.get(path, false);
+        return this.root.get(path, false, false);
+    }
+
+    /**
+     * Get a child from its path. Repetitions on list values are only allowed to keys inserted with priority using {@link #add(String)}.
+     *
+     * @param path the path of names to look for separated by {@link #options()} {@link ConfigurationOptions#pathSeparator()}
+     * @return the child that has the provided path or null if not found
+     */
+    public KeyTree.Node getPriority(final String path) {
+        return this.root.get(path, false, true);
     }
 
     /**
@@ -47,11 +67,17 @@ public class KeyTree implements Iterable<KeyTree.Node> {
      * @return the child that has the provided path
      */
     public KeyTree.Node getOrAdd(final String path) {
-        return this.root.get(path, true);
+        return this.root.get(path, true, false);
     }
 
+    /**
+     * Get a child from its path. It is created with priority if it does not exist.
+     *
+     * @param path the path of names to look for separated by {@link #options()} {@link ConfigurationOptions#pathSeparator()}
+     * @return the child that has the provided path
+     */
     public KeyTree.Node add(final String path) {
-        return this.getOrAdd(path);
+        return this.root.get(path, true, true);
     }
 
     public Set<String> keys() {
@@ -80,7 +106,7 @@ public class KeyTree implements Iterable<KeyTree.Node> {
         return this.root.iterator();
     }
 
-    private KeyTree.Node findParent(final KeyTree.Node parent, final int indent) {
+    protected KeyTree.Node findParent(final KeyTree.Node parent, final int indent) {
         final KeyTree.Node last = parent.getLast();
         if (last != null && last.indent < indent) {
             return this.findParent(last, indent);
@@ -88,34 +114,33 @@ public class KeyTree implements Iterable<KeyTree.Node> {
         return parent;
     }
 
+    protected KeyTree.Node createNode(final KeyTree.Node parent, final int indent, final String key) {
+        return new KeyTree.Node(parent, indent, key);
+    }
+
     public class Node implements Iterable<KeyTree.Node> {
 
-        private final String name;
+        protected final KeyTree.Node parent;
 
-        private final KeyTree.Node parent;
+        protected String name;
+        protected int indent;
 
-        private List<KeyTree.Node> children;
-        private Map<String, KeyTree.Node> indexByName;
-        private Map<Integer, KeyTree.Node> indexByElementIndex; // parent list
+        protected List<KeyTree.Node> children;
+        protected Map<String, KeyTree.Node> indexByName; // allows repetitions
+        protected Map<String, KeyTree.Node> priorityIndex; // nodes added programmatically (not parsed)
+        protected Map<Integer, KeyTree.Node> indexByElementIndex; // parent list
 
-        private final int indent;
+        protected String comment;
+        protected String sideComment;
 
-        private String comment;
-        private String sideComment;
+        protected boolean isList; // parent
+        protected Integer listSize; // parent
+        protected Integer elementIndex; // children
 
-        private boolean isList; // parent
-        private Integer listSize; // parent
-        private Integer elementIndex; // children
-
-        Node(final KeyTree.Node parent, final int indent, final String name, final boolean isList) {
+        Node(final KeyTree.Node parent, final int indent, final String name) {
             this.parent = parent;
             this.indent = indent;
             this.name = name;
-            this.isList = isList;
-        }
-
-        Node(final KeyTree.Node parent, final int indent, final String name) {
-            this(parent, indent, name, false);
         }
 
         public String getName() {
@@ -169,25 +194,26 @@ public class KeyTree implements Iterable<KeyTree.Node> {
          *
          * @param path the path of children names to look for separated by {@link #options()} {@link ConfigurationOptions#pathSeparator()}
          * @param add if a new node must be added if it does not exist
-         * @return the child that has the provided path or null if not found
+         * @param priority if true the priority index is used to allow specific repetitions on list values (manually added), otherwise all nodes are allowed (loaded)
+         * @return the child that has the provided path or null if not found and not added
          */
-        protected KeyTree.Node get(final String path, boolean add) {
+        protected KeyTree.Node get(final String path, boolean add, boolean priority) {
             KeyTree.Node node = null;
             if (path != null && (this.indexByName == null || !this.indexByName.containsKey(path))) {
                 final int i = StringUtils.firstSeparatorIndex(path, KeyTree.this.options.pathSeparator());
                 if (i >= 0) {
                     final String childPath = path.substring(0, i);
-                    KeyTree.Node child = this.get(childPath, add);
+                    KeyTree.Node child = this.get(childPath, add, priority);
                     if (child == null) {
                         return null;
                     }
-                    return child.get(path.substring(i + 1), add);
+                    return child.get(path.substring(i + 1), add, priority);
                 }
                 Matcher listIndex = StringUtils.LIST_INDEX.matcher(path);
                 if (listIndex.matches()) {
                     final String child = listIndex.group(1);
                     if (child != null && !child.isEmpty()) {
-                        node = this.get(child, add);
+                        node = this.get(child, add, priority);
                         if (node == null) {
                             return null;
                         }
@@ -197,23 +223,41 @@ public class KeyTree implements Iterable<KeyTree.Node> {
                     return node.getElement(Integer.parseInt(listIndex.group(2)), add);
                 }
             }
-            if (this.indexByName != null) {
+            if (priority && this.isList) {
+                node = this.priorityIndex != null ? this.priorityIndex.get(path) : null;
+                if (add && node == null && this.indexByName != null) {
+                    node = this.indexByName.get(path);
+                    if (node != null) {
+                        this.setPriority(path, node);
+                    }
+                }
+            } else if (this.indexByName != null) {
                 node = this.indexByName.get(path);
             }
             if (node == null && add) {
-                node = this.add(path);
+                node = this.add(path, priority);
             }
             return node;
         }
 
         /**
-         * Get a child from its path.
+         * Get a child from its path. May contain repetitions with list elements when using names (values can be repeated on a list).
          *
-         * @param path the path of children names to look for separated by {@link #options()} {@link ConfigurationOptions#pathSeparator()}
+         * @param path the path of names to look for separated by {@link #options()} {@link ConfigurationOptions#pathSeparator()}
          * @return the child that has the provided path or null if not found
          */
         public KeyTree.Node get(final String path) {
-            return this.get(path, false);
+            return this.get(path, false, false);
+        }
+
+        /**
+         * Get a child from its path. Repetitions on list values are only allowed to keys inserted with priority using {@link #add(String)}.
+         *
+         * @param path the path of names to look for separated by {@link #options()} {@link ConfigurationOptions#pathSeparator()}
+         * @return the child that has the provided path or null if not found
+         */
+        public KeyTree.Node getPriority(final String path) {
+            return this.get(path, false, true);
         }
 
         /**
@@ -228,13 +272,15 @@ public class KeyTree implements Iterable<KeyTree.Node> {
          */
         protected KeyTree.Node getElement(int i, boolean add) {
             KeyTree.Node child = null;
-            if (this.isList && this.indexByElementIndex != null) {
-                child = this.indexByElementIndex.get(i);
-                if (child == null && !add) {
-                    if (i < 0) {
-                        child = this.indexByElementIndex.get(this.listSize + i);
-                    } else {
-                        child = this.indexByElementIndex.get(i - this.listSize);
+            if (this.isList) {
+                if (this.indexByElementIndex != null) {
+                    child = this.indexByElementIndex.get(i);
+                    if (child == null && !add) {
+                        if (i < 0) {
+                            child = this.indexByElementIndex.get(this.listSize + i);
+                        } else {
+                            child = this.indexByElementIndex.get(i - this.listSize);
+                        }
                     }
                 }
             } else if (!add) {
@@ -294,30 +340,54 @@ public class KeyTree implements Iterable<KeyTree.Node> {
         }
 
         public KeyTree.Node add(final String key) {
-            return this.add(key, false, false);
+            return this.add(key, false);
         }
 
         public KeyTree.Node add(final int indent, final String key) {
-            return this.add(indent, key, false, false);
+            return this.add(indent, key, false);
         }
 
-        protected KeyTree.Node add(final String key, final boolean isList, final boolean indexed) {
-            return this.add(this == KeyTree.this.root ? 0 : this.indent + KeyTree.this.options.indent(), key, isList, indexed);
+        protected KeyTree.Node add(final String key, final boolean priority) {
+            int indent = this == KeyTree.this.root ? 0 : this.indent + KeyTree.this.options.indent();
+            return this.add(indent, key, priority);
         }
 
-        protected KeyTree.Node add(final int indent, final String key, final boolean isList, final boolean indexed) {
-            final KeyTree.Node child = new KeyTree.Node(this, indent, key, isList);
+        protected KeyTree.Node add(final int indent, final String key, final boolean priority) {
+            final KeyTree.Node child = KeyTree.this.createNode(this, indent, key);
             if (this.children == null) {
                 this.children = new ArrayList<>();
             }
             this.children.add(child);
-            if (!indexed) { // not already indexed
-                if (this.indexByName == null) {
-                    this.indexByName = new LinkedHashMap<>();
-                }
-                this.indexByName.put(key, child); // allow repetitions
+            if (this.indexByName == null) {
+                this.indexByName = new LinkedHashMap<>();
             }
+            this.indexByName.putIfAbsent(key, child);
+            if (priority) {
+                this.setPriority(key, child);
+            }
+            child.checkList();
             return child;
+        }
+
+        protected void setPriority(final String key, final KeyTree.Node child) {
+            if (this.priorityIndex == null) {
+                this.priorityIndex = new LinkedHashMap<>();
+            }
+            this.priorityIndex.putIfAbsent(key, child);
+        }
+
+        protected void checkList() {
+            if (this.name != null || this.elementIndex != null) {
+                final Object value = this.getValue();
+                if (value instanceof Collection) {
+                    this.isList(((Collection<?>) value).size());
+                }
+            }
+        }
+
+        public Object getValue() {
+            final String path = this.getPath();
+            return path != null ? KeyTree.this.options.configuration().get(path) : null;
         }
 
         public boolean hasChildren() {
@@ -349,11 +419,6 @@ public class KeyTree implements Iterable<KeyTree.Node> {
             this.listSize = listSize;
         }
 
-        public int isListNewElement() {
-            this.isList(this.listSize == null ? 1 : this.listSize + 1);
-            return this.listSize - 1; // list index
-        }
-
         public void setElementIndex(int elementIndex) {
             if (this.parent != null) {
                 if (this.parent.indexByElementIndex == null) {
@@ -372,27 +437,25 @@ public class KeyTree implements Iterable<KeyTree.Node> {
             return this.elementIndex;
         }
 
-        protected Integer getElementOrChildIndex() {
-            if (this.elementIndex == null && this.parent != null) {
-                this.elementIndex = this.parent.children.lastIndexOf(this);
-            }
-            return this.elementIndex;
-        }
-
         public String getPath() {
             if (this.parent == null || this.parent == KeyTree.this.root) {
                 return this.name;
-            } else if (this.parent.isList) {
-                return indexedName(this.parent.getPath(), this.getElementOrChildIndex());
+            } else if (this.parent.isList && this.elementIndex != null) {
+                return indexedName(this.parent.getPath(), this.elementIndex);
             }
-            return this.parent.getPath() + KeyTree.this.options.pathSeparator() + this.name;
+            return this.getPathWithNameUnchecked();
         }
 
         public String getPathWithName() { // name may be repeated in lists
             if (this.parent == null || this.parent == KeyTree.this.root) {
                 return this.name;
             }
-            return this.parent.getPath() + KeyTree.this.options.pathSeparator() + this.name;
+            return this.getPathWithNameUnchecked();
+        }
+
+        private String getPathWithNameUnchecked() {
+            char sep = KeyTree.this.options.pathSeparator();
+            return this.parent.getPath() + sep + StringUtils.escape(this.name);
         }
 
         private String indexedName(String name, int listIndex) {
@@ -401,11 +464,13 @@ public class KeyTree implements Iterable<KeyTree.Node> {
 
         private KeyTree.Node addIndexed(final int i) {
             KeyTree.Node child = null;
-            Object value = KeyTree.this.options.configuration().get(this.getPath());
+            Object value = this.getValue();
             if (value != null) {
                 if (value instanceof Collection) {
                     final int size = ((Collection<?>) value).size();
-                    this.isList(size);
+                    if (!this.isList) {
+                        this.isList(size);
+                    }
 
                     if (value instanceof List) {
                         final int index = this.asListIndex(i, size);
@@ -413,7 +478,7 @@ public class KeyTree implements Iterable<KeyTree.Node> {
                             Object item = ((List<?>) value).get(index);
                             final String name = (item instanceof String || item instanceof Number || item instanceof Boolean)
                                     ? String.valueOf(item) : null;
-                            child = this.add(name, false, true);
+                            child = this.add(name);
                         }
                     }
                 } else {
@@ -431,16 +496,17 @@ public class KeyTree implements Iterable<KeyTree.Node> {
                                 key = it.next();
                             }
                             if (key != null) {
-                                child = this.add(String.valueOf(key), false, true);
+                                child = this.add(String.valueOf(key));
                             }
                         }
                     }
                 }
             }
             if (child == null) {
-                child = this.add(null, false, true);
+                child = this.add(null);
             }
             child.setElementIndex(i);
+            child.checkList();
             return child;
         }
 
@@ -460,6 +526,10 @@ public class KeyTree implements Iterable<KeyTree.Node> {
                 this.indexByName.clear();
                 this.indexByName = null;
             }
+            if (this.priorityIndex != null) {
+                this.priorityIndex.clear();
+                this.priorityIndex = null;
+            }
             if (this.indexByElementIndex != null) {
                 this.indexByElementIndex.clear();
                 this.indexByElementIndex = null;
@@ -467,6 +537,10 @@ public class KeyTree implements Iterable<KeyTree.Node> {
             if (this.parent != null) {
                 if (this.parent.indexByName != null && this.parent.indexByName.get(this.name) == this) {
                     this.parent.indexByName.remove(this.name);
+
+                    if (this.parent.priorityIndex != null) {
+                        this.parent.priorityIndex.remove(this.name);
+                    }
 
                     if (this.parent.indexByElementIndex != null && this.elementIndex != null) {
                         this.parent.indexByElementIndex.remove(this.elementIndex);
@@ -483,7 +557,6 @@ public class KeyTree implements Iterable<KeyTree.Node> {
                 this.clearNode();
                 if (removeFromParent && this.parent != null) {
                     this.parent.children.remove(this);
-
                 }
                 return true;
             }
@@ -509,15 +582,30 @@ public class KeyTree implements Iterable<KeyTree.Node> {
 
         @Override
         public String toString() {
-            return "{" +
-                "indent=" + this.indent +
-                ", path='" + this.getPath() + '\'' +
-                ", name='" + this.name + '\'' +
-                ", comment='" + this.comment + '\'' +
-                ", side='" + this.sideComment + '\'' +
-                ", children=" + this.children +
-                '}';
-        }
+            StringBuilder builder = new StringBuilder("{");
 
+            builder.append("indent=").append(this.indent)
+                    .append(", path=").append(StringUtils.wrap(this.getPath()))
+                    .append(", name=").append(StringUtils.wrap(this.name))
+                    .append(", comment=").append(StringUtils.wrap(this.comment))
+                    .append(", side=").append(StringUtils.wrap(this.sideComment));
+
+            builder.append(", isList=").append(this.isList);
+
+            if (this.isList) {
+                builder.append("(").append(this.listSize).append(")");
+            }
+
+            builder.append(", children=");
+
+            if (this.children != null) {
+                builder.append('(').append(this.children.size()).append(')');
+                builder.append(this.children.stream().map(KeyTree.Node::getName).collect(Collectors.joining(", ", "[", "]")));
+            } else {
+                builder.append("[]");
+            }
+
+            return builder.append('}').toString();
+        }
     }
 }

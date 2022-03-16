@@ -5,7 +5,6 @@ import org.simpleyaml.utils.StringUtils;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.function.Predicate;
 
 public abstract class YamlCommentReader extends YamlCommentMapper implements Closeable {
 
@@ -162,9 +161,12 @@ public abstract class YamlCommentReader extends YamlCommentMapper implements Clo
                 && this.trim.charAt(0) != ReadingExplicitStyle.VALUE) {
             this.endExplicitNotation();
         }
-        if (this.currentList != null && indent <= this.currentList.getIndentation()) {
-            // No more elements for the current list
-            this.currentList = null;
+        if (this.currentList != null) {
+            int currentListIndent = this.currentList.getIndentation();
+            if (indent < currentListIndent || (!this.isListElement && indent == currentListIndent)) {
+                // No more elements for the current list
+                this.currentList = null;
+            }
         }
     }
 
@@ -454,7 +456,7 @@ public abstract class YamlCommentReader extends YamlCommentMapper implements Clo
 
         this.key = this.readKey();
 
-        if (this.isListElement && (this.currentNode != null || this.currentList != null)) {
+        if (this.isListElement) {
             this.trackListElement();
         } else {
             this.track(this.indent, this.key);
@@ -464,16 +466,19 @@ public abstract class YamlCommentReader extends YamlCommentMapper implements Clo
     }
 
     protected void trackListElement() {
-        if (this.currentList == null) {
-            this.currentList = this.currentNode;
+        if (this.currentList == null || (this.currentNode != null && this.indent > this.currentNode.indent)) {
+            this.currentList = this.keyTree.findParent(this.indent + 2); // "- " prefix
+            if (this.currentList.listSize == null || this.currentList.size() == 0) {
+                this.currentList.isList(0);
+            }
         }
-        int index = this.currentList.isListNewElement();
         if (this.isExplicit() && this.indent == this.explicitNotation.getIndentation()) { // : - value
-            this.currentNode = this.currentList.add(this.key, false, false);
+            this.currentNode = this.currentList.add(this.key);
         } else { // - value
-            this.currentNode = this.currentList.add(this.indent, this.key, false, false);
+            this.currentNode = this.currentList.add(this.indent, this.key);
         }
-        this.currentNode.setElementIndex(index);
+        this.currentList.isList(this.currentList.listSize + 1);
+        this.currentNode.setElementIndex(this.currentList.listSize - 1);
     }
 
     protected KeyTree.Node trackExplicit() throws IOException {
@@ -492,7 +497,7 @@ public abstract class YamlCommentReader extends YamlCommentMapper implements Clo
 
         this.currentNode = this.explicitNotation.track();
 
-        if (!addKey && this.currentNode != null && this.isListElement) {
+        if (!addKey && this.isListElement) {
             this.trackListElement();
         }
 
@@ -505,28 +510,14 @@ public abstract class YamlCommentReader extends YamlCommentMapper implements Clo
         return this.currentNode;
     }
 
-    /*
-      Free memory of empty nodes
-     */
-
     protected void clearCurrentNode() {
-        if (this.currentNode != null) {
-            final KeyTree.Node parent = this.currentNode.getParent();
-            final KeyTree.Node node = parent != null ? parent : this.currentNode;
-            node.clear();
-            this.currentNode = null;
-        }
+        super.clearNode(this.currentNode);
+        this.currentNode = null;
     }
 
-    protected static final Predicate<KeyTree.Node> NO_COMMENTS = node -> node.getComment() == null && node.getSideComment() == null;
-
     protected void clearCurrentNodeIfNoComments() {
-        if (this.currentNode != null) {
-            final KeyTree.Node parent = this.currentNode.getParent();
-            final KeyTree.Node node = parent != null ? parent : this.currentNode;
-            node.clearIf(NO_COMMENTS);
-            this.currentNode = null;
-        }
+        super.clearNodeIfNoComments(this.currentNode);
+        this.currentNode = null;
     }
 
     @Override
