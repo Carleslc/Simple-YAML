@@ -1,5 +1,6 @@
 package org.simpleyaml.configuration.implementation;
 
+import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.comments.YamlCommentDumper;
 import org.simpleyaml.configuration.comments.YamlCommentMapper;
@@ -9,7 +10,9 @@ import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlImplementation;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
+import org.simpleyaml.utils.SectionUtils;
 import org.simpleyaml.utils.SupplierIO;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,30 +34,52 @@ public class SimpleYamlImplementation extends SnakeYamlImplementation {
 
     @Override
     @SuppressWarnings("DuplicateThrows")
-    public Map<String, Object> load(final SupplierIO.Reader readerSupplier) throws IOException, InvalidConfigurationException {
-        final Map<String, Object> values = super.load(readerSupplier);
+    public void load(final SupplierIO.Reader readerSupplier, final ConfigurationSection section) throws IOException, InvalidConfigurationException {
+        if (readerSupplier != null) {
+            this.load(readerSupplier.get(), section);
 
-        if (this.options.useComments()) {
-            this.parseComments(readerSupplier.get());
+            if (this.options.useComments()) {
+                this.parseComments(readerSupplier.get());
+            }
         }
-
-        return values;
     }
 
     @Override
-    public void dump(final Writer writer, final Map<String, Object> values) throws IOException {
+    @SuppressWarnings("DuplicateThrows")
+    public void load(final Reader reader, final ConfigurationSection section) throws IOException, InvalidConfigurationException {
         this.configure(this.options);
 
-        if (this.hasContent(writer, values)) {
+        if (reader != null && section != null) {
+            try {
+                final Map<?, ?> values = this.getYaml().load(reader);
+
+                if (values != null) {
+                    SectionUtils.convertMapsToSections(values, section);
+                }
+            } catch (final YAMLException e) {
+                throw new InvalidConfigurationException(e);
+            } catch (final ClassCastException e) {
+                throw new InvalidConfigurationException("Top level is not a Map.");
+            } finally {
+                reader.close();
+            }
+        }
+    }
+
+    @Override
+    public void dump(final Writer writer, final ConfigurationSection section) throws IOException {
+        this.configure(this.options);
+
+        if (this.hasContent(writer, section)) {
             if (this.options.useComments()) {
                 final YamlCommentDumper commentDumper = new YamlCommentDumper(
                         this.parseComments(),
-                        dumper -> super.dump(dumper, values),
+                        dumper -> super.dumpYaml(dumper, section),
                         writer
                 );
                 commentDumper.dump();
             } else {
-                this.dumpYaml(writer, values);
+                this.dumpYaml(writer, section);
             }
         }
     }

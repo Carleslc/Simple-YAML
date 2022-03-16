@@ -1,61 +1,61 @@
 package org.simpleyaml.configuration.implementation.api;
 
+import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.SupplierIO;
 
 import java.io.*;
-import java.util.Map;
 
 public interface YamlImplementation {
 
     /**
-     * Load Yaml to a map.
-     * @param reader a Yaml reader with contents to load
-     * @return the contents loaded as a map
+     * Load Yaml to a configuration section.
+     * @param reader a reader of Yaml contents to load
+     * @param section the configuration to fill with the contents
      * @throws IOException if cannot read contents.
      * @throws InvalidConfigurationException if contents is not a valid Yaml configuration
      */
-    Map<String, Object> load(final Reader reader) throws IOException, InvalidConfigurationException;
+    void load(final Reader reader, final ConfigurationSection section) throws IOException, InvalidConfigurationException;
 
     /**
-     * Load Yaml to a map.
-     * @param readerSupplier a function providing a Yaml reader with contents to load
-     * @return the contents loaded as a map
+     * Load Yaml to a configuration section.
+     * @param readerSupplier a function providing a reader of Yaml contents to load
+     * @param section the configuration to fill with the contents
      * @throws IOException if cannot read contents.
      * @throws InvalidConfigurationException if contents is not a valid Yaml configuration
      */
-    default Map<String, Object> load(final SupplierIO.Reader readerSupplier) throws IOException, InvalidConfigurationException {
-        return this.load(readerSupplier.get());
+    default void load(final SupplierIO.Reader readerSupplier, final ConfigurationSection section) throws IOException, InvalidConfigurationException {
+        this.load(readerSupplier.get(), section);
     }
 
     /**
-     * Load Yaml to a map.
+     * Load Yaml to a configuration section.
      * @param contents a Yaml string with contents to load
-     * @return the contents loaded as a map
+     * @param section the configuration to fill with the contents
      * @throws IOException if cannot read contents.
      * @throws InvalidConfigurationException if contents is not a valid Yaml string
      */
-    default Map<String, Object> load(final String contents) throws IOException, InvalidConfigurationException {
-        return this.load(new StringReader(contents));
+    default void load(final String contents, final ConfigurationSection section) throws IOException, InvalidConfigurationException {
+        this.load(new StringReader(contents), section);
     }
 
     /**
-     * Dump values to Yaml.
+     * Dump section values to Yaml.
      * @param writer writer to dump values
-     * @param values values to dump
+     * @param section section with values to dump
      */
-    void dump(final Writer writer, final Map<String, Object> values) throws IOException;
+    void dump(final Writer writer, final ConfigurationSection section) throws IOException;
 
     /**
-     * Dump values to Yaml.
-     * @param values values to dump
+     * Dump section values to a Yaml string.
+     * @param section section with values to dump
      * @return the values as a valid Yaml string
      */
-    default String dump(final Map<String, Object> values) throws IOException {
+    default String dump(final ConfigurationSection section) throws IOException {
         final StringWriter stringWriter = new StringWriter();
 
-        this.dump(stringWriter, values);
+        this.dump(stringWriter, section);
 
         return stringWriter.toString();
     }

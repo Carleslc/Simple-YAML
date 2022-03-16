@@ -11,6 +11,7 @@ import org.simpleyaml.configuration.implementation.SimpleYamlImplementation;
 import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.simpleyaml.configuration.implementation.api.YamlImplementation;
 import org.simpleyaml.configuration.implementation.api.YamlImplementationCommentable;
+import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlImplementation;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.SupplierIO;
 import org.simpleyaml.utils.Validate;
@@ -37,7 +38,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
     private File configFile;
 
     /**
-     * Builds this {@link FileConfiguration} without any configuration file.
+     * Builds this {@link YamlFile} without any configuration file.
      * <p>
      * In order to save changes you will have to use one of these methods before:<br>
      * - {@link #setConfigurationFile(File)}<br>
@@ -48,6 +49,17 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         super(new SimpleYamlImplementation());
     }
 
+    /**
+     * Builds this {@link YamlFile} without any configuration file.
+     * <p>
+     * In order to save changes you will have to use one of these methods before:<br>
+     * - {@link #setConfigurationFile(File)}<br>
+     * - {@link #setConfigurationFile(String)}<br>
+     * Or set the file when saving changes with {@link #save(File)}
+     *
+     * @param yamlImplementation the implementation to use. Default is {@link SimpleYamlImplementation},
+     *        but you can provide other like {@link SnakeYamlImplementation} or a custom implementation.
+     */
     public YamlFile(final YamlImplementation yamlImplementation) {
         super(yamlImplementation);
     }

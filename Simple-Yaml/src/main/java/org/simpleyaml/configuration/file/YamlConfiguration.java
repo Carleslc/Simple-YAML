@@ -13,7 +13,6 @@ import org.simpleyaml.utils.SupplierIO;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
-import java.util.Map;
 
 /**
  * An implementation of {@link Configuration} which saves the configuration in Yaml.
@@ -99,7 +98,7 @@ public class YamlConfiguration extends FileConfiguration {
      * @see #saveToString()
      */
     public String dump() throws IOException {
-        return this.yamlImplementation.dump(this.getValues(false));
+        return this.yamlImplementation.dump(this);
     }
 
     /**
@@ -110,7 +109,7 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public void dump(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        this.yamlImplementation.dump(writer, this.getValues(false));
+        this.yamlImplementation.dump(writer, this);
     }
 
     /**
@@ -132,11 +131,7 @@ public class YamlConfiguration extends FileConfiguration {
 
         this.loadHeader(readerSupplier.get());
 
-        final Map<?, ?> input = this.yamlImplementation.load(readerSupplier);
-
-        if (input != null) {
-            this.convertMapsToSections(input, this);
-        }
+        this.yamlImplementation.load(readerSupplier, this);
     }
 
     protected void loadHeader(final Reader reader) throws IOException {
@@ -402,25 +397,6 @@ public class YamlConfiguration extends FileConfiguration {
             this.options = new YamlConfigurationOptions(this);
         }
         return (YamlConfigurationOptions) this.options;
-    }
-
-    protected void convertMapsToSections(final Map<?, ?> input, final ConfigurationSection section) {
-        for (final Map.Entry<?, ?> entry : input.entrySet()) {
-            Object keyObject = entry.getKey();
-            String key;
-            if (keyObject == null) {
-                key = "";
-            } else {
-                key = keyObject.toString();
-            }
-            final Object value = entry.getValue();
-
-            if (value instanceof Map) {
-                this.convertMapsToSections((Map<?, ?>) value, section.createSection(key));
-            } else {
-                section.set(key, value);
-            }
-        }
     }
 
     private static YamlConfiguration load(final YamlConfigurationLoader loader) throws IOException {

@@ -55,16 +55,16 @@ public class YamlImplementationTest {
             );
         }
 
-        final Map<String, Object> values = implementation.load(yamlFile.fileToString());
+        implementation.load(yamlFile.fileToString(), yamlFile);
 
         MatcherAssert.assertThat(
                 "Wrong implementation load/dump!",
-                implementation.dump(values),
+                implementation.dump(yamlFile),
                 new IsEqual<>(TestResources.testContent())
         );
 
         try (Writer writer = new StringWriter()) {
-            yaml.serialize(implementation.getRepresenter().represent(values), writer);
+            yaml.serialize(implementation.getRepresenter().represent(yamlFile), writer);
 
             MatcherAssert.assertThat(
                     "Wrong implementation serialize!",

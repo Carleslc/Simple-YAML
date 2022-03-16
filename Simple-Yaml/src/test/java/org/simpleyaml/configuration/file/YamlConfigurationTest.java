@@ -9,6 +9,7 @@ import org.llorllale.cactoos.matchers.HasValues;
 import org.llorllale.cactoos.matchers.IsBlank;
 import org.simpleyaml.configuration.MemoryConfiguration;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
+import org.simpleyaml.utils.SectionUtils;
 import org.simpleyaml.utils.TestResources;
 
 import java.io.IOException;
@@ -205,14 +206,13 @@ class YamlConfigurationTest {
     }
 
     @Test
-    void convertMapsToSections() throws IOException {
-        final YamlConfiguration configuration = resourceLoadYamlConfiguration("test.yml");
+    void convertMapsToSections() {
         final Map<String, Object> map = new HashMap<>();
         map.put("test", "hello");
         map.put("test-2", false);
         map.put("test-3", 123);
         final MemoryConfiguration section = new MemoryConfiguration();
-        configuration.convertMapsToSections(map, section);
+        SectionUtils.convertMapsToSections(map, section);
 
         MatcherAssert.assertThat(
             "Couldn't load section from the map!",
