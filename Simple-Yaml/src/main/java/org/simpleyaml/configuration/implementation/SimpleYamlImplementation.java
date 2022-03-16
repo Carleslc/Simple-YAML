@@ -8,10 +8,13 @@ import org.simpleyaml.configuration.comments.YamlCommentParser;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlConstructor;
 import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlImplementation;
+import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlRepresenter;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.SectionUtils;
 import org.simpleyaml.utils.SupplierIO;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -22,6 +25,18 @@ import java.nio.file.Files;
 import java.util.Map;
 
 public class SimpleYamlImplementation extends SnakeYamlImplementation {
+
+    public SimpleYamlImplementation() {
+        super(new SnakeYamlRepresenter());
+    }
+
+    public SimpleYamlImplementation(final SnakeYamlRepresenter yamlRepresenter) {
+        super(yamlRepresenter);
+    }
+
+    public SimpleYamlImplementation(final SnakeYamlConstructor yamlConstructor, final SnakeYamlRepresenter yamlRepresenter, final DumperOptions yamlOptions) {
+        super(yamlConstructor, yamlRepresenter, yamlOptions);
+    }
 
     @Override
     public void setComment(final String path, final String comment, final CommentType type) {
