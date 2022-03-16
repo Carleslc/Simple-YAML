@@ -419,6 +419,10 @@ public class KeyTree implements Iterable<KeyTree.Node> {
             this.listSize = listSize;
         }
 
+        public Integer getListSize() {
+            return this.listSize;
+        }
+
         public void setElementIndex(int elementIndex) {
             if (this.parent != null) {
                 if (this.parent.indexByElementIndex == null) {
