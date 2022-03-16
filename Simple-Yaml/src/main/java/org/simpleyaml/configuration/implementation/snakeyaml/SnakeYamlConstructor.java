@@ -3,8 +3,7 @@ package org.simpleyaml.configuration.implementation.snakeyaml;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.nodes.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,6 +16,28 @@ public class SnakeYamlConstructor extends SafeConstructor {
 
     public SnakeYamlConstructor() {
         this.yamlConstructors.put(Tag.MAP, new ConstructCustomObject());
+    }
+
+    @Override
+    public void flattenMapping(final MappingNode node) {
+        super.flattenMapping(node);
+    }
+
+    public Object construct(final Node node) {
+        return super.constructObject(node);
+    }
+
+    protected boolean hasSerializedTypeKey(final MappingNode node) {
+        for (final NodeTuple nodeTuple : node.getValue()) {
+            final Node keyNode = nodeTuple.getKeyNode();
+            if (keyNode instanceof ScalarNode) {
+                final String key = ((ScalarNode) keyNode).getValue();
+                if (key.equals(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private final class ConstructCustomObject extends SafeConstructor.ConstructYamlMap {
