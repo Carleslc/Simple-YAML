@@ -22,7 +22,7 @@ public class ConfigurationSerialization {
 
     public static final String SERIALIZED_TYPE_KEY = "==";
 
-    private static final Map<String, Class<? extends ConfigurationSerializable>> aliases = new HashMap<String, Class<? extends ConfigurationSerializable>>();
+    private static final Map<String, Class<? extends ConfigurationSerializable>> aliases = new HashMap<>();
 
     private final Class<? extends ConfigurationSerializable> clazz;
 
@@ -64,7 +64,7 @@ public class ConfigurationSerialization {
      * @return New instance of the specified class
      */
     public static ConfigurationSerializable deserializeObject(final Map<String, ?> args) {
-        Class<? extends ConfigurationSerializable> clazz = null;
+        Class<? extends ConfigurationSerializable> clazz;
 
         if (args.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
             try {
@@ -131,7 +131,9 @@ public class ConfigurationSerialization {
      * @param clazz Class to unregister
      */
     public static void unregisterClass(final Class<? extends ConfigurationSerializable> clazz) {
-        while (ConfigurationSerialization.aliases.values().remove(clazz)) {
+        while (true) {
+            if (!ConfigurationSerialization.aliases.values().remove(clazz)) break;
+            // Continue unregistering remaining aliases
         }
     }
 
@@ -156,20 +158,14 @@ public class ConfigurationSerialization {
     public static String getAlias(final Class<? extends ConfigurationSerializable> clazz) {
         DelegateDeserialization delegate = clazz.getAnnotation(DelegateDeserialization.class);
 
-        if (delegate != null) {
-            if (delegate.value() == null || delegate.value() == clazz) {
-                delegate = null;
-            } else {
-                return ConfigurationSerialization.getAlias(delegate.value());
-            }
+        if (delegate != null && delegate.value() != clazz) {
+            return ConfigurationSerialization.getAlias(delegate.value());
         }
 
-        if (delegate == null) {
-            final SerializableAs alias = clazz.getAnnotation(SerializableAs.class);
+        final SerializableAs alias = clazz.getAnnotation(SerializableAs.class);
 
-            if (alias != null && alias.value() != null) {
-                return alias.value();
-            }
+        if (alias != null) {
+            return alias.value();
         }
 
         return clazz.getName();
@@ -179,14 +175,12 @@ public class ConfigurationSerialization {
         Validate.notNull(args, "Args must not be null");
 
         ConfigurationSerializable result = null;
-        Method method = null;
+        Method method;
 
-        if (result == null) {
-            method = this.getMethod("deserialize", true);
+        method = this.getMethod("deserialize", true);
 
-            if (method != null) {
-                result = this.deserializeViaMethod(method, args);
-            }
+        if (method != null) {
+            result = this.deserializeViaMethod(method, args);
         }
 
         if (result == null) {
@@ -208,6 +202,7 @@ public class ConfigurationSerialization {
         return result;
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected Method getMethod(final String name, final boolean isStatic) {
         try {
             final Method method = this.clazz.getDeclaredMethod(name, Map.class);
@@ -220,9 +215,7 @@ public class ConfigurationSerialization {
             }
 
             return method;
-        } catch (final NoSuchMethodException ex) {
-            return null;
-        } catch (final SecurityException ex) {
+        } catch (final NoSuchMethodException | SecurityException ex) {
             return null;
         }
     }
@@ -230,9 +223,7 @@ public class ConfigurationSerialization {
     protected Constructor<? extends ConfigurationSerializable> getConstructor() {
         try {
             return this.clazz.getConstructor(Map.class);
-        } catch (final NoSuchMethodException ex) {
-            return null;
-        } catch (final SecurityException ex) {
+        } catch (final NoSuchMethodException | SecurityException ex) {
             return null;
         }
     }
@@ -242,7 +233,7 @@ public class ConfigurationSerialization {
             final ConfigurationSerializable result = (ConfigurationSerializable) method.invoke(null, args);
 
             if (result == null) {
-                Logger.getLogger(ConfigurationSerialization.class.getName()).log(Level.SEVERE, "Could not call method '" + method.toString() + "' of " + this.clazz + " for deserialization: method returned null");
+                Logger.getLogger(ConfigurationSerialization.class.getName()).log(Level.SEVERE, "Could not call method '" + method + "' of " + this.clazz + " for deserialization: method returned null");
             } else {
                 return result;
             }

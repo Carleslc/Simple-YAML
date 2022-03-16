@@ -88,10 +88,16 @@ public interface ConfigurationSection {
     boolean isSet(String path);
 
     /**
-     * Gets the size of the configuration.
+     * Gets the size of this configuration section.
      * @return number of keys in this configuration section
      */
     int size();
+
+    /**
+     * Gets if this configuration section is empty.
+     * @return if there are no keys in this configuration section
+     */
+    boolean isEmpty();
 
     /**
      * Gets the path of this {@link ConfigurationSection} from its root {@link

@@ -199,6 +199,11 @@ public class MemorySection implements ConfigurationSection {
     }
 
     @Override
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
+
+    @Override
     public String getCurrentPath() {
         return this.fullPath;
     }

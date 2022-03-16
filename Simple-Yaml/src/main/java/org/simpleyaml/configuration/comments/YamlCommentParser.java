@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 
 public class YamlCommentParser extends YamlCommentReader {
 
-    private final BufferedReader reader;
+    protected final BufferedReader reader;
 
-    private StringBuilder blockComment;
-    private boolean blockCommentStarted = false;
-    private boolean headerParsed = false;
+    protected StringBuilder blockComment;
+    protected boolean blockCommentStarted = false;
+    protected boolean headerParsed = false;
 
     public YamlCommentParser(final YamlConfigurationOptions options, final Reader reader) {
         super(options);
@@ -50,7 +50,7 @@ public class YamlCommentParser extends YamlCommentReader {
         }
     }
 
-    private void appendLine() {
+    protected void appendLine() {
         if (!this.isExplicit()) {
             if (this.blockComment == null) {
                 this.blockComment = new StringBuilder();
@@ -59,7 +59,7 @@ public class YamlCommentParser extends YamlCommentReader {
         }
     }
 
-    private void appendCommentLine() {
+    protected void appendCommentLine() {
         this.trackSideCommentBelow();
         if (this.isExplicit()) {
             this.explicitNotation.addComment(this.currentLine);
@@ -92,13 +92,13 @@ public class YamlCommentParser extends YamlCommentReader {
         this.trackSideComment(this.currentNode);
     }
 
-    private String trackBlockComment(final KeyTree.Node node) {
+    protected String trackBlockComment(final KeyTree.Node node) {
         String blockComment = null;
         if (node != null && this.blockComment != null && (!this.isExplicit() || this.explicitNotation.getNode() == node)) {
             blockComment = this.blockComment.toString();
             if (!this.headerParsed) {
                 // Remove header from first key comment
-                blockComment = this.removeHeader(blockComment);
+                blockComment = removeHeader(blockComment, this.options());
                 this.headerParsed = true;
             }
             this.setRawComment(node, blockComment, CommentType.BLOCK);
@@ -108,7 +108,7 @@ public class YamlCommentParser extends YamlCommentReader {
         return blockComment;
     }
 
-    private void trackBlockCommentExplicit(final KeyTree.Node node) {
+    protected void trackBlockCommentExplicit(final KeyTree.Node node) {
         String blockComment = this.trackBlockComment(node);
         final String explicitBlockComment = this.explicitNotation.getKeyComment();
         if (explicitBlockComment != null) {
@@ -124,8 +124,8 @@ public class YamlCommentParser extends YamlCommentReader {
         }
     }
 
-    private String removeHeader(String blockComment) {
-        final String header = this.options().headerFormatter().dump(this.options().header());
+    public static String removeHeader(String blockComment, final YamlConfigurationOptions options) {
+        final String header = options.headerFormatter().dump(options.header());
         if (header != null && !header.isEmpty()) {
             blockComment = blockComment.replaceFirst(Pattern.quote(header), "");
             if (blockComment.isEmpty()) {
@@ -135,7 +135,7 @@ public class YamlCommentParser extends YamlCommentReader {
         return blockComment;
     }
 
-    private void trackSideComment(final KeyTree.Node node) throws IOException {
+    protected void trackSideComment(final KeyTree.Node node) throws IOException {
         if (this.isExplicit()) {
             if (this.currentLine != null && !this.explicitNotation.isFinished()) {
                 this.readValue();
@@ -160,14 +160,14 @@ public class YamlCommentParser extends YamlCommentReader {
         }
     }
 
-    private void setSideComment(final KeyTree.Node node, String sideComment) {
+    protected void setSideComment(final KeyTree.Node node, String sideComment) {
         if (sideComment != null && !sideComment.isEmpty() && !isSpace(sideComment.charAt(0))) {
             sideComment = " " + sideComment;
         }
         this.setRawComment(node, sideComment, CommentType.SIDE);
     }
 
-    private void trackSideCommentBelow() {
+    protected void trackSideCommentBelow() {
         if (this.isSectionEnd()) {
             // Indent level changed
             if (this.blockComment != null && this.blockCommentStarted) {

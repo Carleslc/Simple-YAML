@@ -31,13 +31,9 @@ public final class TestResources {
         return new TempFile().value().toFile();
     }
 
-    public static String fileToStringUnix(YamlFile yamlFile) throws IOException {
-        String content = yamlFile.fileToString();
-        if (content != null) {
-            // Strip Windows carriage to ensure testable contents are the same as in Unix
-            content = content.replace("\r", "");
-        }
-        return content;
+    public static String fileToStringUnix(final YamlFile yamlFile) throws IOException {
+        // Strip Windows carriage to ensure testable contents are the same as in Unix
+        return StringUtils.stripCarriage(yamlFile.fileToString());
     }
 
     public static String testContent() {

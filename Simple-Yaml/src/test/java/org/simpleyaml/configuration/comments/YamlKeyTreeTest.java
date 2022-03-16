@@ -272,7 +272,7 @@ final class YamlKeyTreeTest {
         final KeyTree tree = new KeyTree(configuration.options());
         final String nodekey = "nodekey";
         tree.add(nodekey);
-        final String expected = "{indent=0, path='', name='', comment='null', side='null', children=[{indent=0, path='nodekey', name='nodekey', comment='null', side='null', children=null}]}";
+        final String expected = "{indent=0, path='', name='', comment=, side=, isList=false, children=(1)[nodekey]}";
 
         MatcherAssert.assertThat(
             "toString returns a wrong value.",

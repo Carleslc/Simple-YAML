@@ -12,6 +12,8 @@ public final class StringUtils {
 
     public static final Pattern LIST_INDEX = Pattern.compile("^(.*)\\[(-?\\d+)]$", Pattern.DOTALL); // for list indexing: list[0]
 
+    public static final char ESCAPE_CHAR = '\\';
+
     public static String[] splitNewLines(final String s, int limit) {
         return NEW_LINE.split(s, limit);
     }
@@ -94,7 +96,7 @@ public final class StringUtils {
         int idx = -1;
         for (int i = fromIndex; i < len; i++) {
             char c = path.charAt(i);
-            if (c == '\\') { // escape separator with \
+            if (c == ESCAPE_CHAR) { // escape separator with \
                 escape = !escape;
             } else {
                 if (c == sep && !escape) {
@@ -118,7 +120,7 @@ public final class StringUtils {
         int len = path.length();
         for (int i = fromIndex; i < len; i++) {
             char c = path.charAt(i);
-            if (c == '\\') { // escape separator with \
+            if (c == ESCAPE_CHAR) { // escape separator with \
                 escape = !escape;
             } else if (c == sep && !escape) {
                 return i;
@@ -141,8 +143,27 @@ public final class StringUtils {
         return Arrays.stream(lines(comment)).map(String::trim).allMatch(line -> line.isEmpty() || line.startsWith(prefix));
     }
 
-    public static String quoteNewLines(String s) {
+    public static String quoteNewLines(final String s) {
         return NEW_LINE.matcher(s).replaceAll("\\\\n");
     }
 
+    public static String stripCarriage(final String s) {
+        return s != null ? s.replace("\r", "") : null;
+    }
+
+    public static String wrap(final String value) {
+        return value == null ? "" : '\'' + value + '\'';
+    }
+
+    private static String SEPARATOR = ".";
+    private static String ESCAPE_SEPARATOR = ESCAPE_CHAR + SEPARATOR;
+
+    public static void setSeparator(final char separator) {
+        SEPARATOR = String.valueOf(separator);
+        ESCAPE_SEPARATOR = ESCAPE_CHAR + SEPARATOR;
+    }
+
+    public static String escape(final String s) {
+        return s != null ? s.replace(SEPARATOR, ESCAPE_SEPARATOR) : null;
+    }
 }

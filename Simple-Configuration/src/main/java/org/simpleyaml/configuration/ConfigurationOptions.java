@@ -1,5 +1,6 @@
 package org.simpleyaml.configuration;
 
+import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
 
 import java.util.Objects;
@@ -60,6 +61,7 @@ public class ConfigurationOptions {
         Validate.isTrue(value != '\\', value + " is used for escaping and cannot be a path separator");
         Validate.isTrue(value != '[' && value != ']', value + " is used for indexing and cannot be a path separator");
         this.pathSeparator = value;
+        StringUtils.setSeparator(value);
         return this;
     }
 

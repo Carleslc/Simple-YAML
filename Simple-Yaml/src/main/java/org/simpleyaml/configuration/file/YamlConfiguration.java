@@ -8,6 +8,7 @@ import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.simpleyaml.configuration.implementation.api.YamlImplementation;
 import org.simpleyaml.configuration.implementation.snakeyaml.SnakeYamlImplementation;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
+import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.SupplierIO;
 import org.simpleyaml.utils.Validate;
 
@@ -72,7 +73,7 @@ public class YamlConfiguration extends FileConfiguration {
 
         this.save(stringWriter);
 
-        return stringWriter.toString();
+        return StringUtils.stripCarriage(stringWriter.toString());
     }
 
     /**
