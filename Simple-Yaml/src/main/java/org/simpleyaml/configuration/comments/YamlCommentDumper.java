@@ -16,7 +16,7 @@ public class YamlCommentDumper extends YamlCommentReader {
     protected BufferedWriter writer;
     protected StringWriter explicitBlock;
 
-    protected KeyTree.Node firstListMapElement;
+    protected KeyTree.Node commentNode, commentNodeFallback, firstListMapElement;
 
     public YamlCommentDumper(final YamlCommentMapper yamlCommentMapper, final DumperBus.Dumper source, final Writer writer) {
         super(yamlCommentMapper.options());
@@ -41,7 +41,8 @@ public class YamlCommentDumper extends YamlCommentReader {
 
         // Append end of file (footer) comment (null path), if found
         this.clearSection();
-        this.appendBlockComment(this.getNode(null));
+        this.commentNode = this.getNode(null);
+        this.appendBlockComment();
 
         this.close();
     }
@@ -54,35 +55,36 @@ public class YamlCommentDumper extends YamlCommentReader {
     @Override
     protected void processLine() throws IOException {
         this.clearSection();
-        final KeyTree.Node readerNode = this.track();
-        final KeyTree.Node commentNode = this.getCommentNode(readerNode);
-        this.appendBlockComment(commentNode);
+        this.getCommentNode(this.track());
+        this.appendBlockComment();
         this.writer.write(this.currentLine);
-        this.appendSideComment(commentNode);
+        this.appendSideComment();
     }
 
     protected void clearSection() {
+        this.commentNode = this.commentNodeFallback = this.firstListMapElement = null;
         if (this.isSectionEnd()) {
             this.clearCurrentNode();
         }
     }
 
-    public KeyTree.Node getCommentNode(final KeyTree.Node readerNode) {
-        this.firstListMapElement = null;
-        KeyTree.Node commentNode = null;
+    public void getCommentNode(final KeyTree.Node readerNode) {
         if (readerNode != null) {
-            commentNode = this.getNode(readerNode.getPath());
+            this.commentNode = this.getNode(readerNode.getPath()); // key or list element by index
 
-            if (commentNode != null) {
-                final KeyTree.Node parent = commentNode.getParent();
-                if (parent != null && parent.isList() && commentNode.size() == 1) {
-                    this.checkFirstListMapElement(commentNode, readerNode);
+            if (this.commentNode != null) {
+                if (this.commentNode.parent != null && this.commentNode.parent.isList && this.commentNode.size() == 1) {
+                    this.checkFirstListMapElement(this.commentNode, readerNode); // first key for list maps
                 }
-            } else if (readerNode.getName() != null) {
-                commentNode = this.getNode(readerNode.getPathWithName());
+            }
+
+            if (this.commentNode == null ||
+                    (readerNode.name != null && (this.commentNode.comment == null || this.commentNode.sideComment == null))) {
+                if (readerNode.parent != null && readerNode.parent.isList && readerNode.elementIndex != null) {
+                    this.commentNodeFallback = this.getNode(readerNode.getPathWithName()); // list element by name
+                }
             }
         }
-        return commentNode;
     }
 
     protected void checkFirstListMapElement(final KeyTree.Node commentNode, final KeyTree.Node readerNode) {
@@ -101,16 +103,24 @@ public class YamlCommentDumper extends YamlCommentReader {
 
     @Override
     public KeyTree.Node getNode(final String path) {
-        return this.yamlCommentMapper.getNode(path);
+        return this.yamlCommentMapper.getPriorityNode(path);
     }
 
-    protected void appendBlockComment(final KeyTree.Node node) throws IOException {
-        if (node != null) {
-            this.appendBlockComment(node.getComment());
+    protected void appendBlockComment() throws IOException {
+        String blockComment = null;
 
-            if (this.firstListMapElement != null) {
-                this.appendBlockComment(this.firstListMapElement.getComment());
-            }
+        if (this.commentNode != null) {
+            blockComment = this.commentNode.getComment();
+        }
+
+        if (blockComment == null && this.commentNodeFallback != null) {
+            blockComment = this.commentNodeFallback.getComment();
+        }
+
+        this.appendBlockComment(blockComment);
+
+        if (this.firstListMapElement != null) {
+            this.appendBlockComment(this.firstListMapElement.getComment());
         }
 
         if (this.explicitBlock != null) {
@@ -130,15 +140,19 @@ public class YamlCommentDumper extends YamlCommentReader {
         }
     }
 
-    protected void appendSideComment(final KeyTree.Node node) throws IOException {
+    protected void appendSideComment() throws IOException {
         String sideComment = null;
 
-        if (node != null) {
-            sideComment = node.getSideComment();
+        if (this.commentNode != null) {
+            sideComment = this.commentNode.getSideComment();
+        }
 
-            if (sideComment == null && this.firstListMapElement != null) {
-                sideComment = this.firstListMapElement.getSideComment(); // comment on first list map element
-            }
+        if (sideComment == null && this.firstListMapElement != null) {
+            sideComment = this.firstListMapElement.getSideComment();
+        }
+
+        if (sideComment == null && this.commentNodeFallback != null) {
+            sideComment = this.commentNodeFallback.getSideComment();
         }
 
         this.readValue();
@@ -221,7 +235,7 @@ public class YamlCommentDumper extends YamlCommentReader {
         if (this.isLiteral && this.quoteNotation != ReadingQuoteStyle.LITERAL) {
             writer.write(this.currentLine); // ? | # comment
         } else {
-            writer.write('\n');
+            writer.write(System.lineSeparator());
 
             if (inQuoteBlock) {
                 writer.write(this.currentLine);
