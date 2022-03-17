@@ -24,6 +24,9 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.util.Map;
 
+/**
+ * Default YAML implementation using snakeyaml high-level API and a custom comment parser / dumper.
+ */
 public class SimpleYamlImplementation extends SnakeYamlImplementation {
 
     public SimpleYamlImplementation() {

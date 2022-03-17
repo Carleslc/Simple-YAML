@@ -5,6 +5,9 @@ import org.simpleyaml.configuration.comments.Commentable;
 import org.simpleyaml.configuration.comments.YamlCommentMapper;
 import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
+/**
+ * A YAML implementation capable of processing comments.
+ */
 public abstract class YamlImplementationCommentable implements YamlImplementation, Commentable {
 
     /**

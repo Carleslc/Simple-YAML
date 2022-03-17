@@ -221,6 +221,9 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return Objects.hash(super.hashCode(), indentList, commentFormatter);
     }
 
+    /**
+     * Options to configure the default {@link QuoteStyle} for each type.
+     */
     public static final class QuoteStyleDefaults {
 
         private final Map<Class<?>, QuoteStyle> typeQuoteStyles = new HashMap<>();

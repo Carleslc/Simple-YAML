@@ -6,14 +6,26 @@ import org.simpleyaml.configuration.comments.format.YamlCommentFormat;
 import org.simpleyaml.configuration.comments.format.YamlCommentFormatter;
 import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 
+/**
+ * An alternative API to set values along with comments for a path.
+ * <pre>
+ * {@code
+ * yamlFile.path("test.hello")
+ *         .set("Hello")
+ *         .comment("Block comment")
+ *         .commentSide("Side comment");
+ * }
+ * </pre>
+ * @see YamlFile#path(String)
+ */
 public class YamlFileWrapper extends ConfigurationWrapper<YamlFile> {
-
-    protected YamlFileWrapper(final YamlFile configuration, final String path, final YamlFileWrapper parent) {
-        super(configuration, path, parent);
-    }
 
     public YamlFileWrapper(final YamlFile configuration, final String path) {
         super(configuration, path);
+    }
+
+    protected YamlFileWrapper(final YamlFile configuration, final String path, final YamlFileWrapper parent) {
+        super(configuration, path, parent);
     }
 
     /**

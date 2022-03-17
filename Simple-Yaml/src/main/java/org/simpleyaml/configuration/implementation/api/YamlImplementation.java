@@ -7,6 +7,9 @@ import org.simpleyaml.utils.SupplierIO;
 
 import java.io.*;
 
+/**
+ * A YAML implementation to load/parse and dump/save a {@link ConfigurationSection}.
+ */
 public interface YamlImplementation {
 
     /**

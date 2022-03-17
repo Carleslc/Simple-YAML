@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * YAML implementation using snakeyaml low-level API and snakeyaml comment processing available if {@link YamlConfigurationOptions#useComments()} is enabled.
+ */
 public class SnakeYamlImplementation extends YamlImplementationCommentable {
 
     private SnakeYamlConstructor yamlConstructor;
