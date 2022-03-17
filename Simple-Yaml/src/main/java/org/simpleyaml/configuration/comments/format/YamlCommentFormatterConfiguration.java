@@ -73,12 +73,12 @@ public class YamlCommentFormatterConfiguration extends CommentFormatterConfigura
         return this.trim;
     }
 
-    public void checkCommentPrefix(final String commentPrefix) {
+    protected void checkCommentPrefix(final String commentPrefix) {
         Validate.isTrue(commentPrefix != null && StringUtils.allLinesArePrefixedOrBlank(commentPrefix, COMMENT_INDICATOR),
                 "All comment prefix lines must be blank or optional space followed by a " + COMMENT_INDICATOR);
     }
 
-    public void checkCommentPrefixMultiline(final String commentPrefix) {
+    protected void checkCommentPrefixMultiline(final String commentPrefix) {
         checkCommentPrefix(commentPrefix);
     }
 

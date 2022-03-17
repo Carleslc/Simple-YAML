@@ -55,7 +55,7 @@ public class YamlSideCommentFormatterConfiguration extends YamlCommentFormatterC
     }
 
     @Override
-    public void checkCommentPrefix(final String sidePrefix) {
+    protected void checkCommentPrefix(final String sidePrefix) {
         Validate.isTrue(sidePrefix != null
                         && !sidePrefix.isEmpty()
                         && Character.isWhitespace(sidePrefix.charAt(0)),
@@ -64,7 +64,7 @@ public class YamlSideCommentFormatterConfiguration extends YamlCommentFormatterC
     }
 
     @Override
-    public void checkCommentPrefixMultiline(final String commentPrefix) {
+    protected void checkCommentPrefixMultiline(final String commentPrefix) {
         super.checkCommentPrefix(commentPrefix);
     }
 }
