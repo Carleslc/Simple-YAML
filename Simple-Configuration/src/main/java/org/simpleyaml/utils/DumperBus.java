@@ -40,8 +40,11 @@ public class DumperBus extends Writer {
     public void dump() throws IOException {
         this.lineBuffer = new StringBuffer();
         this.runThread(() -> {
-            this.source.dump(this);
-            this.close();
+            try {
+                this.source.dump(this);
+            } finally {
+                this.close();
+            }
         });
     }
 
@@ -100,6 +103,8 @@ public class DumperBus extends Writer {
     private void append(final String line) throws IOException {
         try {
             this.lineQueue.put(Optional.ofNullable(line));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -116,6 +121,8 @@ public class DumperBus extends Writer {
                 return null;
             }
             return this.lineQueue.take().orElse(null);
+        } catch (InterruptedException e) {
+            return null;
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -129,9 +136,9 @@ public class DumperBus extends Writer {
     public void close() throws IOException {
         if (!this.isClosed()) {
             this.flush();
+            this.lineBuffer = null;
             this.append(null);
         }
-        this.lineBuffer = null;
         this.executor.shutdown();
     }
 
