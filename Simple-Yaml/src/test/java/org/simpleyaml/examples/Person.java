@@ -8,10 +8,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Class that represents a Person that is used only for the test examples.<br>
+ * Class that represents a Person that is used only for the test examples.
+ * <br>
  * Note that has methods to serialize and deserialize Person objects to save them later.
- *
- * @author Carlos Lazaro Costa
  */
 @SerializableAs("Person") // this is an alias to org.simpleyaml.examples.Person
 public class Person implements ConfigurationSerializable {

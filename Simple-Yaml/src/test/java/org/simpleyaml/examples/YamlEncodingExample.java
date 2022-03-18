@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import org.simpleyaml.configuration.file.YamlFile;
 
+/**
+ * This example shows you how to use unicode values.
+ */
 public class YamlEncodingExample {
 
     public static void main(final String[] args) throws IOException {

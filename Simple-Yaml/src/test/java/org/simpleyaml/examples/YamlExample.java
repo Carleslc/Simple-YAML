@@ -9,10 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * YAML is a human-readable data serialization language.<br>
- * This example shows you how to use this API to use these files to save your data.
- *
- * @author Carlos Lazaro Costa
+ * YAML is a human-readable data serialization language.
+ * <p/>
+ * This example shows you how to use this API to save your data and configurations using YAML.
  */
 public final class YamlExample {
 

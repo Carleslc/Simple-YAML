@@ -11,8 +11,6 @@ import java.util.Date;
 
 /**
  * This example shows you how to use this API to load and save a YAML file with comments.
- *
- * @author Carlos Lazaro Costa
  */
 public final class YamlCommentsExample {
 
