@@ -37,6 +37,14 @@ public class StringUtilsTest {
                 StringUtils.lines("\n", false),
                 new IsEqual<>(new String[] { "", "" })
         );
+        MatcherAssert.assertThat(
+                StringUtils.lines(""),
+                new IsEqual<>(new String[] { "" })
+        );
+        MatcherAssert.assertThat(
+                StringUtils.lines("", false),
+                new IsEqual<>(new String[] { "" })
+        );
     }
 
     @Test

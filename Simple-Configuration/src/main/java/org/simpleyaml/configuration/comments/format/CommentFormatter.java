@@ -27,7 +27,7 @@ public interface CommentFormatter {
      * @return the comment in the expected format to be read by humans
      * @throws IOException if comment cannot be parsed
      */
-    String parse(Reader raw, CommentType type, KeyTree.Node node) throws IOException;
+    String parse(final Reader raw, final CommentType type, final KeyTree.Node node) throws IOException;
 
     /**
      * Given a comment returns the raw-formatted string to be dumped somewhere like a file.
@@ -37,7 +37,7 @@ public interface CommentFormatter {
      * @param node the comment node
      * @return the raw-formatted comment string to be dumped, for instance to a configuration file
      */
-    String dump(String comment, CommentType type, KeyTree.Node node);
+    String dump(final String comment, final CommentType type, final KeyTree.Node node);
 
     /**
      * Parse the comment from a string that may contain a raw-formatted comment (for instance from a configuration file)
@@ -48,60 +48,67 @@ public interface CommentFormatter {
      * @param node the comment node
      * @return the comment in the expected format to be read by humans
      */
-    default String parse(String raw, CommentType type, KeyTree.Node node) throws IOException {
+    default String parse(final String raw, final CommentType type, final KeyTree.Node node) throws IOException {
         return parse(new StringReader(raw), type, node);
     }
 
-    default String parse(Reader raw, CommentType type) throws IOException {
+    default String parse(final Reader raw, final CommentType type) throws IOException {
         return parse(raw, type, null);
     }
 
-    default String parse(String raw, CommentType type) throws IOException {
+    default String parse(final String raw, final CommentType type) throws IOException {
         return parse(raw, type, null);
     }
 
-    default String parse(Reader raw) throws IOException {
+    default String parse(final Reader raw) throws IOException {
         return parse(raw, CommentType.BLOCK);
     }
 
-    default String parse(String raw) throws IOException {
+    default String parse(final String raw) throws IOException {
         return parse(raw, CommentType.BLOCK);
     }
 
-    default String dump(String comment, CommentType type) {
+    default String dump(final String comment, final CommentType type) {
         return dump(comment, type, null);
     }
 
-    default String dump(String comment) {
+    default String dump(final String comment) {
         return dump(comment, CommentType.BLOCK);
     }
 
-    static String format(int indent,
+    static String format(final int indent,
                          String prefixFirst, String prefixMultiline,
-                         String comment,
-                         CommentType type,
-                         String suffixMultiline, String suffixLast) {
+                         final String comment,
+                         final CommentType type,
+                         final String suffixMultiline, String suffixLast) {
 
         if (comment == null) {
             return "";
         }
 
-        Stream<String> stream = Arrays.stream(StringUtils.lines(comment));
+        Stream<String> stream = Arrays.stream(StringUtils.lines(comment, comment.trim().isEmpty()));
 
         final String indentation = StringUtils.indentation(indent);
+        final String indentLine = "\n" + indentation;
 
-        String delimiter = "\n" + indentation;
+        String delimiter;
 
-        if (suffixMultiline != null) {
-            delimiter = suffixMultiline + delimiter;
+        if (suffixMultiline == null) {
+            delimiter = indentLine;
+        } else {
+            delimiter = String.join(indentLine, StringUtils.lines(suffixMultiline, false)) + indentLine;
         }
 
         if (prefixFirst == null) {
             prefixFirst = "";
+        } else {
+            prefixFirst = String.join(indentLine, StringUtils.lines(prefixFirst, false));
         }
 
         if (prefixMultiline == null) {
             prefixMultiline = prefixFirst;
+        } else {
+            prefixMultiline = String.join(indentLine, StringUtils.lines(prefixMultiline, false));
         }
 
         if (type == CommentType.BLOCK) {
@@ -112,18 +119,20 @@ public interface CommentFormatter {
 
         if (suffixLast == null) {
             suffixLast = "";
+        } else {
+            suffixLast = String.join(indentLine, StringUtils.lines(suffixLast, false));
         }
 
         return stream.collect(Collectors.joining(delimiter, prefixFirst, suffixLast));
     }
 
-    static String format(String prefixFirst, String prefixMultiline,
-                         String comment,
-                         String suffixMultiline, String suffixLast) {
+    static String format(final String prefixFirst, final String prefixMultiline,
+                         final String comment,
+                         final String suffixMultiline, final String suffixLast) {
         return format(0, prefixFirst, prefixMultiline, comment, CommentType.BLOCK, suffixMultiline, suffixLast);
     }
 
-    static String format(int indent, String comment, CommentType type, CommentFormatterConfiguration configuration) {
+    static String format(final int indent, final String comment, final CommentType type, final CommentFormatterConfiguration configuration) {
         return format(
                 indent,
                 configuration.prefixFirst(), configuration.prefixMultiline(),

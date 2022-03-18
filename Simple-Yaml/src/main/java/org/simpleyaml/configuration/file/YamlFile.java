@@ -260,7 +260,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         final String comment = this.getComment(path, CommentType.BLOCK);
         if (comment == null) {
             this.setComment(path, "\n", CommentType.BLOCK);
-        } else if (!comment.startsWith("\n")) {
+        } else {
             this.setComment(path, '\n' + comment, CommentType.BLOCK);
         }
         this.setCommentFormat(defaultFormatter);
@@ -368,7 +368,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * If default behaviour does not suits you then change the format before calling one of these methods.
      * @param yamlCommentFormat desired format to set/dump and get/parse comments
      */
-    public void setCommentFormat(YamlCommentFormat yamlCommentFormat) {
+    public void setCommentFormat(final YamlCommentFormat yamlCommentFormat) {
         Validate.notNull(yamlCommentFormat, "yamlCommentFormat cannot be null!");
         this.setCommentFormat(yamlCommentFormat.commentFormatter());
     }
@@ -381,7 +381,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * and for dumping comments with {@link #setComment(String, String, CommentType)}.
      * @param yamlCommentFormatter desired formatter to set/dump and get/parse comments
      */
-    public void setCommentFormat(YamlCommentFormatter yamlCommentFormatter) {
+    public void setCommentFormat(final YamlCommentFormatter yamlCommentFormatter) {
         this.options().commentFormatter(yamlCommentFormatter);
     }
 
@@ -422,7 +422,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      *
      * @param header New header
      */
-    public void setHeader(String header) {
+    public void setHeader(final String header) {
         this.options().header(header);
     }
 
@@ -451,7 +451,7 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      * Null is a valid value which will indicate that no footer is applied.
      * @param footer the footer comment to write at the end of the file
      */
-    public void setFooter(String footer) {
+    public void setFooter(final String footer) {
         this.setComment(null, footer);
     }
 

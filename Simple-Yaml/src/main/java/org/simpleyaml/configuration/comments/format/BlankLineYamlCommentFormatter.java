@@ -10,17 +10,24 @@ import org.simpleyaml.utils.StringUtils;
 public class BlankLineYamlCommentFormatter extends YamlCommentFormatter {
 
     public BlankLineYamlCommentFormatter() {
-        super();
+        this(new YamlCommentFormatterConfiguration());
+    }
+
+    public BlankLineYamlCommentFormatter(final YamlCommentFormatterConfiguration blockFormatter) {
+        this(blockFormatter, new YamlSideCommentFormatterConfiguration());
+    }
+
+    public BlankLineYamlCommentFormatter(final YamlCommentFormatterConfiguration blockFormatter, final YamlSideCommentFormatterConfiguration sideFormatter) {
+        super(blockFormatter, sideFormatter);
         this.stripPrefix(true).trim(false);
         blockFormatter.prefix('\n' + blockFormatter.prefixFirst(), blockFormatter.prefixMultiline());
     }
 
     @Override
-    public String dump(String comment, CommentType type, KeyTree.Node node) {
+    public String dump(final String comment, final CommentType type, final KeyTree.Node node) {
         if (type == CommentType.SIDE) {
             final String defaultPrefixFirst = sideFormatter.prefixFirst();
-            int indentation = node == null ? 0 : node.getIndentation();
-            final String blankLineSideFirstPrefix = '\n' + StringUtils.indentation(indentation) + StringUtils.stripIndentation(defaultPrefixFirst);
+            final String blankLineSideFirstPrefix = '\n' + StringUtils.stripIndentation(defaultPrefixFirst);
             sideFormatter.prefix(blankLineSideFirstPrefix, sideFormatter.prefixMultiline());
             final String dump = super.dump(comment, type, node);
             sideFormatter.prefix(defaultPrefixFirst, sideFormatter.prefixMultiline());

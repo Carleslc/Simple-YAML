@@ -23,12 +23,12 @@ public class YamlHeaderFormatter implements CommentFormatter {
 
     protected YamlCommentFormatterConfiguration configuration;
 
-    protected YamlHeaderFormatter(YamlCommentFormatterConfiguration configuration) {
+    protected YamlHeaderFormatter(final YamlCommentFormatterConfiguration configuration) {
         Validate.notNull(configuration);
         this.configuration = configuration;
     }
 
-    public YamlHeaderFormatter(String commentPrefix, boolean strip) {
+    public YamlHeaderFormatter(final String commentPrefix, final boolean strip) {
         this(new YamlCommentFormatterConfiguration().prefix(commentPrefix).stripPrefix(strip).suffix(BLANK_LINE));
     }
 
@@ -54,7 +54,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * @return the header
      */
     @Override
-    public String parse(String raw, CommentType type, KeyTree.Node node) throws IOException {
+    public String parse(final String raw, final CommentType type, final KeyTree.Node node) throws IOException {
         if (raw == null) {
             return null;
         }
@@ -62,7 +62,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
     }
 
     @Override
-    public String parse(Reader raw, CommentType type, KeyTree.Node node) throws IOException {
+    public String parse(final Reader raw, final CommentType type, final KeyTree.Node node) throws IOException {
         if (raw == null) {
             return null;
         }
@@ -113,7 +113,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * @return the final string to be dumped
      */
     @Override
-    public String dump(String header, CommentType type, KeyTree.Node node) {
+    public String dump(final String header, final CommentType type, final KeyTree.Node node) {
         if (header == null) {
             return null;
         }
@@ -204,7 +204,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * @param commentPrefixFirst the comment prefix to apply to the beginning of the header
      * @return this object, for chaining
      */
-    public YamlHeaderFormatter prefixFirst(String commentPrefixFirst) {
+    public YamlHeaderFormatter prefixFirst(final String commentPrefixFirst) {
         this.configuration.prefix(commentPrefixFirst, this.commentPrefix());
         return this;
     }
@@ -214,7 +214,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
      * @param suffixMultiline the suffix to append to every line of the header
      * @return this object, for chaining
      */
-    public YamlHeaderFormatter commentSuffix(String suffixMultiline) {
+    public YamlHeaderFormatter commentSuffix(final String suffixMultiline) {
         this.configuration.suffix(this.configuration.suffixLast(BLANK_LINE), suffixMultiline);
         return this;
     }
@@ -238,7 +238,7 @@ public class YamlHeaderFormatter implements CommentFormatter {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         YamlHeaderFormatter that = (YamlHeaderFormatter) o;

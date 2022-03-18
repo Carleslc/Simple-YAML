@@ -9,12 +9,20 @@ import org.simpleyaml.configuration.comments.KeyTree;
 public class PrettyYamlCommentFormatter extends YamlCommentFormatter {
 
     public PrettyYamlCommentFormatter() {
-        super();
+        this(new YamlCommentFormatterConfiguration());
+    }
+
+    public PrettyYamlCommentFormatter(final YamlCommentFormatterConfiguration blockFormatter) {
+        this(blockFormatter, new YamlSideCommentFormatterConfiguration());
+    }
+
+    public PrettyYamlCommentFormatter(final YamlCommentFormatterConfiguration blockFormatter, final YamlSideCommentFormatterConfiguration sideFormatter) {
+        super(blockFormatter, sideFormatter);
         this.stripPrefix(true).trim(true);
     }
 
     @Override
-    public String dump(String comment, CommentType type, KeyTree.Node node) {
+    public String dump(final String comment, final CommentType type, final KeyTree.Node node) {
         if (type == CommentType.BLOCK && node != null && node.getIndentation() == 0 && !node.isFirstNode()) { // Block comment for root keys except the first key
             final YamlCommentFormatterConfiguration blockCommentFormatterConfiguration = this.formatterConfiguration(CommentType.BLOCK);
             final String defaultPrefixFirst = blockCommentFormatterConfiguration.prefixFirst();

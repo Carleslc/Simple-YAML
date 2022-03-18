@@ -20,14 +20,14 @@ public class YamlCommentFormatter implements CommentFormatter {
     protected final YamlCommentFormatterConfiguration blockFormatter;
     protected final YamlSideCommentFormatterConfiguration sideFormatter;
 
-    public YamlCommentFormatter(YamlCommentFormatterConfiguration blockFormatter, YamlSideCommentFormatterConfiguration sideFormatter) {
+    public YamlCommentFormatter(final YamlCommentFormatterConfiguration blockFormatter, final YamlSideCommentFormatterConfiguration sideFormatter) {
         Validate.notNull(blockFormatter, "blockFormatter configuration cannot be null!");
         Validate.notNull(blockFormatter, "sideFormatter configuration cannot be null!");
         this.blockFormatter = blockFormatter;
         this.sideFormatter = sideFormatter;
     }
 
-    public YamlCommentFormatter(YamlCommentFormatterConfiguration blockFormatter) {
+    public YamlCommentFormatter(final YamlCommentFormatterConfiguration blockFormatter) {
         this(blockFormatter, new YamlSideCommentFormatterConfiguration());
         this.stripPrefix(true);
     }
@@ -37,16 +37,16 @@ public class YamlCommentFormatter implements CommentFormatter {
     }
 
     @Override
-    public String parse(Reader raw, CommentType type, KeyTree.Node node) throws IOException {
+    public String parse(final Reader raw, final CommentType type, final KeyTree.Node node) throws IOException {
         if (raw == null) {
             return null;
         }
 
-        YamlCommentFormatterConfiguration formatterConfiguration = formatterConfiguration(type);
+        final YamlCommentFormatterConfiguration formatterConfiguration = this.formatterConfiguration(type);
 
         // Remove prefix indentation so the comment prefix can be stripped ignoring the indentation
-        String prefixFirst = StringUtils.stripIndentation(formatterConfiguration.prefixFirst());
-        String prefixMultiline = StringUtils.stripIndentation(formatterConfiguration.prefixMultiline());
+        final String prefixFirst = StringUtils.stripIndentation(formatterConfiguration.prefixFirst());
+        final String prefixMultiline = StringUtils.stripIndentation(formatterConfiguration.prefixMultiline());
 
         try (final BufferedReader reader = raw instanceof BufferedReader ? (BufferedReader) raw : new BufferedReader(raw)) {
             StringBuilder commentBuilder = new StringBuilder();
@@ -73,7 +73,7 @@ public class YamlCommentFormatter implements CommentFormatter {
         }
     }
 
-    protected String parseCommentLine(String line, String prefix, boolean strip) {
+    protected String parseCommentLine(final String line, final String prefix, final boolean strip) {
         String commentLine = StringUtils.stripIndentation(line);
         if (strip) {
             // Remove comment prefix or first # character if line do not start with the provided comment prefix
@@ -83,7 +83,7 @@ public class YamlCommentFormatter implements CommentFormatter {
     }
 
     @Override
-    public String dump(String comment, CommentType type, KeyTree.Node node) {
+    public String dump(final String comment, final CommentType type, final KeyTree.Node node) {
         final YamlCommentFormatterConfiguration formatterConfiguration = this.formatterConfiguration(type);
 
         String prefix = null;
@@ -110,7 +110,15 @@ public class YamlCommentFormatter implements CommentFormatter {
                 formatterConfiguration.suffixMultiline(), formatterConfiguration.suffixLast());
     }
 
-    public final YamlCommentFormatterConfiguration formatterConfiguration(CommentType type) {
+    public final YamlCommentFormatterConfiguration blockFormatter() {
+        return this.blockFormatter;
+    }
+
+    public final YamlSideCommentFormatterConfiguration sideFormatter() {
+        return this.sideFormatter;
+    }
+
+    public final YamlCommentFormatterConfiguration formatterConfiguration(final CommentType type) {
         return type == CommentType.BLOCK ? this.blockFormatter : this.sideFormatter;
     }
 
@@ -143,7 +151,7 @@ public class YamlCommentFormatter implements CommentFormatter {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         YamlCommentFormatter that = (YamlCommentFormatter) o;
