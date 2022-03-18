@@ -113,6 +113,7 @@ You can find some examples to test [here](https://github.com/Carleslc/Simple-YAM
 
 * [`YamlExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlExample.java): An example to create YAML files, save or delete values and move through the file configuration.
 * [`YamlCommentsExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlCommentsExample.java): An example to load and save YAML files keeping comments and also how to read and add comments programmatically.
+* [`YamlCommentsFormatExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlCommentsFormatExample.java): An example to format header and comments with custom prefixes, suffixes and blank lines.
 * [`YamlEncodingExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlEncodingExample.java): A minimal example to check your encoding with Unicode characters.
 * [`YamlSerializationExample`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/YamlSerializationExample.java): An example for saving complex objects using serialization.
 * [`Person`](https://github.com/Carleslc/Simple-YAML/blob/master/Simple-Yaml/src/test/java/org/simpleyaml/examples/Person.java): An example of class for complex objects used in the previous file. Here you can see how to serialize and deserialize objects.
