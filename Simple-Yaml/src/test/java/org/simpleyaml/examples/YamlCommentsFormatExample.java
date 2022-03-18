@@ -91,7 +91,7 @@ public class YamlCommentsFormatExample {
 
         // You can also set a custom formatted comment directly prefixing all lines with # (raw)
         yamlFile.path("custom.raw").set("This is a nested key")
-                .comment("\n# ***\n#~ This is a multiline\n#~~ raw comment\n# ***\n", YamlCommentFormat.RAW);
+                .comment("\n# ***\n#~ This is a multiline\n#~~ custom raw comment\n# ***\n", YamlCommentFormat.RAW);
 
         // Save file
         yamlFile.save();

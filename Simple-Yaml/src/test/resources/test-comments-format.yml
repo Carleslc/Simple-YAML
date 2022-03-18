@@ -1,0 +1,42 @@
+######################
+##  HEADER COMMENT  ##
+######################
+
+# This comment has a blank line above (header separator)
+key-1: This is a root key
+
+# This comment has a blank line above (pretty format)
+key-2:
+  # This comment does not have a blank line above
+  key-2-1: This is a nested key
+  
+  # This comment has a blank line above
+  key-2-2: This is a nested key
+  
+  # This comment has a blank line above
+  key-2-3: This is a nested key
+
+#--------------------#
+# Custom block format
+#--------------------#
+custom:
+  #--------------------#
+  # This is a multiline
+  # comment without
+  # blank line above
+  #--------------------#
+  multiline: This is a nested key  # Side comment
+  
+  #--------------------#
+  # This comment has
+  # a blank line above
+  # and custom format
+  #--------------------#
+  blank-line-custom: This is a nested key
+  
+  # ***
+  #~ This is a multiline
+  #~~ custom raw comment
+  # ***
+  
+  raw: This is a nested key
