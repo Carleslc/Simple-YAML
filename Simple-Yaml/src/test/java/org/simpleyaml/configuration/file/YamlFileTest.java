@@ -223,6 +223,32 @@ class YamlFileTest {
     }
 
     @Test
+    void saveDefaults() throws Exception {
+        final File temp = TestResources.tempFile();
+        //noinspection ResultOfMethodCallIgnored
+        temp.delete();
+
+        final YamlFile yamlFile = new YamlFile(temp);
+
+        MatcherAssert.assertThat(
+                "File already exists!",
+                yamlFile.exists(),
+                new IsNot<>(new IsTrue())
+        );
+
+        final String content = "number: 5\n";
+        yamlFile.addDefault("number", 5);
+
+        yamlFile.save();
+
+        MatcherAssert.assertThat(
+                "Defaults have not being correctly saved!",
+                TestResources.fileToStringUnix(yamlFile),
+                new IsEqual<>(content)
+        );
+    }
+
+    @Test
     void fileToString() throws Exception {
         final YamlFile yamlFile = new YamlFile(TestResources.getResourceURI("test.yml"));
         final String content = TestResources.testContent();

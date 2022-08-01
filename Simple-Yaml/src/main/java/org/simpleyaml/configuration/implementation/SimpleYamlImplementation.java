@@ -97,7 +97,7 @@ public class SimpleYamlImplementation extends SnakeYamlImplementation {
                 );
                 commentDumper.dump();
             } else {
-                this.dumpYaml(writer, section);
+                super.dumpYaml(writer, section);
             }
         }
     }

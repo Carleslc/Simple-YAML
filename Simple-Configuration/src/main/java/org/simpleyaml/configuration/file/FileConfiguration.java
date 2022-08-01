@@ -8,6 +8,7 @@ import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  * This is a base class for all File based implementations of {@link Configuration}
@@ -58,7 +59,7 @@ public abstract class FileConfiguration extends MemoryConfiguration implements L
             throw new IOException("Cannot create successfully all needed parent directories!");
         }
 
-        this.save(new OutputStreamWriter(new FileOutputStream(file), this.options().charset()));
+        this.save(new OutputStreamWriter(Files.newOutputStream(file.toPath()), this.options().charset()));
     }
 
     /**
@@ -135,7 +136,7 @@ public abstract class FileConfiguration extends MemoryConfiguration implements L
      */
     public void load(final File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
         Validate.notNull(file, "File cannot be null");
-        load(new FileInputStream(file));
+        load(Files.newInputStream(file.toPath()));
     }
 
     /**

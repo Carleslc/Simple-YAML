@@ -164,11 +164,21 @@ public class SnakeYamlImplementation extends YamlImplementationCommentable {
         if (writer == null) {
             return false;
         }
-        if (section == null || section.isEmpty()) {
-            writer.write("");
-            return false;
+
+        boolean empty = false;
+
+        if (section == null) {
+            empty = true;
+        } else if (section.isEmpty()) {
+            final ConfigurationSection defaultsSection = section.getDefaultSection();
+            empty = defaultsSection == null || defaultsSection.isEmpty();
         }
-        return true;
+
+        if (empty) {
+            writer.write("");
+        }
+
+        return !empty;
     }
 
     @Override
