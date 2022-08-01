@@ -20,7 +20,9 @@ import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.TestResources;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -911,6 +913,91 @@ class YamlFileTest {
                 new IsEqual<>("\n" +
                         "# Multiline\n" +
                         "# footer with blank lines")
+        );
+    }
+
+    @Test
+    void headerEmptyRootComment() throws Exception {
+        final String contents = TestResources.testHeader() +
+                "root: This is a root key\n";
+
+        YamlFile yamlFile = new YamlFile(TestResources.tempFile(contents));
+
+        yamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+                "Couldn't write to temporal file!",
+                TestResources.fileToStringUnix(yamlFile),
+                new IsEqual<>(contents)
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the options header correctly!",
+                yamlFile.options().header(),
+                new IsEqual<>(TestResources.testHeader().trim())
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the header correctly!",
+                yamlFile.getHeader(),
+                new IsEqual<>(TestResources.testHeader().trim())
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the first key comment correctly!",
+                yamlFile.getComment("root", YamlCommentFormat.RAW),
+                new IsNull<>()
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the first key comment correctly!",
+                yamlFile.getComment("[0]", YamlCommentFormat.RAW),
+                new IsNull<>()
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't save the header correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contents)
+        );
+
+        yamlFile.setComment("root", ""); // empty comment (blank line)
+
+        yamlFile.save();
+
+        final String contentsEmptyComment = TestResources.testHeader() +
+                "\nroot: This is a root key\n";
+
+        yamlFile.loadWithComments();
+
+        MatcherAssert.assertThat(
+                "Couldn't get the options header correctly after save!",
+                yamlFile.options().header(),
+                new IsEqual<>(TestResources.testHeader().trim())
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the header correctly after save!",
+                yamlFile.getHeader(),
+                new IsEqual<>(TestResources.testHeader().trim())
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the first key comment correctly!",
+                yamlFile.getComment("root", YamlCommentFormat.RAW),
+                new IsEqual<>("")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't get the first key comment correctly!",
+                yamlFile.getComment("[0]", YamlCommentFormat.RAW),
+                new IsEqual<>("")
+        );
+
+        MatcherAssert.assertThat(
+                "Couldn't save the header correctly!",
+                yamlFile.saveToString(),
+                new IsEqual<>(contentsEmptyComment)
         );
     }
 

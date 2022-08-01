@@ -6,6 +6,7 @@ import org.cactoos.io.TempFile;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -29,6 +30,16 @@ public final class TestResources {
 
     public static File tempFile() throws Exception {
         return new TempFile().value().toFile();
+    }
+
+    public static File tempFile(final String contents) throws Exception {
+        final File newTempFile = tempFile();
+
+        try (final FileWriter tempWriter = new FileWriter(newTempFile)) {
+            tempWriter.write(contents);
+        }
+
+        return newTempFile;
     }
 
     public static String fileToStringUnix(final YamlFile yamlFile) throws IOException {

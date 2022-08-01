@@ -125,11 +125,18 @@ public class YamlCommentParser extends YamlCommentReader {
     }
 
     public static String removeHeader(String blockComment, final YamlConfigurationOptions options) {
-        final String header = options.headerFormatter().dump(options.header());
+        String header = options.headerFormatter().dump(options.header());
         if (header != null && !header.isEmpty()) {
+            boolean headerWithBlankLine = header.endsWith("\n\n");
+            if (headerWithBlankLine) {
+                // header ends with a blank new line, but block comments end one line above, so we add a '\n' to strip the header
+                blockComment += '\n';
+            }
             blockComment = blockComment.replaceFirst(Pattern.quote(header), "");
             if (blockComment.isEmpty()) {
                 blockComment = null; // blockComment was the header
+            } else if (headerWithBlankLine) {
+                blockComment = blockComment.substring(0, blockComment.length() - 1); // restore extra '\n'
             }
         }
         return blockComment;
