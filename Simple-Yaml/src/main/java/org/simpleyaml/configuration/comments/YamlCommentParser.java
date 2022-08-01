@@ -125,7 +125,7 @@ public class YamlCommentParser extends YamlCommentReader {
     }
 
     public static String removeHeader(String blockComment, final YamlConfigurationOptions options) {
-        String header = options.headerFormatter().dump(options.header());
+        final String header = options.headerFormatter().dump(options.header());
         if (header != null && !header.isEmpty()) {
             boolean headerWithBlankLine = header.endsWith("\n\n");
             if (headerWithBlankLine) {
