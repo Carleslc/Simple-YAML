@@ -7,23 +7,23 @@
     <parent>
         <artifactId>Simple-YAML-Parent</artifactId>
         <groupId>me.carleslc.simpleyaml</groupId>
-        <version>1.8.1</version>
+        <version>1.8.2</version>
     </parent>
     <artifactId>Simple-Yaml</artifactId>
     <groupId>me.carleslc</groupId>
     <name>Simple-Yaml</name>
-    <version>1.8.1</version>
+    <version>1.8.2</version>
 
     <dependencies>
         <dependency>
             <groupId>me.carleslc</groupId>
             <artifactId>Simple-Configuration</artifactId>
-            <version>1.8.1</version>
+            <version>1.8.2</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.30</version>
+            <version>1.32</version>
         </dependency>
     </dependencies>
 
