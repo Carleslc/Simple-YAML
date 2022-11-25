@@ -12,8 +12,8 @@ YAML is a human-readable data-oriented serialization language.
 
 Serialization is the process of translating data structures or object state into a format that can be stored and reconstructed later in the same or another computer environment.
 
-You can learn more about YAML language [here](http://www.yaml.org/spec/1.2/spec.html). Specifically, if you're interested to learn about the YAML syntax you can go to the
-[Chapter 2 of the YAML specification](http://www.yaml.org/spec/1.2/spec.html#Preview).
+You can learn more about YAML language [here](https://yaml.org/spec/1.2.2/). Specifically, if you're interested to learn about the YAML syntax you can go to the
+[Chapter 2 of the YAML specification](https://yaml.org/spec/1.2.2/#chapter-2-language-overview).
 
 Filename extensions: `.yaml`, `.yml`
 
@@ -52,7 +52,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 <dependency>
     <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Yaml</artifactId>
-    <version>1.8.2</version>
+    <version>1.8.3</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 <dependency>
     <groupId>me.carleslc.Simple-YAML</groupId>
     <artifactId>Simple-Configuration</artifactId>
-    <version>1.8.2</version>
+    <version>1.8.3</version>
 </dependency>
 ```
 
@@ -88,7 +88,7 @@ allprojects {
 
 ```gradle
 dependencies {
-  implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.8.2'
+  implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.8.3'
 }
 ```
 
@@ -99,7 +99,7 @@ dependencies {
 
 ```gradle
 dependencies {
-  implementation 'me.carleslc.Simple-YAML:Simple-Configuration:1.8.2'
+  implementation 'me.carleslc.Simple-YAML:Simple-Configuration:1.8.3'
 }
 ```
 
@@ -143,4 +143,4 @@ Have a look to these repositories:
 - [HOCON](https://github.com/portlek/hocongration)
 - [TOML](https://github.com/portlek/tomlgration)
 
-These projects are using the Simple-Configuration module and they are not related directly with Simple-YAML.
+These projects are using the Simple-Configuration module, but they are not related directly with Simple-YAML.
