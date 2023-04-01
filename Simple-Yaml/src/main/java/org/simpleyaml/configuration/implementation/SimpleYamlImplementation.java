@@ -15,7 +15,9 @@ import org.simpleyaml.exceptions.InvalidConfigurationException;
 import org.simpleyaml.utils.SectionUtils;
 import org.simpleyaml.utils.SupplierIO;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.error.YAMLException;
+import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,15 +32,26 @@ import java.util.Map;
 public class SimpleYamlImplementation extends SnakeYamlImplementation {
 
     public SimpleYamlImplementation() {
-        super(new SnakeYamlRepresenter());
+        super();
+    }
+
+    public SimpleYamlImplementation(final LoaderOptions loaderOptions, final DumperOptions dumperOptions) {
+        super(loaderOptions, dumperOptions);
     }
 
     public SimpleYamlImplementation(final SnakeYamlRepresenter yamlRepresenter) {
         super(yamlRepresenter);
     }
 
-    public SimpleYamlImplementation(final SnakeYamlConstructor yamlConstructor, final SnakeYamlRepresenter yamlRepresenter, final DumperOptions yamlOptions) {
-        super(yamlConstructor, yamlRepresenter, yamlOptions);
+    public SimpleYamlImplementation(final SnakeYamlConstructor yamlConstructor,
+                                   final SnakeYamlRepresenter yamlRepresenter) {
+        super(yamlConstructor, yamlRepresenter);
+    }
+
+    public SimpleYamlImplementation(final SnakeYamlConstructor yamlConstructor,
+                                   final SnakeYamlRepresenter yamlRepresenter,
+                                   final Resolver resolver) {
+        super(yamlConstructor, yamlRepresenter, resolver);
     }
 
     @Override
@@ -149,8 +162,8 @@ public class SimpleYamlImplementation extends SnakeYamlImplementation {
         super.configure(options);
 
         // Use custom comment processor
-        this.getLoaderOptions().setProcessComments(false);
-        this.getDumperOptions().setProcessComments(false);
+        this.loaderOptions.setProcessComments(false);
+        this.dumperOptions.setProcessComments(false);
     }
 
 }

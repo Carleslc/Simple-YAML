@@ -13,6 +13,7 @@ import org.simpleyaml.utils.SupplierIO;
 import org.simpleyaml.utils.Validate;
 
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  * An implementation of {@link Configuration} which saves the configuration in Yaml.
@@ -196,7 +197,7 @@ public class YamlConfiguration extends FileConfiguration {
     @Override
     public void load(final File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
         Validate.notNull(file, "File cannot be null");
-        load(() -> new FileInputStream(file));
+        load(() -> Files.newInputStream(file.toPath()));
     }
 
     /**

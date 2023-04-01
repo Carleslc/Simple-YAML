@@ -5,6 +5,7 @@ import org.simpleyaml.configuration.implementation.api.QuoteValue;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
@@ -20,10 +21,18 @@ import java.util.Map;
  */
 public class SnakeYamlRepresenter extends Representer {
 
-    public SnakeYamlRepresenter() {
+    private final DumperOptions dumperOptions;
+
+    public SnakeYamlRepresenter(final DumperOptions dumperOptions) {
+        super(dumperOptions);
+        this.dumperOptions = dumperOptions;
         this.multiRepresenters.put(ConfigurationSection.class, new RepresentConfigurationSection());
         this.multiRepresenters.put(ConfigurationSerializable.class, new RepresentConfigurationSerializable());
         this.multiRepresenters.put(QuoteValue.class, new RepresentQuoteValue());
+    }
+
+    protected final DumperOptions getDumperOptions() {
+        return this.dumperOptions;
     }
 
     private final class RepresentConfigurationSection extends RepresentMap {

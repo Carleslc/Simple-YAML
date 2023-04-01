@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration.implementation.snakeyaml;
 
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.nodes.*;
@@ -10,11 +11,13 @@ import java.util.Map;
 
 /**
  * @author Bukkit
+ * @author Carleslc
  * @see <a href="https://github.com/Bukkit/Bukkit/tree/master/src/main/java/org/bukkit/configuration/file/YamlConstructor.java">Bukkit Source</a>
  */
 public class SnakeYamlConstructor extends SafeConstructor {
 
-    public SnakeYamlConstructor() {
+    public SnakeYamlConstructor(final LoaderOptions loaderOptions) {
+        super(loaderOptions);
         this.yamlConstructors.put(Tag.MAP, new ConstructCustomObject());
     }
 
@@ -66,7 +69,6 @@ public class SnakeYamlConstructor extends SafeConstructor {
         public void construct2ndStep(final Node node, final Object object) {
             throw new YAMLException("Unexpected referential mapping structure. Node: " + node);
         }
-
     }
 
 }

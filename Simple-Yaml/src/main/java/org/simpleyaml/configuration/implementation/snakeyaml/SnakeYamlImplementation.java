@@ -25,38 +25,37 @@ import java.util.Map;
  */
 public class SnakeYamlImplementation extends YamlImplementationCommentable {
 
-    private SnakeYamlConstructor yamlConstructor;
-    private SnakeYamlRepresenter yamlRepresenter;
-    private DumperOptions dumperOptions;
-    private LoaderOptions loaderOptions;
-    private Resolver resolver;
-    private Yaml yaml;
+    protected final SnakeYamlConstructor yamlConstructor;
+    protected final SnakeYamlRepresenter yamlRepresenter;
+    protected final DumperOptions dumperOptions;
+    protected final LoaderOptions loaderOptions;
+    protected final Resolver resolver;
+    protected final Yaml yaml;
 
     public SnakeYamlImplementation() {
-        this(new SnakeYamlRepresenter());
+        this(new LoaderOptions(), new DumperOptions());
+    }
+
+    public SnakeYamlImplementation(final LoaderOptions loaderOptions, final DumperOptions dumperOptions) {
+        this(new SnakeYamlConstructor(loaderOptions), new SnakeYamlRepresenter(dumperOptions));
     }
 
     public SnakeYamlImplementation(final SnakeYamlRepresenter yamlRepresenter) {
-        this(new SnakeYamlConstructor(), yamlRepresenter, new DumperOptions());
+        this(new SnakeYamlConstructor(new LoaderOptions()), yamlRepresenter);
     }
 
-    public SnakeYamlImplementation(final SnakeYamlConstructor yamlConstructor, final SnakeYamlRepresenter yamlRepresenter, final DumperOptions yamlOptions) {
-        this.setYaml(yamlConstructor, yamlRepresenter, yamlOptions);
+    public SnakeYamlImplementation(final SnakeYamlConstructor yamlConstructor,
+                                   final SnakeYamlRepresenter yamlRepresenter) {
+        this(yamlConstructor, yamlRepresenter, new Resolver());
     }
 
-    protected final void setYaml(final SnakeYamlConstructor yamlConstructor, final SnakeYamlRepresenter yamlRepresenter, final DumperOptions yamlOptions) {
-        this.setYaml(yamlConstructor, yamlRepresenter, yamlOptions, new LoaderOptions(), new Resolver());
-    }
-
-    protected final void setYaml(final SnakeYamlConstructor yamlConstructor,
+    public SnakeYamlImplementation(final SnakeYamlConstructor yamlConstructor,
                                  final SnakeYamlRepresenter yamlRepresenter,
-                                 final DumperOptions dumperOptions,
-                                 final LoaderOptions loaderOptions,
                                  final Resolver resolver) {
         this.yamlConstructor = yamlConstructor;
         this.yamlRepresenter = yamlRepresenter;
-        this.dumperOptions = dumperOptions;
-        this.loaderOptions = loaderOptions;
+        this.loaderOptions = yamlConstructor.getLoadingConfig();
+        this.dumperOptions = yamlRepresenter.getDumperOptions();
         this.resolver = resolver;
         this.yaml = new Yaml(this.yamlConstructor, this.yamlRepresenter, this.dumperOptions, this.loaderOptions, this.resolver);
     }
