@@ -56,6 +56,8 @@ If you are using Maven you do not need to download the jar. Instead, add this re
 </dependency>
 ```
 
+You can also use `me.carleslc.Simple-YAML` as the _groupId_.
+
 </details>
 
 <details>
@@ -68,6 +70,8 @@ If you are using Maven you do not need to download the jar. Instead, add this re
     <version>1.8.4</version>
 </dependency>
 ```
+
+You can also use `me.carleslc.Simple-YAML` as the _groupId_.
 
 </details>
 
