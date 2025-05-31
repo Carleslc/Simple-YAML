@@ -642,6 +642,24 @@ public class MemorySection implements ConfigurationSection {
     }
 
     @Override
+    public byte getByte(final String path) {
+        final Object def = this.getDefault(path);
+        return this.getByte(path, def instanceof Number ? NumberConversions.toByte(def) : 0);
+    }
+
+    @Override
+    public byte getByte(final String path, final byte def) {
+        final Object val = this.get(path, def);
+        return val instanceof Number ? NumberConversions.toByte(val) : def;
+    }
+
+    @Override
+    public boolean isByte(final String path) {
+        final Object val = this.get(path);
+        return val instanceof Byte;
+    }
+
+    @Override
     public double getDouble(final String path) {
         final Object def = this.getDefault(path);
         return this.getDouble(path, def instanceof Number ? NumberConversions.toDouble(def) : 0);

@@ -354,6 +354,46 @@ public interface ConfigurationSection {
     boolean isBoolean(String path);
 
     /**
+     * Gets the requested byte by path.
+     * <p>
+     * If the byte does not exist but a default value has been specified,
+     * this will return the default value. If the byte does not exist and
+     * no default value was specified, this will return 0.
+     *
+     * @param path Path of the byte to get.
+     * @return Requested byte.
+     */
+    byte getByte(String path);
+
+    /**
+     * Gets the requested byte by path, returning a default value if not
+     * found.
+     * <p>
+     * If the byte does not exist then the specified default value will
+     * returned regardless of if a default has been identified in the root
+     * {@link Configuration}.
+     *
+     * @param path Path of the byte to get.
+     * @param def  The default value to return if the path is not found or is
+     *             not a byte.
+     * @return Requested byte.
+     */
+    byte getByte(String path, byte def);
+
+    /**
+     * Checks if the specified path is a byte.
+     * <p>
+     * If the path exists but is not a byte, this will return false. If the
+     * path does not exist, this will return false. If the path does not exist
+     * but a default value has been specified, this will check if that default
+     * value is a byte and return appropriately.
+     *
+     * @param path Path of the byte to check.
+     * @return Whether or not the specified path is a byte.
+     */
+    boolean isByte(String path);
+
+    /**
      * Gets the requested double by path.
      * <p>
      * If the double does not exist but a default value has been specified,
