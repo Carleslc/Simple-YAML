@@ -695,6 +695,24 @@ public class MemorySection implements ConfigurationSection {
         return val instanceof Long;
     }
 
+    @Override
+    public short getShort(final String path) {
+        final Object def = this.getDefault(path);
+        return this.getShort(path, def instanceof Number ? NumberConversions.toShort(def) : 0);
+    }
+
+    @Override
+    public short getShort(final String path, final short def) {
+        final Object val = this.get(path, def);
+        return val instanceof Number ? NumberConversions.toShort(val) : def;
+    }
+
+    @Override
+    public boolean isShort(final String path) {
+        final Object val = this.get(path);
+        return val instanceof Short;
+    }
+
     // Java
     @Override
     public List<?> getList(final String path) {

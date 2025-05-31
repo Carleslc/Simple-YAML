@@ -473,6 +473,46 @@ public interface ConfigurationSection {
      */
     boolean isLong(String path);
 
+    /**
+     * Gets the requested short by path.
+     * <p>
+     * If the short does not exist but a default value has been specified, this
+     * will return the default value. If the short does not exist and no
+     * default value was specified, this will return 0.
+     *
+     * @param path Path of the short to get.
+     * @return Requested short.
+     */
+    short getShort(String path);
+
+    /**
+     * Gets the requested short by path, returning a default value if not
+     * found.
+     * <p>
+     * If the short does not exist then the specified default value will
+     * returned regardless of if a default has been identified in the root
+     * {@link Configuration}.
+     *
+     * @param path Path of the short to get.
+     * @param def  The default value to return if the path is not found or is
+     *             not a short.
+     * @return Requested short.
+     */
+    short getShort(String path, short def);
+
+    /**
+     * Checks if the specified path is a short.
+     * <p>
+     * If the path exists but is not a short, this will return false. If the
+     * path does not exist, this will return false. If the path does not exist
+     * but a default value has been specified, this will check if that default
+     * value is a short and return appropriately.
+     *
+     * @param path Path of the short to check.
+     * @return Whether or not the specified path is a short.
+     */
+    boolean isShort(String path);
+
     // Java
 
     /**
