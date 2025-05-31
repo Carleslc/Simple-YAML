@@ -394,6 +394,46 @@ public interface ConfigurationSection {
     boolean isByte(String path);
 
     /**
+     * Gets the requested char by path.
+     * <p>
+     * If the char does not exist but a default value has been specified,
+     * this will return the default value. If the char does not exist and
+     * no default value was specified, this will return '\0'.
+     *
+     * @param path Path of the char to get.
+     * @return Requested char.
+     */
+    char getCharacter(String path);
+
+    /**
+     * Gets the requested char by path, returning a default value if not
+     * found.
+     * <p>
+     * If the char does not exist then the specified default value will
+     * returned regardless of if a default has been identified in the root
+     * {@link Configuration}.
+     *
+     * @param path Path of the char to get.
+     * @param def  The default value to return if the path is not found or is
+     *             not a char.
+     * @return Requested char.
+     */
+    char getCharacter(String path, char def);
+
+    /**
+     * Checks if the specified path is a char.
+     * <p>
+     * If the path exists but is not a char, this will return false. If the
+     * path does not exist, this will return false. If the path does not exist
+     * but a default value has been specified, this will check if that default
+     * value is a char and return appropriately.
+     *
+     * @param path Path of the char to check.
+     * @return Whether or not the specified path is a char.
+     */
+    boolean isCharacter(String path);
+
+    /**
      * Gets the requested double by path.
      * <p>
      * If the double does not exist but a default value has been specified,

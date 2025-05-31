@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration;
 
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
+import org.simpleyaml.utils.CharacterConversions;
 import org.simpleyaml.utils.NumberConversions;
 import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
@@ -657,6 +658,24 @@ public class MemorySection implements ConfigurationSection {
     public boolean isByte(final String path) {
         final Object val = this.get(path);
         return val instanceof Byte;
+    }
+
+    @Override
+    public char getCharacter(final String path) {
+        final Object def = this.getDefault(path);
+        return this.getCharacter(path, def instanceof Character ? (Character) def : '\0');
+    }
+
+    @Override
+    public char getCharacter(final String path, final char def) {
+        final Object val = this.get(path, def);
+        return CharacterConversions.canBeChar(val) ? CharacterConversions.toChar(val) : def;
+    }
+
+    @Override
+    public boolean isCharacter(final String path) {
+        final Object val = this.get(path);
+        return val instanceof Character;
     }
 
     @Override
