@@ -4,7 +4,7 @@
 
 _This Java API provides an easy-to-use way to store data and provide configurations using the YAML format._
 
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/carleslc)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/carleslc)
 
 ## What is YAML?
 
