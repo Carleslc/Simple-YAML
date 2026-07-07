@@ -22,7 +22,7 @@ public class YamlCommentFormatter implements CommentFormatter {
 
     public YamlCommentFormatter(final YamlCommentFormatterConfiguration blockFormatter, final YamlSideCommentFormatterConfiguration sideFormatter) {
         Validate.notNull(blockFormatter, "blockFormatter configuration cannot be null!");
-        Validate.notNull(blockFormatter, "sideFormatter configuration cannot be null!");
+        Validate.notNull(sideFormatter, "sideFormatter configuration cannot be null!");
         this.blockFormatter = blockFormatter;
         this.sideFormatter = sideFormatter;
     }
