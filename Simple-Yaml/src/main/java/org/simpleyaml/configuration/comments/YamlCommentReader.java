@@ -454,28 +454,36 @@ public abstract class YamlCommentReader extends YamlCommentMapper implements Clo
             return this.trackExplicit();
         }
 
+        // Save the line values before reading the key, because reading a multiline key advances to its continuation lines
+        final int indent = this.indent;
+        final boolean isListElement = this.isListElement;
+
         this.key = this.readKey();
 
-        if (this.isListElement) {
-            this.trackListElement();
+        if (isListElement) {
+            this.trackListElement(indent);
         } else {
-            this.track(this.indent, this.key);
+            this.track(indent, this.key);
         }
 
         return this.currentNode;
     }
 
     protected void trackListElement() {
-        if (this.currentList == null || (this.currentNode != null && this.indent > this.currentNode.indent)) {
-            this.currentList = this.keyTree.findParent(this.indent + 2); // "- " prefix
+        this.trackListElement(this.indent);
+    }
+
+    protected void trackListElement(final int indent) {
+        if (this.currentList == null || (this.currentNode != null && indent > this.currentNode.indent)) {
+            this.currentList = this.keyTree.findParent(indent + 2); // "- " prefix
             if (this.currentList.listSize == null || this.currentList.size() == 0) {
                 this.currentList.isList(0);
             }
         }
-        if (this.isExplicit() && this.indent == this.explicitNotation.getIndentation()) { // : - value
+        if (this.isExplicit() && indent == this.explicitNotation.getIndentation()) { // : - value
             this.currentNode = this.currentList.add(this.key);
         } else { // - value
-            this.currentNode = this.currentList.add(this.indent, this.key);
+            this.currentNode = this.currentList.add(indent, this.key);
         }
         this.currentList.isList(this.currentList.listSize + 1);
         this.currentNode.setElementIndex(this.currentList.listSize - 1);

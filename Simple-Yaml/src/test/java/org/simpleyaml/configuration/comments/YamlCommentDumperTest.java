@@ -9,6 +9,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
 import org.simpleyaml.configuration.file.YamlConfiguration;
+import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.utils.StringUtils;
 
 class YamlCommentDumperTest {
@@ -43,6 +44,51 @@ class YamlCommentDumperTest {
                 "test-2: 'test-2' # test comment\n" +
                 "# test # comment\n" +
                 "test-3: 'test-3 #' # test # comment\n")
+        );
+    }
+
+    @Test
+    void dumpMultilineListElement() throws IOException {
+        // https://github.com/Carleslc/Simple-YAML/issues/79
+        final String value = "&8%plugin_so-sum_{cat}_{sub-cat}%&8 in &8%plugin_so-count_{cat}_{sub-cat}%&8 offers";
+
+        final YamlFile yamlFile = new YamlFile();
+        yamlFile.options().useComments(true);
+        yamlFile.set("test", Arrays.asList(value));
+
+        final String contents = yamlFile.saveToString();
+
+        MatcherAssert.assertThat(
+            "Multiline list element is wrong!",
+            contents,
+            new IsEqual<>("test:\n" +
+                "  - '&8%plugin_so-sum_{cat}_{sub-cat}%&8 in &8%plugin_so-count_{cat}_{sub-cat}%&8\n" +
+                "    offers'\n")
+        );
+
+        // Round-trip with comments
+        final YamlFile loadedYamlFile = new YamlFile();
+        loadedYamlFile.options().useComments(true);
+        loadedYamlFile.loadFromString("test:\n" +
+            "  # block comment\n" +
+            "  - '&8%plugin_so-sum_{cat}_{sub-cat}%&8 in &8%plugin_so-count_{cat}_{sub-cat}%&8\n" +
+            "    offers'\n" +
+            "  - second # side comment\n");
+
+        MatcherAssert.assertThat(
+            "Multiline list element value is wrong!",
+            loadedYamlFile.getList("test"),
+            new IsEqual<>(Arrays.asList(value, "second"))
+        );
+
+        MatcherAssert.assertThat(
+            "Multiline list element comments are wrong!",
+            loadedYamlFile.saveToString(),
+            new IsEqual<>("test:\n" +
+                "  # block comment\n" +
+                "  - '&8%plugin_so-sum_{cat}_{sub-cat}%&8 in &8%plugin_so-count_{cat}_{sub-cat}%&8\n" +
+                "    offers'\n" +
+                "  - second # side comment\n")
         );
     }
 

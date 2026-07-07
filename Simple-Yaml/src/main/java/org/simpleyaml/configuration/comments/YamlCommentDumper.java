@@ -15,6 +15,7 @@ public class YamlCommentDumper extends YamlCommentReader {
     protected final DumperBus bus;
     protected BufferedWriter writer;
     protected StringWriter explicitBlock;
+    protected StringWriter multilineKeyBlock;
 
     protected KeyTree.Node commentNode, commentNodeFallback, firstListMapElement;
 
@@ -55,9 +56,16 @@ public class YamlCommentDumper extends YamlCommentReader {
     @Override
     protected void processLine() throws IOException {
         this.clearSection();
+        final String line = this.currentLine; // reading a multiline key advances currentLine to its last continuation line
         this.getCommentNode(this.track());
         this.appendBlockComment();
-        this.writer.write(this.currentLine);
+        if (this.multilineKeyBlock != null) {
+            this.writer.write(line);
+            this.writer.write(this.multilineKeyBlock.toString());
+            this.multilineKeyBlock = null;
+        } else {
+            this.writer.write(this.currentLine);
+        }
         this.appendSideComment();
     }
 
@@ -222,6 +230,16 @@ public class YamlCommentDumper extends YamlCommentReader {
     }
 
     @Override
+    protected void readKeyMultiline(final StringBuilder keyBuilder) throws IOException {
+        // Continuation lines of a multiline key are buffered so processLine can write them
+        // after the block comment and the first line of the key
+        if (!this.isExplicit() && this.multilineKeyBlock == null) {
+            this.multilineKeyBlock = new StringWriter();
+        }
+        super.readKeyMultiline(keyBuilder);
+    }
+
+    @Override
     protected void processMultiline(boolean inQuoteBlock) throws IOException {
         Writer writer;
         if (this.isExplicit()) {
@@ -229,6 +247,8 @@ public class YamlCommentDumper extends YamlCommentReader {
                 this.explicitBlock = new StringWriter();
             }
             writer = this.explicitBlock;
+        } else if (this.multilineKeyBlock != null) {
+            writer = this.multilineKeyBlock;
         } else {
             writer = this.writer;
         }
