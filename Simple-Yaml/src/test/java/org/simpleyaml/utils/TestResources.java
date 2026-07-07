@@ -237,7 +237,7 @@ public final class TestResources {
                 "# Some timestamps\n" +
                 "'timestamp':\n" +
                 "  # ISO\n" +
-                "  'canonicalDate': 2020-07-04T13:18:04.458Z\n" +
+                "  'canonicalDate': !!timestamp '2020-07-04T13:18:04.458Z'\n" +
                 "  # Date/Time with format\n" +
                 "  'formattedDate': '04/07/2020 15:18:04' # dd/MM/yyyy HH:mm:ss\n" +
                 "\n" +
@@ -290,7 +290,8 @@ public final class TestResources {
                 "# Some timestamps\n" +
                 "\"timestamp\":\n" +
                 "  # ISO\n" +
-                "  \"canonicalDate\": 2020-07-04T13:18:04.458Z\n" +
+                "  \"canonicalDate\": !!timestamp |-\n" +
+                "    2020-07-04T13:18:04.458Z\n" +
                 "  # Date/Time with format\n" +
                 "  \"formattedDate\": |- # dd/MM/yyyy HH:mm:ss\n" +
                 "    04/07/2020 15:18:04\n" +
