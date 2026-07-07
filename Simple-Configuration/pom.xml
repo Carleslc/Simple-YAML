@@ -7,7 +7,7 @@
     <parent>
         <artifactId>Simple-YAML-Parent</artifactId>
         <groupId>me.carleslc.simpleyaml</groupId>
-        <version>1.8.4</version>
+        <version>1.8.5</version>
     </parent>
     <artifactId>Simple-Configuration</artifactId>
     <groupId>me.carleslc</groupId>
