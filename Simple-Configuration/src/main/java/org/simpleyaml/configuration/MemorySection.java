@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration;
 
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
+import org.simpleyaml.utils.CharacterConversions;
 import org.simpleyaml.utils.NumberConversions;
 import org.simpleyaml.utils.StringUtils;
 import org.simpleyaml.utils.Validate;
@@ -642,6 +643,42 @@ public class MemorySection implements ConfigurationSection {
     }
 
     @Override
+    public byte getByte(final String path) {
+        final Object def = this.getDefault(path);
+        return this.getByte(path, def instanceof Number ? NumberConversions.toByte(def) : 0);
+    }
+
+    @Override
+    public byte getByte(final String path, final byte def) {
+        final Object val = this.get(path, def);
+        return val instanceof Number ? NumberConversions.toByte(val) : def;
+    }
+
+    @Override
+    public boolean isByte(final String path) {
+        final Object val = this.get(path);
+        return val instanceof Byte;
+    }
+
+    @Override
+    public char getCharacter(final String path) {
+        final Object def = this.getDefault(path);
+        return this.getCharacter(path, def instanceof Character ? (Character) def : '\0');
+    }
+
+    @Override
+    public char getCharacter(final String path, final char def) {
+        final Object val = this.get(path, def);
+        return CharacterConversions.canBeChar(val) ? CharacterConversions.toChar(val) : def;
+    }
+
+    @Override
+    public boolean isCharacter(final String path) {
+        final Object val = this.get(path);
+        return val instanceof Character;
+    }
+
+    @Override
     public double getDouble(final String path) {
         final Object def = this.getDefault(path);
         return this.getDouble(path, def instanceof Number ? NumberConversions.toDouble(def) : 0);
@@ -660,6 +697,24 @@ public class MemorySection implements ConfigurationSection {
     }
 
     @Override
+    public float getFloat(final String path) {
+        final Object def = this.getDefault(path);
+        return this.getFloat(path, def instanceof Number ? NumberConversions.toFloat(def) : 0);
+    }
+
+    @Override
+    public float getFloat(final String path, final float def) {
+        final Object val = this.get(path, def);
+        return val instanceof Number ? NumberConversions.toFloat(val) : def;
+    }
+
+    @Override
+    public boolean isFloat(final String path) {
+        final Object val = this.get(path);
+        return val instanceof Float;
+    }
+
+    @Override
     public long getLong(final String path) {
         final Object def = this.getDefault(path);
         return this.getLong(path, def instanceof Number ? NumberConversions.toLong(def) : 0);
@@ -675,6 +730,24 @@ public class MemorySection implements ConfigurationSection {
     public boolean isLong(final String path) {
         final Object val = this.get(path);
         return val instanceof Long;
+    }
+
+    @Override
+    public short getShort(final String path) {
+        final Object def = this.getDefault(path);
+        return this.getShort(path, def instanceof Number ? NumberConversions.toShort(def) : 0);
+    }
+
+    @Override
+    public short getShort(final String path, final short def) {
+        final Object val = this.get(path, def);
+        return val instanceof Number ? NumberConversions.toShort(val) : def;
+    }
+
+    @Override
+    public boolean isShort(final String path) {
+        final Object val = this.get(path);
+        return val instanceof Short;
     }
 
     // Java
