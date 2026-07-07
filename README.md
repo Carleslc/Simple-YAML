@@ -134,17 +134,6 @@ For more information and methods see the **Javadoc**:
 
 This API uses _SnakeYAML_ underneath. It is already included in the [latest Simple-Yaml.jar](https://github.com/Carleslc/Simple-YAML/releases) and with the maven or gradle dependencies.
 
-* [SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml)
-    + [Javadoc](https://javadoc.io/doc/org.yaml/snakeyaml/latest/index.html)
-    + [Documentation](https://bitbucket.org/snakeyaml/snakeyaml/wiki/Documentation)
-
-### Looking for other file type configurations?
-
-Have a look to these repositories:
-
-- [XML](https://github.com/portlek/xmlgration)
-- [JSON](https://github.com/portlek/jsongration)
-- [HOCON](https://github.com/portlek/hocongration)
-- [TOML](https://github.com/portlek/tomlgration)
-
-These projects are using the Simple-Configuration module, but they are not related directly with Simple-YAML.
+* [SnakeYAML](https://codeberg.org/snakeyaml/snakeyaml)
+    + [Javadoc](https://javadoc.io/doc/org.yaml/snakeyaml/2.6/index.html)
+    + [Documentation](https://codeberg.org/snakeyaml/snakeyaml/wiki)
