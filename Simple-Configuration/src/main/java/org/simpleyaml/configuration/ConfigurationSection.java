@@ -387,6 +387,12 @@ public interface ConfigurationSection {
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
      * value is a byte and return appropriately.
+     * <p>
+     * Note that values loaded from a YAML file are parsed as {@link Integer},
+     * {@link Long} or {@link Double}, never as {@link Byte}, so this will only
+     * return true for values set programmatically with a byte value, like
+     * {@code set(path, (byte) 1)}. To read a byte value from a file use
+     * {@link #getByte(String)}, which converts any numeric value to a byte.
      *
      * @param path Path of the byte to check.
      * @return Whether or not the specified path is a byte.
@@ -427,6 +433,12 @@ public interface ConfigurationSection {
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
      * value is a char and return appropriately.
+     * <p>
+     * Note that values loaded from a YAML file are parsed as {@link String},
+     * never as {@link Character}, so this will only return true for values set
+     * programmatically with a char value, like {@code set(path, 'a')}. To read
+     * a char value from a file use {@link #getCharacter(String)}, which converts
+     * single-character strings and numeric code points to a char.
      *
      * @param path Path of the char to check.
      * @return Whether or not the specified path is a char.
@@ -507,6 +519,12 @@ public interface ConfigurationSection {
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
      * value is a float and return appropriately.
+     * <p>
+     * Note that values loaded from a YAML file are parsed as {@link Double},
+     * never as {@link Float}, so this will only return true for values set
+     * programmatically with a float value, like {@code set(path, 1.5f)}. To read
+     * a float value from a file use {@link #getFloat(String)}, which converts
+     * any numeric value to a float.
      *
      * @param path Path of the float to check.
      * @return Whether or not the specified path is a float.
@@ -587,6 +605,12 @@ public interface ConfigurationSection {
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
      * value is a short and return appropriately.
+     * <p>
+     * Note that values loaded from a YAML file are parsed as {@link Integer},
+     * {@link Long} or {@link Double}, never as {@link Short}, so this will only
+     * return true for values set programmatically with a short value, like
+     * {@code set(path, (short) 1)}. To read a short value from a file use
+     * {@link #getShort(String)}, which converts any numeric value to a short.
      *
      * @param path Path of the short to check.
      * @return Whether or not the specified path is a short.

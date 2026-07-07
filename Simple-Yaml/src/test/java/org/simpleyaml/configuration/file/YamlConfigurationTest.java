@@ -62,6 +62,37 @@ class YamlConfigurationTest {
     }
 
     @Test
+    void primitiveGetters() throws IOException {
+        final YamlConfiguration configuration = new YamlConfiguration();
+        configuration.loadFromString("b: 5\ns: 300\nf: 1.5\nc: A\nn: 65\n");
+
+        // Values loaded from a YAML file are parsed as Integer, Long, Double or String,
+        // so the getters convert them to the requested primitive type
+        MatcherAssert.assertThat("Wrong byte!", configuration.getByte("b"), new IsEqual<>((byte) 5));
+        MatcherAssert.assertThat("Wrong short!", configuration.getShort("s"), new IsEqual<>((short) 300));
+        MatcherAssert.assertThat("Wrong float!", configuration.getFloat("f"), new IsEqual<>(1.5f));
+        MatcherAssert.assertThat("Wrong char!", configuration.getCharacter("c"), new IsEqual<>('A'));
+        MatcherAssert.assertThat("Wrong char from code point!", configuration.getCharacter("n"), new IsEqual<>('A'));
+        MatcherAssert.assertThat("Wrong byte default!", configuration.getByte("missing", (byte) 7), new IsEqual<>((byte) 7));
+
+        // is* checks are false for loaded values because they are not parsed with the exact primitive wrapper type
+        MatcherAssert.assertThat("Loaded value is not a Byte!", configuration.isByte("b"), new IsEqual<>(false));
+        MatcherAssert.assertThat("Loaded value is not a Short!", configuration.isShort("s"), new IsEqual<>(false));
+        MatcherAssert.assertThat("Loaded value is not a Float!", configuration.isFloat("f"), new IsEqual<>(false));
+        MatcherAssert.assertThat("Loaded value is not a Character!", configuration.isCharacter("c"), new IsEqual<>(false));
+
+        // is* checks are true for values set programmatically with the exact primitive wrapper type
+        configuration.set("mb", (byte) 5);
+        configuration.set("ms", (short) 300);
+        configuration.set("mf", 1.5f);
+        configuration.set("mc", 'A');
+        MatcherAssert.assertThat("Set value is a Byte!", configuration.isByte("mb"), new IsEqual<>(true));
+        MatcherAssert.assertThat("Set value is a Short!", configuration.isShort("ms"), new IsEqual<>(true));
+        MatcherAssert.assertThat("Set value is a Float!", configuration.isFloat("mf"), new IsEqual<>(true));
+        MatcherAssert.assertThat("Set value is a Character!", configuration.isCharacter("mc"), new IsEqual<>(true));
+    }
+
+    @Test
     void loadFromString() throws IOException {
         final YamlConfiguration configuration = resourceLoadYamlConfiguration("test.yml");
         final String newContent = "test:\n" +
