@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
@@ -89,6 +92,39 @@ class YamlCommentDumperTest {
                 "  - '&8%plugin_so-sum_{cat}_{sub-cat}%&8 in &8%plugin_so-count_{cat}_{sub-cat}%&8\n" +
                 "    offers'\n" +
                 "  - second # side comment\n")
+        );
+    }
+
+    @Test
+    void dumpFirstListMapElementComment() throws IOException {
+        // https://github.com/Carleslc/Simple-YAML/issues/84
+        final Map<String, Object> element = new LinkedHashMap<>();
+        element.put("key0", "val0");
+        element.put("key1", "val1");
+        element.put("key2", "val2");
+
+        final YamlFile yamlFile = new YamlFile();
+        yamlFile.set("test.list", Collections.singletonList(element));
+
+        yamlFile.setComment("test.list", "the list");
+        yamlFile.setComment("test.list[0]", "the first element");
+        yamlFile.setComment("test.list[0].key0", "comment 0");
+        yamlFile.setComment("test.list[0].key1", "comment 1");
+        yamlFile.setComment("test.list[0].key2", "comment 2");
+
+        MatcherAssert.assertThat(
+            "List map element comments are wrong!",
+            yamlFile.saveToString(),
+            new IsEqual<>("test:\n" +
+                "  # the list\n" +
+                "  list:\n" +
+                "    # the first element\n" +
+                "      # comment 0\n" +
+                "    - key0: val0\n" +
+                "      # comment 1\n" +
+                "      key1: val1\n" +
+                "      # comment 2\n" +
+                "      key2: val2\n")
         );
     }
 

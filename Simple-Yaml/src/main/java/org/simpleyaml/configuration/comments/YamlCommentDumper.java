@@ -81,7 +81,7 @@ public class YamlCommentDumper extends YamlCommentReader {
             this.commentNode = this.getNode(readerNode.getPath()); // key or list element by index
 
             if (this.commentNode != null) {
-                if (this.commentNode.parent != null && this.commentNode.parent.isList && this.commentNode.size() == 1) {
+                if (this.commentNode.parent != null && this.commentNode.parent.isList && this.commentNode.size() > 0) {
                     this.checkFirstListMapElement(this.commentNode, readerNode); // first key for list maps
                 }
             }
